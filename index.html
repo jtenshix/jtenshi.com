@@ -21,11 +21,10 @@
     }
 
     .carrusel-container {
-      display: flex;
-      overflow: hidden;
-      width: 1500px; /* 5 * 300px */
-      height: 200px;
       position: relative;
+      width: 300px; /* Solo un recuadro visible a la vez */
+      height: 200px;
+      overflow: hidden;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -152,7 +151,7 @@
   </div>
 
   <script>
-    // --- Configuración de Firebase ---
+    // --- Configuración de Firebase (reemplaza con las tuyas) ---
     const firebaseConfig = {
       apiKey: "AIzaSyCHa373WgLLHsy8wZXK9zr_HVieQvlrhUs",
       authDomain: "oasis-b036d.firebaseapp.com",
@@ -171,7 +170,7 @@
       return match ? match[1] : null;
     }
 
-    // --- Inicializar el carrusel con 5 recuadros vacíos ---
+    // --- Inicializar el carrusel con 5 recuadros ---
     const carruselTrack = document.getElementById('carruselTrack');
     const inputModal = document.getElementById('inputModal');
     const videoLinkInput = document.getElementById('videoLink');
@@ -179,8 +178,8 @@
     const flechaIzquierda = document.getElementById('flechaIzquierda');
     const flechaDerecha = document.getElementById('flechaDerecha');
 
-    let videos = []; // Array para guardar los video IDs
-    let recuadroActivoIndex = -1;
+    let videos = [];
+    let posicionActual = 0;
 
     function inicializarCarrusel() {
       carruselTrack.innerHTML = '';
@@ -189,17 +188,18 @@
         recuadro.classList.add('recuadro', 'vacio');
         recuadro.innerHTML = '+';
         recuadro.dataset.index = i;
-        recuadro.onclick = (e) => {
-          recuadroActivoIndex = parseInt(e.target.dataset.index);
+        recuadro.onclick = () => {
           inputModal.style.display = 'block';
           videoLinkInput.focus();
+          recuadro.dataset.index = i; // Guardar el índice del recuadro activo
         };
         carruselTrack.appendChild(recuadro);
       }
+      actualizarCarrusel();
       actualizarFlechas();
     }
 
-    // --- Función para guardar en Firebase ---
+    // --- Guardar y cargar desde Firebase ---
     function guardarEnFirebase() {
       db.collection('videos').doc('carrusel').set({
         videos: videos,
@@ -211,7 +211,6 @@
       });
     }
 
-    // --- Cargar desde Firebase ---
     function cargarDeFirebase() {
       db.collection('videos').doc('carrusel').get().then((doc) => {
         if (doc.exists) {
@@ -241,7 +240,7 @@
       });
     }
 
-    // --- Guardar video en recuadro ---
+    // --- Guardar video en el recuadro activo ---
     guardarVideoBtn.onclick = () => {
       const link = videoLinkInput.value.trim();
       const videoId = getYouTubeId(link);
@@ -249,43 +248,62 @@
         alert("Enlace inválido de YouTube.");
         return;
       }
-      videos[recuadroActivoIndex] = videoId;
-      const recuadro = carruselTrack.children[recuadroActivoIndex];
-      recuadro.classList.remove('vacio');
-      recuadro.innerHTML = '';
-      const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube.com/embed/${videoId}`;
-      iframe.width = "300";
-      iframe.height = "200";
-      iframe.frameborder = "0";
-      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-      iframe.allowFullscreen = true;
-      recuadro.appendChild(iframe);
-      inputModal.style.display = 'none';
-      videoLinkInput.value = '';
-      guardarEnFirebase();
+      const recuadroActivo = Array.from(carruselTrack.children).find(r => r.dataset.index === recuadroActivoIndex.toString());
+      if (recuadroActivo) {
+        videos[parseInt(recuadroActivo.dataset.index)] = videoId;
+        recuadroActivo.classList.remove('vacio');
+        recuadroActivo.innerHTML = '';
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${videoId}`;
+        iframe.width = "300";
+        iframe.height = "200";
+        iframe.frameborder = "0";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        recuadroActivo.appendChild(iframe);
+        inputModal.style.display = 'none';
+        videoLinkInput.value = '';
+        guardarEnFirebase();
+      }
     };
 
-    // --- Navegación con flechas ---
+    // --- Navegación del carrusel ---
+    function actualizarCarrusel() {
+      const offset = -posicionActual * 300;
+      carruselTrack.style.transform = `translateX(${offset}px)`;
+    }
+
     function actualizarFlechas() {
-      flechaIzquierda.disabled = carruselTrack.scrollLeft <= 0;
-      flechaDerecha.disabled = carruselTrack.scrollLeft >= (carruselTrack.scrollWidth - carruselTrack.clientWidth);
+      flechaIzquierda.disabled = posicionActual <= 0;
+      flechaDerecha.disabled = posicionActual >= carruselTrack.children.length - 1;
     }
 
     flechaIzquierda.onclick = () => {
-      carruselTrack.scrollLeft -= 300; // Mover un recuadro a la izquierda
-      actualizarFlechas();
+      if (posicionActual > 0) {
+        posicionActual--;
+        actualizarCarrusel();
+        actualizarFlechas();
+      }
     };
 
     flechaDerecha.onclick = () => {
-      carruselTrack.scrollLeft += 300; // Mover un recuadro a la derecha
-      actualizarFlechas();
+      if (posicionActual < carruselTrack.children.length - 1) {
+        posicionActual++;
+        actualizarCarrusel();
+        actualizarFlechas();
+      }
     };
 
-    carruselTrack.addEventListener('scroll', actualizarFlechas);
-
     // --- Inicializar ---
+    let recuadroActivoIndex = -1;
     cargarDeFirebase();
+
+    // --- Cerrar modal al hacer clic fuera ---
+    window.onclick = (event) => {
+      if (event.target === inputModal) {
+        inputModal.style.display = 'none';
+      }
+    };
   </script>
 </body>
 </html>
