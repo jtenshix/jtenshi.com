@@ -8,7 +8,8 @@ export default async function handler(request, response) {
     }
 
     try {
-        const apiKey = process.env.key_api;
+        // Se ha actualizado el nombre de la variable de entorno
+        const apiKey = process.env.YOUTUBEAPIKEY; 
         const apiResponse = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&key=${apiKey}&maxResults=50`);
         
         if (!apiResponse.ok) {
