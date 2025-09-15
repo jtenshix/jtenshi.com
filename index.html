@@ -3,173 +3,153 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notas Oceánicas - Carrusel de Videos</title>
+  <title>Carrusel de Videos - Prueba</title>
   <!-- Cargar Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
-  <!-- GridStack -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@8.3.0/dist/gridstack.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/gridstack@8.3.0/dist/gridstack-all.js"></script>
 
   <style>
-    /* Estilos generales */
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow-x: hidden;
       background: linear-gradient(to bottom, #1c2541 0%, #512E5F 40%, #4a148c 100%);
       font-family: Arial, sans-serif;
-    }
-
-    .container {
-      padding-top: 70px;
-      height: calc(100% - 70px);
-      width: 100%;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
-    #notaDisplay {
-      flex-grow: 1;
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      overflow-x: auto;
-      position: relative;
-    }
-
-    /* Estilos del carrusel */
-    .carousel-container {
+    .carrusel-container {
       display: flex;
-      overflow-x: auto;
-      gap: 15px;
-      padding: 10px 0;
-      scroll-behavior: smooth;
+      overflow: hidden;
+      width: 1500px; /* 5 * 300px */
+      height: 200px;
       position: relative;
-      max-width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
-    .video-frame {
+    .carrusel-track {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+
+    .recuadro {
+      width: 300px;
+      height: 200px;
       background: rgba(255, 255, 255, 0.1);
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 10px;
-      width: 300px;
-      height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: border-color 0.3s, transform 0.3s;
+      cursor: pointer;
+      transition: border-color 0.3s;
     }
 
-    .video-frame:hover {
+    .recuadro:hover {
       border-color: rgba(255, 255, 255, 0.6);
-      transform: scale(1.02);
     }
 
-    .video-frame iframe {
+    .recuadro iframe {
       width: 100%;
       height: 100%;
       border: none;
       border-radius: 8px;
     }
 
-    .video-frame.add-video {
-      background: rgba(0, 0, 0, 0.2);
-      cursor: pointer;
+    .recuadro.vacio {
       font-size: 40px;
       color: #fff;
       text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     }
 
-    .video-frame.add-video:hover {
-      background: rgba(0, 0, 0, 0.4);
-    }
-
-    .carousel-nav {
-      display: flex;
-      justify-content: space-between;
+    .flechas {
       position: absolute;
       top: 50%;
-      width: 100%;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
       transform: translateY(-50%);
       padding: 0 10px;
     }
 
-    .carousel-nav button {
+    .flecha {
       background: rgba(0, 0, 0, 0.5);
       border: none;
       color: #fff;
-      font-size: 20px;
-      width: 30px;
-      height: 30px;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       cursor: pointer;
       transition: background 0.3s;
     }
 
-    .carousel-nav button:hover {
+    .flecha:hover {
       background: rgba(0, 0, 0, 0.7);
     }
 
-    .carousel-nav button:disabled {
+    .flecha:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
-    /* Botón flotante */
-    #addNoteButton {
+    #inputModal {
+      display: none;
       position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background-color: #006994;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
       color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      z-index: 1001;
+      z-index: 1000;
     }
 
-    #addNoteButton:hover {
-      background-color: #005577;
+    #inputModal input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    #inputModal button {
+      background: #006994;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #inputModal button:hover {
+      background: #005577;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="zoom-container">
-      <div id="notaDisplay" class="grid-stack"></div>
+  <div class="carrusel-container">
+    <div class="carrusel-track" id="carruselTrack">
+      <!-- Los 5 recuadros se generan dinámicamente -->
+    </div>
+    <div class="flechas">
+      <button class="flecha" id="flechaIzquierda">&lt;</button>
+      <button class="flecha" id="flechaDerecha">&gt;</button>
     </div>
   </div>
 
-  <button id="addNoteButton" title="Añadir nuevo carrusel">+</button>
-  <div id="addNoteOptions" style="display: none;">
-    <div class="card" id="addVideoCarouselOption" title="Añadir un carrusel de videos de YouTube">
-      <h2>🎥 Carrusel</h2>
-      <p>Crear un carrusel de videos.</p>
-    </div>
+  <div id="inputModal">
+    <label for="videoLink">Ingresa el enlace de YouTube:</label>
+    <input type="text" id="videoLink" placeholder="https://www.youtube.com/watch?v=...">
+    <button id="guardarVideo">Guardar</button>
   </div>
-  <div id="inputArea" style="display: none;">
-    <div id="videoLinkInputArea">
-      <div class="input-group">
-        <label for="videoLink">Link del video de YouTube:</label>
-        <input type="text" id="videoLink" placeholder="Pega aquí la URL de YouTube (ej: https://www.youtube.com/watch?v=dQw4w9WgXcQ)" />
-      </div>
-      <div class="input-group">
-        <label for="videoNoteText">Texto adicional (opcional):</label>
-        <textarea id="videoNoteText" placeholder="Escribe aquí una descripción..." rows="3"></textarea>
-      </div>
-      <button id="saveVideoLink">Guardar Video</button>
-    </div>
-  </div>
-  <div class="blur-background" style="display: none;"></div>
 
   <script>
     // --- Configuración de Firebase ---
@@ -184,20 +164,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // --- Inicializar GridStack ---
-    let grid = null;
-    document.addEventListener('DOMContentLoaded', () => {
-      grid = GridStack.init({
-        column: 12,
-        margin: 5,
-        cellHeight: 'auto',
-        disableResize: true,
-        float: true,
-        overlap: false,
-        animate: true,
-      });
-    });
-
     // --- Función para extraer ID de YouTube ---
     function getYouTubeId(url) {
       const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/;
@@ -205,230 +171,121 @@
       return match ? match[1] : null;
     }
 
-    // --- Función para guardar enlace de video ---
-    function guardarLinkDeVideo() {
-      const videoLinkInputElem = document.getElementById('videoLink');
-      const videoNoteTextElem = document.getElementById('videoNoteText');
-      const saveVideoLinkButtonElem = document.getElementById('saveVideoLink');
+    // --- Inicializar el carrusel con 5 recuadros vacíos ---
+    const carruselTrack = document.getElementById('carruselTrack');
+    const inputModal = document.getElementById('inputModal');
+    const videoLinkInput = document.getElementById('videoLink');
+    const guardarVideoBtn = document.getElementById('guardarVideo');
+    const flechaIzquierda = document.getElementById('flechaIzquierda');
+    const flechaDerecha = document.getElementById('flechaDerecha');
 
-      if (!videoLinkInputElem || !db) return;
-      let link = videoLinkInputElem.value.trim();
-      const texto = videoNoteTextElem ? videoNoteTextElem.value.trim() : '';
-      const videoId = getYouTubeId(link);
+    let videos = []; // Array para guardar los video IDs
+    let recuadroActivoIndex = -1;
 
-      if (!videoId) {
-        alert("Introduce un enlace válido de YouTube.");
-        videoLinkInputElem.focus();
-        return;
+    function inicializarCarrusel() {
+      carruselTrack.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const recuadro = document.createElement('div');
+        recuadro.classList.add('recuadro', 'vacio');
+        recuadro.innerHTML = '+';
+        recuadro.dataset.index = i;
+        recuadro.onclick = (e) => {
+          recuadroActivoIndex = parseInt(e.target.dataset.index);
+          inputModal.style.display = 'block';
+          videoLinkInput.focus();
+        };
+        carruselTrack.appendChild(recuadro);
       }
+      actualizarFlechas();
+    }
 
-      if (saveVideoLinkButtonElem) saveVideoLinkButtonElem.disabled = true;
-
-      let noteId = localStorage.getItem('activeCarouselNoteId');
-      if (!noteId) {
-        db.collection('notas').add({
-          tipo: 'video',
-          videos: [videoId],
-          texto: texto || null,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          w: 12,
-        }).then((docRef) => {
-          noteId = docRef.id;
-          localStorage.setItem('activeCarouselNoteId', noteId);
-          hidePopups();
-          renderCarousel(noteId);
-        });
-      } else {
-        db.collection('notas').doc(noteId).get().then((doc) => {
-          if (doc.exists) {
-            const data = doc.data();
-            const videos = data.videos || [];
-            videos.push(videoId);
-            return db.collection('notas').doc(noteId).update({
-              videos: videos,
-              texto: texto || data.texto || null,
-            });
-          } else {
-            localStorage.removeItem('activeCarouselNoteId');
-            return guardarLinkDeVideo();
-          }
-        }).then(() => {
-          hidePopups();
-          renderCarousel(noteId);
-        });
-      }.catch((error) => {
-        console.error('Error al guardar video:', error);
-        alert("Error al guardar video: " + error.message);
-      }).finally(() => {
-        if (saveVideoLinkButtonElem) saveVideoLinkButtonElem.disabled = false;
+    // --- Función para guardar en Firebase ---
+    function guardarEnFirebase() {
+      db.collection('videos').doc('carrusel').set({
+        videos: videos,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }).then(() => {
+        console.log("Videos guardados en Firebase");
+      }).catch((error) => {
+        console.error("Error al guardar en Firebase:", error);
       });
     }
 
-    // --- Función para renderizar el carrusel ---
-    function renderCarousel(noteId) {
-      db.collection('notas').doc(noteId).get().then((doc) => {
+    // --- Cargar desde Firebase ---
+    function cargarDeFirebase() {
+      db.collection('videos').doc('carrusel').get().then((doc) => {
         if (doc.exists) {
-          const notaData = doc.data();
-          let gridItem = document.createElement('div');
-          gridItem.classList.add('grid-stack-item');
-          gridItem.setAttribute('data-note-id', noteId);
-          gridItem.setAttribute('data-note-type', 'video');
-
-          const content = document.createElement('div');
-          content.classList.add('grid-stack-item-content');
-
-          const card = document.createElement('div');
-          card.classList.add('card-wrapper');
-
-          const carouselContainer = document.createElement('div');
-          carouselContainer.classList.add('carousel-container');
-          carouselContainer.setAttribute('data-note-id', noteId);
-
-          const videos = notaData.videos || [];
-          for (let i = 0; i < Math.max(5, videos.length); i++) {
-            const videoFrame = document.createElement('div');
-            videoFrame.classList.add('video-frame');
-            if (i < videos.length) {
+          videos = doc.data().videos || [];
+          inicializarCarrusel();
+          videos.forEach((videoId, index) => {
+            if (index < 5) {
+              const recuadro = carruselTrack.children[index];
+              recuadro.classList.remove('vacio');
+              recuadro.innerHTML = '';
               const iframe = document.createElement('iframe');
-              iframe.src = `https://www.youtube.com/embed/${videos[i]}`;
+              iframe.src = `https://www.youtube.com/embed/${videoId}`;
               iframe.width = "300";
               iframe.height = "200";
               iframe.frameborder = "0";
               iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
               iframe.allowFullscreen = true;
-              videoFrame.appendChild(iframe);
-            } else {
-              videoFrame.classList.add('add-video');
-              videoFrame.innerHTML = '+';
-              videoFrame.onclick = () => {
-                localStorage.setItem('activeCarouselNoteId', noteId);
-                document.getElementById('addNoteOptions').style.display = 'none';
-                document.getElementById('videoLinkInputArea').style.display = 'block';
-                document.getElementById('inputArea').style.display = 'flex';
-                document.querySelector('.blur-background').style.display = 'block';
-                document.getElementById('videoLink').focus();
-              };
+              recuadro.appendChild(iframe);
             }
-            carouselContainer.appendChild(videoFrame);
-          }
-
-          // Añadir navegación
-          const nav = document.createElement('div');
-          nav.classList.add('carousel-nav');
-          const prevButton = document.createElement('button');
-          prevButton.innerHTML = '&lt;';
-          prevButton.onclick = (e) => {
-            e.stopPropagation();
-            carouselContainer.scrollLeft -= 320;
-            updateNavButtons(carouselContainer, prevButton, nextButton);
-          };
-          const nextButton = document.createElement('button');
-          nextButton.innerHTML = '&gt;';
-          nextButton.onclick = (e) => {
-            e.stopPropagation();
-            carouselContainer.scrollLeft += 320;
-            updateNavButtons(carouselContainer, prevButton, nextButton);
-          };
-          nav.appendChild(prevButton);
-          nav.appendChild(nextButton);
-          carouselContainer.appendChild(nav);
-
-          card.appendChild(carouselContainer);
-
-          if (notaData.texto) {
-            const noteContentElement = document.createElement('div');
-            noteContentElement.classList.add('note-content');
-            noteContentElement.innerHTML = linkify(notaData.texto);
-            card.appendChild(noteContentElement);
-          }
-
-          const menuBar = document.createElement('div');
-          menuBar.classList.add('menu-bar');
-          // ... (puedes añadir botones de menú si lo deseas, como en tu código original) ...
-
-          card.appendChild(menuBar);
-          content.appendChild(card);
-          gridItem.appendChild(content);
-
-          const existingItem = grid.getElementsByClassName(`grid-stack-item[data-note-id="${noteId}"]`)[0];
-          if (existingItem) {
-            grid.removeWidget(existingItem);
-          }
-          grid.addWidget(gridItem, {
-            x: typeof notaData.x === 'number' ? notaData.x : undefined,
-            y: typeof notaData.y === 'number' ? notaData.y : undefined,
-            w: notaData.w || 12,
-            autoPosition: (typeof notaData.x !== 'number' || typeof notaData.y !== 'number')
           });
+        } else {
+          inicializarCarrusel();
         }
+      }).catch((error) => {
+        console.error("Error al cargar desde Firebase:", error);
+        inicializarCarrusel();
       });
     }
 
-    // --- Función para actualizar botones de navegación ---
-    function updateNavButtons(container, prevButton, nextButton) {
-      prevButton.disabled = container.scrollLeft <= 0;
-      nextButton.disabled = container.scrollLeft >= (container.scrollWidth - container.clientWidth);
+    // --- Guardar video en recuadro ---
+    guardarVideoBtn.onclick = () => {
+      const link = videoLinkInput.value.trim();
+      const videoId = getYouTubeId(link);
+      if (!videoId) {
+        alert("Enlace inválido de YouTube.");
+        return;
+      }
+      videos[recuadroActivoIndex] = videoId;
+      const recuadro = carruselTrack.children[recuadroActivoIndex];
+      recuadro.classList.remove('vacio');
+      recuadro.innerHTML = '';
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoId}`;
+      iframe.width = "300";
+      iframe.height = "200";
+      iframe.frameborder = "0";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      recuadro.appendChild(iframe);
+      inputModal.style.display = 'none';
+      videoLinkInput.value = '';
+      guardarEnFirebase();
+    };
+
+    // --- Navegación con flechas ---
+    function actualizarFlechas() {
+      flechaIzquierda.disabled = carruselTrack.scrollLeft <= 0;
+      flechaDerecha.disabled = carruselTrack.scrollLeft >= (carruselTrack.scrollWidth - carruselTrack.clientWidth);
     }
 
-    // --- Función para mostrar/ocultar popups ---
-    function hidePopups() {
-      const addOpts = document.getElementById('addNoteOptions');
-      const inputArea = document.getElementById('inputArea');
-      const blurBg = document.querySelector('.blur-background');
-      if (addOpts) addOpts.style.display = 'none';
-      if (inputArea) inputArea.style.display = 'none';
-      if (blurBg) blurBg.style.display = 'none';
-      document.getElementById('videoLink').value = '';
-      document.getElementById('videoNoteText').value = '';
-    }
+    flechaIzquierda.onclick = () => {
+      carruselTrack.scrollLeft -= 300; // Mover un recuadro a la izquierda
+      actualizarFlechas();
+    };
 
-    // --- Listeners ---
-    document.addEventListener('DOMContentLoaded', () => {
-      const addNoteBtn = document.getElementById('addNoteButton');
-      const addVideoOpt = document.getElementById('addVideoCarouselOption');
-      const saveVideoBtn = document.getElementById('saveVideoLink');
-      const blurBg = document.querySelector('.blur-background');
+    flechaDerecha.onclick = () => {
+      carruselTrack.scrollLeft += 300; // Mover un recuadro a la derecha
+      actualizarFlechas();
+    };
 
-      if (addNoteBtn) {
-        addNoteBtn.onclick = (e) => {
-          e.stopPropagation();
-          if (document.getElementById('addNoteOptions').style.display === 'flex') {
-            hidePopups();
-          } else {
-            hidePopups();
-            document.getElementById('addNoteOptions').style.display = 'flex';
-            blurBg.style.display = 'block';
-          }
-        };
-      }
+    carruselTrack.addEventListener('scroll', actualizarFlechas);
 
-      if (addVideoOpt) {
-        addVideoOpt.onclick = (e) => {
-          e.stopPropagation();
-          document.getElementById('addNoteOptions').style.display = 'none';
-          document.getElementById('videoLinkInputArea').style.display = 'block';
-          document.getElementById('inputArea').style.display = 'flex';
-          blurBg.style.display = 'block';
-          document.getElementById('videoLink').focus();
-        };
-      }
-
-      if (saveVideoBtn) saveVideoBtn.onclick = guardarLinkDeVideo;
-
-      if (blurBg) blurBg.onclick = hidePopups;
-    });
-
-    // --- Listener de Firestore ---
-    db.collection('notas').onSnapshot((snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'added' || change.type === 'modified') {
-          renderCarousel(change.doc.id);
-        } else if (change.type === 'removed') {
-          const gridItem = grid.getElementsByClassName(`grid-stack-item[data-note-id="${change.doc.id}"]`)[0];
-          if (gridItem) grid.removeWidget(gridItem);
-        }
-      });
-    });
+    // --- Inicializar ---
+    cargarDeFirebase();
   </script>
 </body>
 </html>
