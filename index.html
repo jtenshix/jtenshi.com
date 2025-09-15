@@ -75,7 +75,7 @@
 
     <div class="carousel-container">
         <div class="carousel-track" id="videos-track">
-            </div>
+        </div>
         <button class="carousel-btn prev">‹</button>
         <button class="carousel-btn next">›</button>
     </div>
@@ -91,8 +91,8 @@
 
         async function fetchPlaylistVideos() {
             try {
-                // Llama a la función serverless en Vercel
-                const response = await fetch(`/api/get-playlist?playlistId=${PLAYLIST_ID}`);
+                // Se ha actualizado la URL para que sea absoluta y apunte a tu API en Vercel
+                const response = await fetch(`https://jtenshi-com.vercel.app/api/get-playlist?playlistId=${PLAYLIST_ID}`);
                 const data = await response.json();
 
                 if (data.items) {
