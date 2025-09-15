@@ -12,8 +12,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
+      padding: 20px;
     }
 
     header {
@@ -28,35 +29,66 @@
     }
 
     #carousel {
-      position: relative;
-      width: 80%;
-      max-width: 800px;
-      height: 450px;
+      display: flex;
+      gap: 20px;
       overflow: hidden;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(255, 64, 129, 0.5);
+      width: 90%;
+      max-width: 1000px;
+      justify-content: center;
     }
 
-    .slide {
-      position: absolute;
-      top: 0;
-      left: 100%;
+    .video-card {
+      flex: 0 0 300px;
+      background: #1a1a1a;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255, 64, 129, 0.4);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .video-card:hover {
+      transform: scale(1.05);
+    }
+
+    .video-card img {
       width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: all 1s ease-in-out;
+      border-radius: 15px 15px 0 0;
     }
 
-    .slide.active {
+    .video-card h3 {
+      margin: 10px;
+      font-size: 1em;
+      color: #ff80ab;
+    }
+
+    /* Modal */
+    #playerModal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
       left: 0;
-      opacity: 1;
-    }
-
-    iframe {
+      top: 0;
       width: 100%;
       height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #playerModal iframe {
+      width: 80%;
+      height: 60%;
       border: none;
-      border-radius: 20px;
+    }
+
+    #closeBtn {
+      position: absolute;
+      top: 20px;
+      right: 40px;
+      font-size: 2em;
+      color: white;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -67,11 +99,20 @@
 
   <div id="carousel"></div>
 
+  <!-- Modal con reproductor -->
+  <div id="playerModal">
+    <span id="closeBtn">&times;</span>
+    <iframe id="playerFrame" allowfullscreen></iframe>
+  </div>
+
   <script>
-    // URL de tu hoja en formato CSV (más fácil de leer con JS)
+    // URL de tu hoja en CSV
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTL48hAnTyE99fxqCjK5n_MGu1p0a_iywggHPVTA-w_YSjuecflA0__MeAZZgoY_P_SzeC8Nrt0-ER6/pub?output=csv";
 
     const carousel = document.getElementById("carousel");
+    const modal = document.getElementById("playerModal");
+    const player = document.getElementById("playerFrame");
+    const closeBtn = document.getElementById("closeBtn");
 
     fetch(sheetUrl)
       .then(res => res.text())
@@ -79,28 +120,41 @@
         const rows = data.split("\n").slice(1); // saltar cabecera
         const videos = rows.slice(0, 3); // tomar solo los 3 primeros
 
-        videos.forEach((row, index) => {
+        videos.forEach(row => {
           const [nombre, link] = row.split(",");
-          const videoId = new URL(link.trim()).searchParams.get("v"); 
-          const div = document.createElement("div");
-          div.classList.add("slide");
-          if (index === 0) div.classList.add("active");
-          div.innerHTML = `
-            <iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+          if (!link) return;
+          const videoId = new URL(link.trim()).searchParams.get("v");
+          const thumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+          const card = document.createElement("div");
+          card.classList.add("video-card");
+          card.innerHTML = `
+            <img src="${thumbnail}" alt="${nombre}">
+            <h3>${nombre}</h3>
           `;
-          carousel.appendChild(div);
+
+          // abrir modal con el reproductor
+          card.addEventListener("click", () => {
+            player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            modal.style.display = "flex";
+          });
+
+          carousel.appendChild(card);
         });
-
-        // Rotación automática
-        let current = 0;
-        const slides = document.querySelectorAll(".slide");
-
-        setInterval(() => {
-          slides[current].classList.remove("active");
-          current = (current + 1) % slides.length;
-          slides[current].classList.add("active");
-        }, 6000); // cambia cada 6 segundos
       });
+
+    // cerrar modal
+    closeBtn.onclick = () => {
+      modal.style.display = "none";
+      player.src = "";
+    };
+
+    window.onclick = (event) => {
+      if (event.target == modal) {
+        modal.style.display = "none";
+        player.src = "";
+      }
+    };
   </script>
 </body>
 </html>
