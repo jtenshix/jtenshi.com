@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Mi Página de Música</title>
+  <!-- Favicon para evitar 404 -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2214%22 font-size=%2216%22>🎵</text></svg>">
   <style>
     body {
       margin: 0;
@@ -116,7 +118,6 @@
   </div>
 
   <script>
-    // Tu hoja de Google en CSV
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTL48hAnTyE99fxqCjK5n_MGu1p0a_iywggHPVTA-w_YSjuecflA0__MeAZZgoY_P_SzeC8Nrt0-ER6/pub?gid=0&single=true&output=csv";
 
     const carousel = document.getElementById("carousel");
@@ -127,8 +128,8 @@
     fetch(sheetUrl)
       .then(res => res.text())
       .then(data => {
-        const rows = data.split("\n").slice(1); // saltar cabecera
-        const videos = rows.slice(0, 3); // tomar solo 3 primeros
+        const rows = data.split("\n").slice(1);
+        const videos = rows.slice(0, 3);
 
         videos.forEach(row => {
           const [nombre, link] = row.split(",");
@@ -143,7 +144,6 @@
             <h3>${nombre}</h3>
           `;
 
-          // abrir modal con autoplay silenciado
           card.addEventListener("click", () => {
             player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
             modal.style.display = "flex";
@@ -153,7 +153,6 @@
         });
       });
 
-    // cerrar modal
     closeBtn.onclick = () => {
       modal.style.display = "none";
       player.src = "";
