@@ -1,9 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- ... (otros head elements permanecen igual) ... -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notas Oceánicas - Carrusel de Videos</title>
+  <!-- Cargar Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+  <!-- GridStack -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@8.3.0/dist/gridstack.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@8.3.0/dist/gridstack-all.js"></script>
+
   <style>
-    /* Estilos para el carrusel */
+    /* Estilos generales */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-x: hidden;
+      background: linear-gradient(to bottom, #1c2541 0%, #512E5F 40%, #4a148c 100%);
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      padding-top: 70px;
+      height: calc(100% - 70px);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #notaDisplay {
+      flex-grow: 1;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    /* Estilos del carrusel */
     .carousel-container {
       display: flex;
       overflow-x: auto;
@@ -81,48 +117,87 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
+
+    /* Botón flotante */
+    #addNoteButton {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #006994;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    #addNoteButton:hover {
+      background-color: #005577;
+    }
   </style>
 </head>
 <body>
-  <!-- ... (otros body elements permanecen igual) ... -->
-
-  <div id="addNoteOptions">
-    <div class="card" id="addImageLinkOption" title="Añadir un carrusel de videos de YouTube">
-      <h2>🎥 Video</h2>
-      <p>Crear un carrusel de videos de YouTube.</p>
-    </div>
-    <div class="card" id="addTextNoteOption" title="Añadir una nota de texto simple">
-      <h2>📝 Nota</h2>
-      <p>Subir nota de texto.</p>
-    </div>
-  </div>
-
-  <div id="inputArea">
-    <div id="imageLinkInputArea" style="display: none;">
-      <div class="input-group">
-        <label for="videoLink">Link del video de YouTube:</label>
-        <input type="text" id="videoLink" placeholder="Pega aquí la URL de YouTube (ej: https://www.youtube.com/watch?v=dQw4w9WgXcQ)" />
-      </div>
-      <div class="input-group">
-        <label for="videoNoteText">Texto adicional (opcional):</label>
-        <textarea id="videoNoteText" placeholder="Escribe aquí una descripción o nota..." rows="3"></textarea>
-      </div>
-      <button id="saveVideoLink">Guardar Video</button>
-    </div>
-    <div id="textNoteInputArea" style="display: none;">
-      <!-- ... (permanece igual) ... -->
-    </div>
-  </div>
-
   <div class="container">
     <div id="zoom-container">
       <div id="notaDisplay" class="grid-stack"></div>
     </div>
   </div>
 
-  <!-- ... (otros body elements permanecen igual) ... -->
+  <button id="addNoteButton" title="Añadir nuevo carrusel">+</button>
+  <div id="addNoteOptions" style="display: none;">
+    <div class="card" id="addVideoCarouselOption" title="Añadir un carrusel de videos de YouTube">
+      <h2>🎥 Carrusel</h2>
+      <p>Crear un carrusel de videos.</p>
+    </div>
+  </div>
+  <div id="inputArea" style="display: none;">
+    <div id="videoLinkInputArea">
+      <div class="input-group">
+        <label for="videoLink">Link del video de YouTube:</label>
+        <input type="text" id="videoLink" placeholder="Pega aquí la URL de YouTube (ej: https://www.youtube.com/watch?v=dQw4w9WgXcQ)" />
+      </div>
+      <div class="input-group">
+        <label for="videoNoteText">Texto adicional (opcional):</label>
+        <textarea id="videoNoteText" placeholder="Escribe aquí una descripción..." rows="3"></textarea>
+      </div>
+      <button id="saveVideoLink">Guardar Video</button>
+    </div>
+  </div>
+  <div class="blur-background" style="display: none;"></div>
 
   <script>
+    // --- Configuración de Firebase ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHa373WgLLHsy8wZXK9zr_HVieQvlrhUs",
+      authDomain: "oasis-b036d.firebaseapp.com",
+      projectId: "oasis-b036d",
+      storageBucket: "oasis-b036d.appspot.com",
+      messagingSenderId: "141546637821",
+      appId: "1:141546637821:web:0a861aeb13831774ed3194",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // --- Inicializar GridStack ---
+    let grid = null;
+    document.addEventListener('DOMContentLoaded', () => {
+      grid = GridStack.init({
+        column: 12,
+        margin: 5,
+        cellHeight: 'auto',
+        disableResize: true,
+        float: true,
+        overlap: false,
+        animate: true,
+      });
+    });
+
     // --- Función para extraer ID de YouTube ---
     function getYouTubeId(url) {
       const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/;
@@ -130,11 +205,11 @@
       return match ? match[1] : null;
     }
 
-    // --- Función para guardar enlace de video en un carrusel existente ---
+    // --- Función para guardar enlace de video ---
     function guardarLinkDeVideo() {
-      const videoLinkInputElem = getElement('videoLink');
-      const videoNoteTextElem = getElement('videoNoteText');
-      const saveVideoLinkButtonElem = getElement('saveVideoLink');
+      const videoLinkInputElem = document.getElementById('videoLink');
+      const videoNoteTextElem = document.getElementById('videoNoteText');
+      const saveVideoLinkButtonElem = document.getElementById('saveVideoLink');
 
       if (!videoLinkInputElem || !db) return;
       let link = videoLinkInputElem.value.trim();
@@ -149,20 +224,19 @@
 
       if (saveVideoLinkButtonElem) saveVideoLinkButtonElem.disabled = true;
 
-      // Obtener la nota activa o crear una nueva
       let noteId = localStorage.getItem('activeCarouselNoteId');
       if (!noteId) {
         db.collection('notas').add({
           tipo: 'video',
-          texto: texto || null,
           videos: [videoId],
+          texto: texto || null,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           w: 12,
         }).then((docRef) => {
           noteId = docRef.id;
           localStorage.setItem('activeCarouselNoteId', noteId);
-          console.log("Nuevo carrusel creado con ID:", noteId);
           hidePopups();
+          renderCarousel(noteId);
         });
       } else {
         db.collection('notas').doc(noteId).get().then((doc) => {
@@ -176,11 +250,11 @@
             });
           } else {
             localStorage.removeItem('activeCarouselNoteId');
-            return guardarLinkDeVideo(); // Reiniciar si la nota no existe
+            return guardarLinkDeVideo();
           }
         }).then(() => {
-          console.log("Video añadido al carrusel existente:", noteId);
           hidePopups();
+          renderCarousel(noteId);
         });
       }.catch((error) => {
         console.error('Error al guardar video:', error);
@@ -190,131 +264,104 @@
       });
     }
 
-    // --- Actualizar mostrarNotaEnPantalla para carrusel interactivo ---
-    function mostrarNotaEnPantalla(doc) {
-      const notaData = doc.data();
-      const noteId = doc.id;
+    // --- Función para renderizar el carrusel ---
+    function renderCarousel(noteId) {
+      db.collection('notas').doc(noteId).get().then((doc) => {
+        if (doc.exists) {
+          const notaData = doc.data();
+          let gridItem = document.createElement('div');
+          gridItem.classList.add('grid-stack-item');
+          gridItem.setAttribute('data-note-id', noteId);
+          gridItem.setAttribute('data-note-type', 'video');
 
-      if (!notaData || (!notaData.videos && !notaData.nota)) {
-        console.warn(`Datos inválidos o incompletos para nota ${noteId}, no se mostrará.`);
-        return null;
-      }
+          const content = document.createElement('div');
+          content.classList.add('grid-stack-item-content');
 
-      let gridItem = document.createElement('div');
-      gridItem.classList.add('grid-stack-item');
-      gridItem.setAttribute('data-note-id', noteId);
-      gridItem.setAttribute('data-note-type', notaData.tipo || (notaData.videos ? 'video' : 'texto'));
+          const card = document.createElement('div');
+          card.classList.add('card-wrapper');
 
-      const content = document.createElement('div');
-      content.classList.add('grid-stack-item-content');
+          const carouselContainer = document.createElement('div');
+          carouselContainer.classList.add('carousel-container');
+          carouselContainer.setAttribute('data-note-id', noteId);
 
-      let card;
-      let noteContentElement = null;
-
-      if (notaData.videos) {
-        card = document.createElement('div');
-        card.classList.add('card-wrapper');
-
-        const carouselContainer = document.createElement('div');
-        carouselContainer.classList.add('carousel-container');
-        carouselContainer.setAttribute('data-note-id', noteId);
-
-        // Añadir 5 cuadros iniciales (con o sin videos)
-        const initialVideos = notaData.videos || [];
-        for (let i = 0; i < Math.max(5, initialVideos.length); i++) {
-          const videoFrame = document.createElement('div');
-          videoFrame.classList.add('video-frame');
-          if (i < initialVideos.length) {
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.youtube.com/embed/${initialVideos[i]}`;
-            iframe.width = "300";
-            iframe.height = "200";
-            iframe.frameborder = "0";
-            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-            iframe.allowFullscreen = true;
-            videoFrame.appendChild(iframe);
-          } else {
-            videoFrame.classList.add('add-video');
-            videoFrame.innerHTML = '+';
-            videoFrame.onclick = () => {
-              localStorage.setItem('activeCarouselNoteId', noteId);
-              if (getElement('addNoteOptions')) getElement('addNoteOptions').style.display = 'none';
-              if (getElement('imageLinkInputArea')) getElement('imageLinkInputArea').style.display = 'block';
-              if (getElement('textNoteInputArea')) getElement('textNoteInputArea').style.display = 'none';
-              if (getElement('inputArea')) getElement('inputArea').style.display = 'flex';
-              if (document.querySelector('.blur-background')) document.querySelector('.blur-background').style.display = 'block';
-              if (getElement('videoLink')) getElement('videoLink').focus();
-            };
+          const videos = notaData.videos || [];
+          for (let i = 0; i < Math.max(5, videos.length); i++) {
+            const videoFrame = document.createElement('div');
+            videoFrame.classList.add('video-frame');
+            if (i < videos.length) {
+              const iframe = document.createElement('iframe');
+              iframe.src = `https://www.youtube.com/embed/${videos[i]}`;
+              iframe.width = "300";
+              iframe.height = "200";
+              iframe.frameborder = "0";
+              iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+              iframe.allowFullscreen = true;
+              videoFrame.appendChild(iframe);
+            } else {
+              videoFrame.classList.add('add-video');
+              videoFrame.innerHTML = '+';
+              videoFrame.onclick = () => {
+                localStorage.setItem('activeCarouselNoteId', noteId);
+                document.getElementById('addNoteOptions').style.display = 'none';
+                document.getElementById('videoLinkInputArea').style.display = 'block';
+                document.getElementById('inputArea').style.display = 'flex';
+                document.querySelector('.blur-background').style.display = 'block';
+                document.getElementById('videoLink').focus();
+              };
+            }
+            carouselContainer.appendChild(videoFrame);
           }
-          carouselContainer.appendChild(videoFrame);
+
+          // Añadir navegación
+          const nav = document.createElement('div');
+          nav.classList.add('carousel-nav');
+          const prevButton = document.createElement('button');
+          prevButton.innerHTML = '&lt;';
+          prevButton.onclick = (e) => {
+            e.stopPropagation();
+            carouselContainer.scrollLeft -= 320;
+            updateNavButtons(carouselContainer, prevButton, nextButton);
+          };
+          const nextButton = document.createElement('button');
+          nextButton.innerHTML = '&gt;';
+          nextButton.onclick = (e) => {
+            e.stopPropagation();
+            carouselContainer.scrollLeft += 320;
+            updateNavButtons(carouselContainer, prevButton, nextButton);
+          };
+          nav.appendChild(prevButton);
+          nav.appendChild(nextButton);
+          carouselContainer.appendChild(nav);
+
+          card.appendChild(carouselContainer);
+
+          if (notaData.texto) {
+            const noteContentElement = document.createElement('div');
+            noteContentElement.classList.add('note-content');
+            noteContentElement.innerHTML = linkify(notaData.texto);
+            card.appendChild(noteContentElement);
+          }
+
+          const menuBar = document.createElement('div');
+          menuBar.classList.add('menu-bar');
+          // ... (puedes añadir botones de menú si lo deseas, como en tu código original) ...
+
+          card.appendChild(menuBar);
+          content.appendChild(card);
+          gridItem.appendChild(content);
+
+          const existingItem = grid.getElementsByClassName(`grid-stack-item[data-note-id="${noteId}"]`)[0];
+          if (existingItem) {
+            grid.removeWidget(existingItem);
+          }
+          grid.addWidget(gridItem, {
+            x: typeof notaData.x === 'number' ? notaData.x : undefined,
+            y: typeof notaData.y === 'number' ? notaData.y : undefined,
+            w: notaData.w || 12,
+            autoPosition: (typeof notaData.x !== 'number' || typeof notaData.y !== 'number')
+          });
         }
-
-        // Añadir navegación
-        const nav = document.createElement('div');
-        nav.classList.add('carousel-nav');
-        const prevButton = document.createElement('button');
-        prevButton.innerHTML = '&lt;';
-        prevButton.onclick = (e) => {
-          e.stopPropagation();
-          carouselContainer.scrollLeft -= 320;
-          updateNavButtons(carouselContainer, prevButton, nextButton);
-        };
-        const nextButton = document.createElement('button');
-        nextButton.innerHTML = '&gt;';
-        nextButton.onclick = (e) => {
-          e.stopPropagation();
-          carouselContainer.scrollLeft += 320;
-          updateNavButtons(carouselContainer, prevButton, nextButton);
-        };
-        nav.appendChild(prevButton);
-        nav.appendChild(nextButton);
-        carouselContainer.appendChild(nav);
-
-        card.appendChild(carouselContainer);
-
-        if (notaData.texto) {
-          noteContentElement = document.createElement('div');
-          noteContentElement.classList.add('note-content');
-          noteContentElement.innerHTML = linkify(notaData.texto);
-          card.appendChild(noteContentElement);
-        }
-      } else if (notaData.nota) {
-        card = document.createElement('div');
-        card.classList.add('text-card');
-        noteContentElement = document.createElement('div');
-        noteContentElement.classList.add('note-content');
-        noteContentElement.innerHTML = linkify(notaData.nota);
-        card.appendChild(noteContentElement);
-      } else {
-        return null;
-      }
-
-      if (noteContentElement) {
-        Array.from(noteContentElement.getElementsByTagName('a')).forEach(link => {
-          link.setAttribute('target', '_blank');
-          link.setAttribute('rel', 'noopener noreferrer');
-        });
-      }
-
-      const menuBar = document.createElement('div');
-      menuBar.classList.add('menu-bar');
-      // ... (resto del código de menuBar permanece igual) ...
-
-      card.appendChild(menuBar);
-      content.appendChild(card);
-      gridItem.appendChild(content);
-
-      const pos = {
-        x: typeof notaData.x === 'number' ? notaData.x : undefined,
-        y: typeof notaData.y === 'number' ? notaData.y : undefined,
-        w: notaData.w || 12,
-        id: noteId,
-        autoPosition: (typeof notaData.x !== 'number' || typeof notaData.y !== 'number')
-      };
-
-      gridItem.docData = notaData;
-
-      return { element: gridItem, position: pos };
+      });
     }
 
     // --- Función para actualizar botones de navegación ---
@@ -323,36 +370,65 @@
       nextButton.disabled = container.scrollLeft >= (container.scrollWidth - container.clientWidth);
     }
 
-    // --- Asignar listener al botón de guardar video ---
-    document.addEventListener('DOMContentLoaded', () => {
-      const addImgOpt = getElement('addImageLinkOption');
-      const saveVideoBtn = getElement('saveVideoLink');
+    // --- Función para mostrar/ocultar popups ---
+    function hidePopups() {
+      const addOpts = document.getElementById('addNoteOptions');
+      const inputArea = document.getElementById('inputArea');
+      const blurBg = document.querySelector('.blur-background');
+      if (addOpts) addOpts.style.display = 'none';
+      if (inputArea) inputArea.style.display = 'none';
+      if (blurBg) blurBg.style.display = 'none';
+      document.getElementById('videoLink').value = '';
+      document.getElementById('videoNoteText').value = '';
+    }
 
-      if (addImgOpt) {
-        addImgOpt.onclick = (e) => {
+    // --- Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const addNoteBtn = document.getElementById('addNoteButton');
+      const addVideoOpt = document.getElementById('addVideoCarouselOption');
+      const saveVideoBtn = document.getElementById('saveVideoLink');
+      const blurBg = document.querySelector('.blur-background');
+
+      if (addNoteBtn) {
+        addNoteBtn.onclick = (e) => {
           e.stopPropagation();
-          db.collection('notas').add({
-            tipo: 'video',
-            videos: [],
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            w: 12,
-          }).then((docRef) => {
-            localStorage.setItem('activeCarouselNoteId', docRef.id);
-            if (getElement('addNoteOptions')) getElement('addNoteOptions').style.display = 'none';
-            if (getElement('imageLinkInputArea')) getElement('imageLinkInputArea').style.display = 'block';
-            if (getElement('textNoteInputArea')) getElement('textNoteInputArea').style.display = 'none';
-            if (getElement('inputArea')) getElement('inputArea').style.display = 'flex';
-            if (document.querySelector('.blur-background')) document.querySelector('.blur-background').style.display = 'block';
-            if (getElement('videoLink')) getElement('videoLink').focus();
-          });
+          if (document.getElementById('addNoteOptions').style.display === 'flex') {
+            hidePopups();
+          } else {
+            hidePopups();
+            document.getElementById('addNoteOptions').style.display = 'flex';
+            blurBg.style.display = 'block';
+          }
+        };
+      }
+
+      if (addVideoOpt) {
+        addVideoOpt.onclick = (e) => {
+          e.stopPropagation();
+          document.getElementById('addNoteOptions').style.display = 'none';
+          document.getElementById('videoLinkInputArea').style.display = 'block';
+          document.getElementById('inputArea').style.display = 'flex';
+          blurBg.style.display = 'block';
+          document.getElementById('videoLink').focus();
         };
       }
 
       if (saveVideoBtn) saveVideoBtn.onclick = guardarLinkDeVideo;
+
+      if (blurBg) blurBg.onclick = hidePopups;
     });
 
-    // --- (Resto del script permanece igual) ... ---
+    // --- Listener de Firestore ---
+    db.collection('notas').onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added' || change.type === 'modified') {
+          renderCarousel(change.doc.id);
+        } else if (change.type === 'removed') {
+          const gridItem = grid.getElementsByClassName(`grid-stack-item[data-note-id="${change.doc.id}"]`)[0];
+          if (gridItem) grid.removeWidget(gridItem);
+        }
+      });
+    });
   </script>
-
-  <!-- ... (otros scripts y cierre de body/html permanecen igual) ... -->
+</body>
 </html>
