@@ -1,169 +1,350 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Mi Página de Música</title>
-  <!-- Favicon para evitar 404 -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><text y=%2214%22 font-size=%2216%22>🎵</text></svg>">
-  <style>
-    body {
-      margin: 0;
-      font-family: "Arial", sans-serif;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a, #0d0d0d);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    header {
-      text-align: center;
-      padding: 20px;
-    }
+    <title>Portal Twitch</title>
 
-    header h1 {
-      font-size: 2.5em;
-      margin: 0;
-      color: #ff4081;
-      text-shadow: 0 0 10px rgba(255, 64, 129, 0.6);
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    #carousel {
-      display: flex;
-      gap: 20px;
-      overflow: hidden;
-      width: 90%;
-      max-width: 1000px;
-      justify-content: center;
-      margin-top: 30px;
-    }
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            color: #fff;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow: hidden;
+        }
 
-    .video-card {
-      flex: 0 0 300px;
-      background: #1a1a1a;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(255, 64, 129, 0.4);
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
+        /* Barra superior */
 
-    .video-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px rgba(255, 64, 129, 0.8);
-    }
+        .topbar {
+            height: 64px;
+            width: 100%;
+            background: #181818;
 
-    .video-card img {
-      width: 100%;
-      border-radius: 15px 15px 0 0;
-    }
+            display: flex;
+            align-items: center;
+            gap: 10px;
 
-    .video-card h3 {
-      margin: 10px;
-      font-size: 1em;
-      color: #ff80ab;
-    }
+            padding: 10px 14px;
+        }
 
-    /* Modal */
-    #playerModal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.95);
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
+        .topbar input {
+            flex: 1;
 
-    #playerModal iframe {
-      width: 80%;
-      height: 60%;
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(255, 64, 129, 0.6);
-    }
+            height: 42px;
 
-    #closeBtn {
-      position: absolute;
-      top: 20px;
-      right: 40px;
-      font-size: 2em;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+            border: none;
+            outline: none;
 
-    #closeBtn:hover {
-      color: #ff4081;
-    }
-  </style>
+            border-radius: 6px;
+
+            padding: 0 14px;
+
+            background: #292929;
+            color: white;
+
+            font-size: 15px;
+        }
+
+        .topbar input::placeholder {
+            color: #999;
+        }
+
+        .topbar button {
+            height: 42px;
+
+            border: none;
+            border-radius: 6px;
+
+            padding: 0 20px;
+
+            background: #9147ff;
+            color: white;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .topbar button:hover {
+            background: #772ce8;
+        }
+
+        /* Contenedor principal */
+
+        .layout {
+            width: 100%;
+            height: calc(100vh - 64px);
+
+            display: grid;
+
+            grid-template-columns: minmax(0, 1fr) 340px;
+        }
+
+        /* Twitch */
+
+        .player {
+            width: 100%;
+            height: 100%;
+
+            background: #000;
+        }
+
+        .player iframe {
+            width: 100%;
+            height: 100%;
+
+            border: none;
+            display: block;
+        }
+
+        /* Chat */
+
+        .chat {
+            width: 100%;
+            height: 100%;
+
+            background: #181818;
+
+            border-left: 1px solid #292929;
+        }
+
+        .chat iframe {
+            width: 100%;
+            height: 100%;
+
+            border: none;
+            display: block;
+        }
+
+        /* Pantallas pequeñas */
+
+        @media (max-width: 800px) {
+
+            html,
+            body {
+                overflow: auto;
+            }
+
+            .layout {
+                height: auto;
+
+                grid-template-columns: 1fr;
+                grid-template-rows: 70vh 400px;
+            }
+
+            .player {
+                height: 70vh;
+            }
+
+            .chat {
+                height: 400px;
+
+                border-left: none;
+                border-top: 1px solid #292929;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <header>
-    <h1>🎶 Mi Página de Música 🎶</h1>
-  </header>
 
-  <div id="carousel"></div>
+    <!-- Barra para introducir el link -->
 
-  <!-- Modal con reproductor -->
-  <div id="playerModal">
-    <span id="closeBtn">&times;</span>
-    <iframe id="playerFrame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-  </div>
+    <div class="topbar">
 
-  <script>
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTL48hAnTyE99fxqCjK5n_MGu1p0a_iywggHPVTA-w_YSjuecflA0__MeAZZgoY_P_SzeC8Nrt0-ER6/pub?gid=0&single=true&output=csv";
+        <input
+            id="twitchUrl"
+            type="text"
+            placeholder="Pega aquí el link del canal de Twitch..."
+            autocomplete="off"
+        >
 
-    const carousel = document.getElementById("carousel");
-    const modal = document.getElementById("playerModal");
-    const player = document.getElementById("playerFrame");
-    const closeBtn = document.getElementById("closeBtn");
+        <button onclick="cargarTwitch()">
+            CARGAR
+        </button>
 
-    fetch(sheetUrl)
-      .then(res => res.text())
-      .then(data => {
-        const rows = data.split("\n").slice(1);
-        const videos = rows.slice(0, 3);
+    </div>
 
-        videos.forEach(row => {
-          const [nombre, link] = row.split(",");
-          if (!link) return;
-          const videoId = new URL(link.trim()).searchParams.get("v");
-          const thumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 
-          const card = document.createElement("div");
-          card.classList.add("video-card");
-          card.innerHTML = `
-            <img src="${thumbnail}" alt="${nombre}">
-            <h3>${nombre}</h3>
-          `;
+    <!-- Contenido -->
 
-          card.addEventListener("click", () => {
-            player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
-            modal.style.display = "flex";
-          });
+    <main class="layout">
 
-          carousel.appendChild(card);
-        });
-      });
+        <!-- Reproductor oficial de Twitch -->
 
-    closeBtn.onclick = () => {
-      modal.style.display = "none";
-      player.src = "";
-    };
+        <section class="player">
 
-    window.onclick = (event) => {
-      if (event.target == modal) {
-        modal.style.display = "none";
-        player.src = "";
-      }
-    };
-  </script>
+            <iframe
+                id="twitchPlayer"
+                allowfullscreen
+                title="Twitch Player">
+            </iframe>
+
+        </section>
+
+
+        <!-- Chat oficial de Twitch -->
+
+        <section class="chat">
+
+            <iframe
+                id="twitchChat"
+                title="Twitch Chat">
+            </iframe>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        /*
+         * Obtiene el nombre del canal
+         * a partir de una URL de Twitch.
+         *
+         * Ejemplos:
+         *
+         * https://www.twitch.tv/canal
+         * twitch.tv/canal
+         * https://twitch.tv/canal/
+         */
+
+        function obtenerCanal(url) {
+
+            url = url.trim();
+
+            if (!url) {
+                return null;
+            }
+
+            if (!url.startsWith("http://") &&
+                !url.startsWith("https://")) {
+
+                url = "https://" + url;
+            }
+
+            try {
+
+                const direccion = new URL(url);
+
+                if (!direccion.hostname.includes("twitch.tv")) {
+                    return null;
+                }
+
+                let canal = direccion.pathname
+                    .replace(/^\/+/, "")
+                    .replace(/\/+$/, "");
+
+                if (!canal) {
+                    return null;
+                }
+
+                return canal.split("/")[0];
+
+            } catch (error) {
+
+                return null;
+            }
+        }
+
+
+        /*
+         * Carga Twitch
+         */
+
+        function cargarTwitch() {
+
+            const input =
+                document.getElementById("twitchUrl");
+
+            const url = input.value;
+
+            const canal = obtenerCanal(url);
+
+
+            if (!canal) {
+
+                alert(
+                    "Introduce un enlace válido de Twitch.\n\n" +
+                    "Ejemplo:\n" +
+                    "https://www.twitch.tv/nombrecanal"
+                );
+
+                return;
+            }
+
+
+            /*
+             * Dominio actual de GitHub Pages.
+             *
+             * Twitch necesita este valor para
+             * permitir el reproductor embebido.
+             */
+
+            const parent =
+                window.location.hostname;
+
+
+            /*
+             * Reproductor oficial de Twitch
+             */
+
+            const player =
+                document.getElementById("twitchPlayer");
+
+            player.src =
+                "https://player.twitch.tv/" +
+                "?channel=" +
+                encodeURIComponent(canal) +
+                "&parent=" +
+                encodeURIComponent(parent);
+
+
+            /*
+             * Chat oficial de Twitch
+             */
+
+            const chat =
+                document.getElementById("twitchChat");
+
+            chat.src =
+                "https://www.twitch.tv/embed/" +
+                encodeURIComponent(canal) +
+                "/chat" +
+                "?parent=" +
+                encodeURIComponent(parent);
+        }
+
+
+        /*
+         * También permite pulsar ENTER
+         * dentro del campo.
+         */
+
+        document
+            .getElementById("twitchUrl")
+            .addEventListener("keydown", function(event) {
+
+                if (event.key === "Enter") {
+
+                    cargarTwitch();
+                }
+            });
+
+    </script>
+
 </body>
 </html>
+```
