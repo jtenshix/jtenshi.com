@@ -2,9 +2,7 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Portal de Reacción</title>
@@ -14,7 +12,7 @@
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>▶</text></svg>"
     >
 
-    <!-- HLS para vídeos .m3u8 -->
+    <!-- Soporte para streams HLS (.m3u8) -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 
@@ -24,22 +22,15 @@
             box-sizing: border-box;
         }
 
-
         html {
             background: #0f0f0f;
         }
-
 
         body {
             margin: 0;
             background: #0f0f0f;
             color: #ffffff;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
+            font-family: Arial, Helvetica, sans-serif;
             min-height: 100vh;
         }
 
@@ -49,103 +40,64 @@
         ========================================= */
 
         .topbar {
-
             width: 100%;
-
             background: #181818;
-
             padding: 14px 20px;
-
             display: flex;
-
             justify-content: center;
         }
 
-
         .search {
-
             width: 100%;
-
             max-width: 1100px;
-
             display: flex;
-
             gap: 10px;
         }
 
-
         .search input {
-
             flex: 1;
-
             height: 42px;
-
             padding: 0 14px;
-
             border: 1px solid #333;
-
             border-radius: 6px;
-
             outline: none;
-
             background: #242424;
-
             color: white;
-
             font-size: 15px;
         }
 
-
         .search input:focus {
-
             border-color: #666;
         }
 
-
         .search input::placeholder {
-
             color: #999;
         }
 
-
         .search button {
-
             height: 42px;
-
             padding: 0 22px;
-
             border: none;
-
             border-radius: 6px;
-
             background: #9147ff;
-
             color: white;
-
             font-weight: bold;
-
             cursor: pointer;
         }
 
-
         .search button:hover {
-
             background: #772ce8;
         }
 
 
         /* =========================================
-           CONTENEDOR
+           CONTENEDOR PRINCIPAL
         ========================================= */
 
         .content {
-
             width: 100%;
-
             max-width: 1200px;
-
             margin: 30px auto;
-
             padding: 0 20px;
         }
 
@@ -155,77 +107,50 @@
         ========================================= */
 
         .twitch-section {
-
             display: grid;
-
-            grid-template-columns:
-                minmax(0, 900px)
-                300px;
-
+            grid-template-columns: minmax(0, 900px) 300px;
             gap: 20px;
-
             align-items: start;
-
             justify-content: center;
         }
 
 
         /* =========================================
-           TWITCH PLAYER
+           PLAYER TWITCH
         ========================================= */
 
         .player {
-
             width: 100%;
-
             aspect-ratio: 16 / 9;
-
             background: #000;
-
             border-radius: 8px;
-
             overflow: hidden;
         }
 
-
         .player iframe {
-
             width: 100%;
-
             height: 100%;
-
             border: none;
-
             display: block;
         }
 
 
         /* =========================================
-           CHAT
+           CHAT TWITCH
         ========================================= */
 
         .chat {
-
             width: 100%;
-
             height: 506px;
-
             background: #181818;
-
             border-radius: 8px;
-
             overflow: hidden;
         }
 
-
         .chat iframe {
-
             width: 100%;
-
             height: 100%;
-
             border: none;
-
             display: block;
         }
 
@@ -235,131 +160,84 @@
         ========================================= */
 
         .second-section {
-
             width: 100%;
-
             max-width: 900px;
-
             margin: 35px auto 60px;
-
             display: block;
         }
 
-
         .second-title {
-
             font-size: 18px;
-
             font-weight: bold;
-
             margin-bottom: 12px;
         }
 
-
         .second-screen {
-
             width: 100%;
-
             aspect-ratio: 16 / 9;
-
             background: #000;
-
             border-radius: 8px;
-
             overflow: hidden;
         }
 
-
         .second-screen iframe {
-
             width: 100%;
-
             height: 100%;
-
             border: none;
-
             display: block;
         }
 
-
         .second-screen video {
-
             width: 100%;
-
             height: 100%;
-
             display: block;
-
             background: #000;
         }
 
 
         /* =========================================
-           CONTROL SEGUNDA PANTALLA
+           CONTROLES SEGUNDA PANTALLA
         ========================================= */
 
         .video-controls {
-
             width: 100%;
-
             margin-top: 12px;
-
             display: flex;
-
             gap: 10px;
         }
 
-
         .video-controls input {
-
             flex: 1;
-
             height: 42px;
-
             padding: 0 14px;
-
             border: 1px solid #333;
-
             border-radius: 6px;
-
             outline: none;
-
             background: #242424;
-
             color: white;
-
             font-size: 15px;
         }
 
-
         .video-controls input:focus {
-
             border-color: #666;
         }
 
+        .video-controls input::placeholder {
+            color: #999;
+        }
 
         .video-controls button {
-
             height: 42px;
-
             padding: 0 20px;
-
             border: none;
-
             border-radius: 6px;
-
             background: #9147ff;
-
             color: white;
-
             font-weight: bold;
-
             cursor: pointer;
         }
 
-
         .video-controls button:hover {
-
             background: #772ce8;
         }
 
@@ -369,19 +247,12 @@
         ========================================= */
 
         .video-error {
-
             display: none;
-
             padding: 12px;
-
             margin-top: 10px;
-
             background: #241818;
-
             border-radius: 6px;
-
             color: #ffb3b3;
-
             font-size: 14px;
         }
 
@@ -393,16 +264,11 @@
         @media (max-width: 1000px) {
 
             .twitch-section {
-
                 grid-template-columns: 1fr;
-
             }
 
-
             .chat {
-
                 height: 400px;
-
             }
 
         }
@@ -415,62 +281,37 @@
         @media (max-width: 600px) {
 
             .topbar {
-
                 padding: 10px;
-
             }
-
 
             .search {
-
                 flex-direction: column;
-
             }
-
 
             .search button {
-
                 width: 100%;
-
             }
-
 
             .content {
-
                 padding: 0 10px;
-
                 margin-top: 15px;
-
             }
-
 
             .player {
-
                 border-radius: 4px;
-
             }
-
 
             .chat {
-
                 height: 400px;
-
                 border-radius: 4px;
-
             }
-
 
             .video-controls {
-
                 flex-direction: column;
-
             }
 
-
             .video-controls button {
-
                 width: 100%;
-
             }
 
         }
@@ -484,7 +325,7 @@
 
 
     <!-- =========================================
-         TWITCH
+         BARRA DE TWITCH
     ========================================= -->
 
     <header class="topbar">
@@ -527,11 +368,7 @@
 
                 <iframe
                     id="twitchPlayer"
-
                     allow="fullscreen; picture-in-picture"
-
-                    allowfullscreen
-
                     title="Twitch Player">
                 </iframe>
 
@@ -544,7 +381,6 @@
 
                 <iframe
                     id="twitchChat"
-
                     title="Twitch Chat">
                 </iframe>
 
@@ -563,7 +399,6 @@
             id="secondSection"
         >
 
-
             <div class="second-title">
                 Segunda pantalla
             </div>
@@ -574,8 +409,6 @@
                 id="secondScreen"
             >
 
-                <!-- Aquí aparecerá el segundo vídeo -->
-
             </div>
 
 
@@ -583,14 +416,10 @@
 
                 <input
                     id="videoUrl"
-
                     type="text"
-
                     placeholder="Pega aquí el link del segundo vídeo..."
-
                     autocomplete="off"
                 >
-
 
                 <button onclick="cargarSegundoVideo()">
                     CARGAR
@@ -606,7 +435,6 @@
                 No se pudo reproducir esta URL.
             </div>
 
-
         </section>
 
 
@@ -617,19 +445,15 @@
 
 
         /* =========================================
-           TWITCH
+           OBTENER CANAL DE TWITCH
         ========================================= */
-
 
         function obtenerCanal(url) {
 
             url = url.trim();
 
-
             if (!url) {
-
                 return null;
-
             }
 
 
@@ -666,16 +490,13 @@
 
 
                 if (!canal) {
-
                     return null;
-
                 }
 
 
                 return canal.split("/")[0];
 
             }
-
 
             catch (error) {
 
@@ -689,7 +510,6 @@
         /* =========================================
            CARGAR TWITCH
         ========================================= */
-
 
         function cargarTwitch() {
 
@@ -713,6 +533,11 @@
 
             }
 
+
+            /*
+             * Twitch exige saber desde qué dominio
+             * se está utilizando el reproductor.
+             */
 
             const parent =
                 window.location.hostname;
@@ -755,9 +580,8 @@
 
 
         /* =========================================
-           YOUTUBE
+           OBTENER ID DE YOUTUBE
         ========================================= */
-
 
         function obtenerYoutubeId(url) {
 
@@ -767,13 +591,14 @@
                     new URL(url);
 
 
+                const hostname =
+                    direccion.hostname.toLowerCase();
+
+
                 /* youtube.com/watch?v= */
 
                 if (
-                    direccion.hostname
-                        .toLowerCase()
-                        .includes("youtube.com") &&
-
+                    hostname.includes("youtube.com") &&
                     direccion.searchParams.get("v")
                 ) {
 
@@ -785,13 +610,12 @@
                 /* youtu.be/ID */
 
                 if (
-                    direccion.hostname
-                        .toLowerCase() === "youtu.be"
+                    hostname === "youtu.be"
                 ) {
 
                     return direccion.pathname
-                        .replace("/", "")
-                        .split("?")[0];
+                        .replace(/^\/+/, "")
+                        .split("/")[0];
 
                 }
 
@@ -826,7 +650,6 @@
 
             }
 
-
             catch (error) {
 
                 return null;
@@ -837,12 +660,30 @@
 
 
         /* =========================================
-           CARGAR SEGUNDO VÍDEO
+           MOSTRAR ERROR
         ========================================= */
 
+        function mostrarError(mensaje) {
+
+            const error =
+                document.getElementById("videoError");
+
+
+            error.textContent =
+                mensaje;
+
+
+            error.style.display =
+                "block";
+
+        }
+
+
+        /* =========================================
+           CARGAR SEGUNDA PANTALLA
+        ========================================= */
 
         function cargarSegundoVideo() {
-
 
             const input =
                 document.getElementById("videoUrl");
@@ -882,14 +723,12 @@
 
             if (youtubeId) {
 
-
                 const iframe =
                     document.createElement("iframe");
 
 
                 iframe.src =
                     "https://www.youtube.com/embed/" +
-
                     encodeURIComponent(youtubeId);
 
 
@@ -897,8 +736,13 @@
                     "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
 
 
-                iframe.allowFullscreen = true;
-
+                /*
+                 * Solo usamos allow.
+                 *
+                 * No agregamos allowfullscreen
+                 * para evitar el warning de Chrome
+                 * sobre atributos duplicados.
+                 */
 
                 iframe.title =
                     "Vídeo de YouTube";
@@ -906,14 +750,13 @@
 
                 pantalla.appendChild(iframe);
 
-
                 return;
 
             }
 
 
             /* =====================================
-               MP4 / WEBM / OGG
+               MP4 / WEBM / OGG / MOV
             ===================================== */
 
             const urlSinQuery =
@@ -925,35 +768,34 @@
             const esVideoDirecto =
 
                 urlSinQuery.endsWith(".mp4") ||
-
                 urlSinQuery.endsWith(".webm") ||
-
                 urlSinQuery.endsWith(".ogg") ||
-
                 urlSinQuery.endsWith(".mov");
 
 
             if (esVideoDirecto) {
 
-
                 const video =
                     document.createElement("video");
 
 
-                video.src = url;
+                video.src =
+                    url;
 
 
-                video.controls = true;
+                video.controls =
+                    true;
 
 
-                video.playsInline = true;
+                video.playsInline =
+                    true;
 
 
-                video.preload = "metadata";
+                video.preload =
+                    "metadata";
 
 
                 pantalla.appendChild(video);
-
 
                 return;
 
@@ -968,28 +810,33 @@
                 urlSinQuery.includes(".m3u8")
             ) {
 
-
                 const video =
                     document.createElement("video");
 
 
-                video.controls = true;
+                video.controls =
+                    true;
 
 
-                video.playsInline = true;
+                video.playsInline =
+                    true;
 
 
-                video.preload = "metadata";
+                video.preload =
+                    "metadata";
 
 
                 pantalla.appendChild(video);
 
 
+                /*
+                 * Chrome / Edge / Firefox
+                 */
+
                 if (
                     window.Hls &&
                     Hls.isSupported()
                 ) {
-
 
                     const hls =
                         new Hls();
@@ -1001,10 +848,36 @@
                     hls.attachMedia(video);
 
 
+                    hls.on(
+                        Hls.Events.ERROR,
+                        function(
+                            event,
+                            data
+                        ) {
+
+                            if (
+                                data.fatal
+                            ) {
+
+                                mostrarError(
+                                    "El stream HLS no pudo reproducirse."
+                                );
+
+                            }
+
+                        }
+                    );
+
+
                     return;
 
                 }
 
+
+                /*
+                 * Safari y navegadores
+                 * con HLS nativo.
+                 */
 
                 if (
                     video.canPlayType(
@@ -1012,7 +885,8 @@
                     )
                 ) {
 
-                    video.src = url;
+                    video.src =
+                        url;
 
                     return;
 
@@ -1030,18 +904,15 @@
 
 
             /* =====================================
-               ÚLTIMO INTENTO:
-               IFRAME
+               ÚLTIMO INTENTO: IFRAME
             ===================================== */
 
             const iframe =
                 document.createElement("iframe");
 
 
-            iframe.src = url;
-
-
-            iframe.allowFullscreen = true;
+            iframe.src =
+                url;
 
 
             iframe.allow =
@@ -1054,40 +925,13 @@
 
             pantalla.appendChild(iframe);
 
-
-            /*
-             * Algunas plataformas permiten
-             * incrustar directamente su página.
-             *
-             * Si la plataforma bloquea iframe,
-             * el navegador impedirá mostrarla.
-             */
-
-
         }
 
 
         /* =========================================
-           ERROR SEGUNDA PANTALLA
+           ENTER EN TWITCH
         ========================================= */
 
-
-        function mostrarError(mensaje) {
-
-            const error =
-                document.getElementById("videoError");
-
-
-            error.textContent =
-                mensaje;
-            
-            error.style.display =
-                "block";
-        }
-
-        /* =========================================
-           ENTER TWITCH
-        ========================================= */
         document
             .getElementById("twitchUrl")
             .addEventListener(
@@ -1097,13 +941,19 @@
                     if (
                         event.key === "Enter"
                     ) {
+
                         cargarTwitch();
+
                     }
+
                 }
             );
+
+
         /* =========================================
-           ENTER SEGUNDO VÍDEO
+           ENTER EN SEGUNDA PANTALLA
         ========================================= */
+
         document
             .getElementById("videoUrl")
             .addEventListener(
@@ -1113,11 +963,18 @@
                     if (
                         event.key === "Enter"
                     ) {
+
                         cargarSegundoVideo();
+
                     }
+
                 }
             );
 
+
     </script>
+
+
 </body>
+
 </html>
