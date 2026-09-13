@@ -1,0 +1,844 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Espejo de Transmisión</title>
+
+    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+
+            margin: 0;
+            padding: 0;
+
+            width: 100%;
+            min-height: 100%;
+
+            background: #0e0e10;
+
+            color: white;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+
+        /* =========================================
+           CONTENEDOR GENERAL
+        ========================================== */
+
+        .layout {
+
+            width: 100%;
+
+            max-width: 1500px;
+
+            margin: 24px auto;
+
+            padding: 0 16px;
+
+        }
+
+
+        /* =========================================
+           STREAM + CHAT
+        ========================================== */
+
+        .stream-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                340px;
+
+            gap: 0;
+
+            align-items: stretch;
+
+        }
+
+
+        /* =========================================
+           ÁREA DEL VIDEO
+        ========================================== */
+
+        .video-area {
+
+            position: relative;
+
+            width: 100%;
+
+            aspect-ratio: 16 / 9;
+
+            background: #000;
+
+            overflow: hidden;
+
+        }
+
+
+        /* =========================================
+           VIDEO PRINCIPAL
+        ========================================== */
+
+        #mainVideo {
+
+            position: absolute;
+
+            inset: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            background: #000;
+
+            z-index: 1;
+
+        }
+
+
+        #mainVideo iframe {
+
+            width: 100%;
+
+            height: 100%;
+
+            border: none;
+
+            display: block;
+
+        }
+
+
+        #mainVideo video {
+
+            width: 100%;
+
+            height: 100%;
+
+            display: block;
+
+            object-fit: contain;
+
+            background: #000;
+
+        }
+
+
+        /* =========================================
+           TWITCH
+        ========================================== */
+
+        #twitchWindow {
+
+            position: absolute;
+
+            width: 320px;
+
+            aspect-ratio: 16 / 9;
+
+            background: #000;
+
+            border: 2px solid #18181b;
+
+            border-radius: 6px;
+
+            overflow: hidden;
+
+            z-index: 50;
+
+            box-shadow:
+                0 4px 18px rgba(0, 0, 0, 0.7);
+
+        }
+
+
+        #twitchPlayer {
+
+            width: 100%;
+
+            height: 100%;
+
+        }
+
+
+        /* =========================================
+           POSICIONES TWITCH
+        ========================================== */
+
+        .top-left {
+
+            top: 15px;
+
+            left: 15px;
+
+            right: auto;
+
+            bottom: auto;
+
+        }
+
+
+        .top-right {
+
+            top: 15px;
+
+            right: 15px;
+
+            left: auto;
+
+            bottom: auto;
+
+        }
+
+
+        .bottom-left {
+
+            bottom: 15px;
+
+            left: 15px;
+
+            right: auto;
+
+            top: auto;
+
+        }
+
+
+        .bottom-right {
+
+            bottom: 15px;
+
+            right: 15px;
+
+            left: auto;
+
+            top: auto;
+
+        }
+
+
+        /* =========================================
+           CHAT
+        ========================================== */
+
+        .chat-area {
+
+            width: 100%;
+
+            aspect-ratio: 340 / 506;
+
+            background: #18181b;
+
+            border-left: 1px solid #303033;
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        .chat-header {
+
+            height: 48px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: bold;
+
+            font-size: 14px;
+
+            border-bottom: 1px solid #303033;
+
+            background: #18181b;
+
+        }
+
+
+        .chat-frame {
+
+            flex: 1;
+
+            min-height: 0;
+
+        }
+
+
+        .chat-frame iframe {
+
+            width: 100%;
+
+            height: 100%;
+
+            border: none;
+
+            display: block;
+
+        }
+
+
+        /* =========================================
+           TABLET
+        ========================================== */
+
+        @media (max-width: 1000px) {
+
+            .stream-layout {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .chat-area {
+
+                aspect-ratio: auto;
+
+                height: 420px;
+
+                border-left: none;
+
+                border-top: 1px solid #303033;
+
+            }
+
+
+            #twitchWindow {
+
+                width: 280px;
+
+            }
+
+        }
+
+
+        /* =========================================
+           CELULAR
+        ========================================== */
+
+        @media (max-width: 600px) {
+
+            .layout {
+
+                padding: 0 8px;
+
+                margin-top: 12px;
+
+            }
+
+
+            #twitchWindow {
+
+                width: 180px;
+
+            }
+
+
+            .chat-area {
+
+                height: 360px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="layout">
+
+        <div class="stream-layout">
+
+
+            <!-- =====================================
+                 VIDEO PRINCIPAL
+            ====================================== -->
+
+            <div class="video-area">
+
+
+                <div id="mainVideo">
+
+                    <!--
+                        EL VIDEO SE CARGARÁ AQUÍ
+                    -->
+
+                </div>
+
+
+                <!-- =================================
+                     TWITCH
+                ================================== -->
+
+                <div
+                    id="twitchWindow"
+                    class="bottom-left"
+                >
+
+                    <div id="twitchPlayer"></div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =====================================
+                 CHAT TWITCH
+            ====================================== -->
+
+            <aside class="chat-area">
+
+                <div class="chat-header">
+                    Chat del stream
+                </div>
+
+                <div class="chat-frame">
+
+                    <iframe
+                        id="twitchChat"
+                        title="Chat de Twitch"
+                    ></iframe>
+
+                </div>
+
+            </aside>
+
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        /* =========================================
+           CONFIGURACIÓN TEMPORAL
+           
+           ESTO LO CAMBIAREMOS DESPUÉS.
+        ========================================== */
+
+        const CANAL_TWITCH = "TU_CANAL";
+
+        const VIDEO_URL = "TU_VIDEO";
+
+
+        /* =========================================
+           OBTENER CANAL TWITCH
+        ========================================== */
+
+        function obtenerCanal(url) {
+
+            url = url.trim();
+
+            if (!url) {
+                return null;
+            }
+
+            if (
+                !url.startsWith("http://") &&
+                !url.startsWith("https://")
+            ) {
+
+                url = "https://" + url;
+
+            }
+
+            try {
+
+                const direccion = new URL(url);
+
+                if (
+                    !direccion.hostname
+                        .toLowerCase()
+                        .includes("twitch.tv")
+                ) {
+
+                    return null;
+
+                }
+
+                const partes =
+                    direccion.pathname
+                        .replace(/^\/+/, "")
+                        .replace(/\/+$/, "")
+                        .split("/");
+
+                if (!partes[0]) {
+                    return null;
+                }
+
+                return partes[0];
+
+            }
+
+            catch (error) {
+
+                return null;
+
+            }
+
+        }
+
+
+        /* =========================================
+           CARGAR TWITCH
+        ========================================== */
+
+        function cargarTwitch() {
+
+            const canal =
+                obtenerCanal(CANAL_TWITCH);
+
+            if (!canal) {
+
+                console.error(
+                    "Canal de Twitch inválido."
+                );
+
+                return;
+
+            }
+
+            const parent =
+                window.location.hostname;
+
+            const playerContainer =
+                document.getElementById(
+                    "twitchPlayer"
+                );
+
+            playerContainer.innerHTML = "";
+
+            new Twitch.Player(
+                "twitchPlayer",
+                {
+
+                    width: "100%",
+
+                    height: "100%",
+
+                    channel: canal,
+
+                    parent: [
+                        parent
+                    ],
+
+                    autoplay: false,
+
+                    muted: false
+
+                }
+            );
+
+
+            /* =====================================
+               CHAT
+            ====================================== */
+
+            const chat =
+                document.getElementById(
+                    "twitchChat"
+                );
+
+            chat.src =
+
+                "https://www.twitch.tv/embed/" +
+
+                encodeURIComponent(canal) +
+
+                "/chat?parent=" +
+
+                encodeURIComponent(parent);
+
+        }
+
+
+        /* =========================================
+           OBTENER YOUTUBE ID
+        ========================================== */
+
+        function obtenerYoutubeId(url) {
+
+            try {
+
+                const direccion =
+                    new URL(url);
+
+                const hostname =
+                    direccion.hostname
+                        .toLowerCase();
+
+
+                if (
+                    hostname.includes(
+                        "youtube.com"
+                    )
+                ) {
+
+                    const id =
+                        direccion.searchParams
+                            .get("v");
+
+                    if (id) {
+                        return id;
+                    }
+
+                }
+
+
+                if (
+                    hostname === "youtu.be"
+                ) {
+
+                    return direccion
+                        .pathname
+                        .replace(/^\/+/, "")
+                        .split("/")[0];
+
+                }
+
+
+                if (
+                    direccion.pathname
+                        .startsWith("/live/")
+                ) {
+
+                    return direccion.pathname
+                        .split("/")[2];
+
+                }
+
+
+                if (
+                    direccion.pathname
+                        .startsWith("/shorts/")
+                ) {
+
+                    return direccion.pathname
+                        .split("/")[2];
+
+                }
+
+
+                return null;
+
+            }
+
+            catch (error) {
+
+                return null;
+
+            }
+
+        }
+
+
+        /* =========================================
+           CARGAR VIDEO PRINCIPAL
+        ========================================== */
+
+        function cargarVideo() {
+
+            const pantalla =
+                document.getElementById(
+                    "mainVideo"
+                );
+
+            pantalla.innerHTML = "";
+
+
+            if (!VIDEO_URL) {
+                return;
+            }
+
+
+            /* =====================================
+               YOUTUBE
+            ====================================== */
+
+            const youtubeId =
+                obtenerYoutubeId(
+                    VIDEO_URL
+                );
+
+
+            if (youtubeId) {
+
+                const iframe =
+                    document.createElement(
+                        "iframe"
+                    );
+
+                iframe.src =
+                    "https://www.youtube.com/embed/" +
+                    encodeURIComponent(youtubeId);
+
+                iframe.allow =
+                    "accelerometer; " +
+                    "autoplay; " +
+                    "clipboard-write; " +
+                    "encrypted-media; " +
+                    "gyroscope; " +
+                    "picture-in-picture; " +
+                    "web-share";
+
+                iframe.allowFullscreen = true;
+
+                iframe.title =
+                    "Video principal";
+
+                pantalla.appendChild(
+                    iframe
+                );
+
+                return;
+
+            }
+
+
+            /* =====================================
+               VIDEO DIRECTO
+            ====================================== */
+
+            const urlSinQuery =
+                VIDEO_URL
+                    .split("?")[0]
+                    .toLowerCase();
+
+
+            const esVideoDirecto =
+
+                urlSinQuery.endsWith(".mp4") ||
+                urlSinQuery.endsWith(".webm") ||
+                urlSinQuery.endsWith(".ogg") ||
+                urlSinQuery.endsWith(".mov");
+
+
+            if (esVideoDirecto) {
+
+                const video =
+                    document.createElement(
+                        "video"
+                    );
+
+                video.src =
+                    VIDEO_URL;
+
+                video.controls = true;
+
+                video.playsInline = true;
+
+                video.preload =
+                    "metadata";
+
+                pantalla.appendChild(
+                    video
+                );
+
+                return;
+
+            }
+
+
+            /* =====================================
+               IFRAME GENÉRICO
+            ====================================== */
+
+            const iframe =
+                document.createElement(
+                    "iframe"
+                );
+
+            iframe.src =
+                VIDEO_URL;
+
+            iframe.allow =
+                "autoplay; fullscreen; picture-in-picture";
+
+            iframe.allowFullscreen =
+                true;
+
+            iframe.title =
+                "Video principal";
+
+            pantalla.appendChild(
+                iframe
+            );
+
+        }
+
+
+        /* =========================================
+           INICIAR ESPEJO
+        ========================================== */
+
+        cargarTwitch();
+
+        cargarVideo();
+
+    </script>
+
+</body>
+
+</html>
+```
+
+### Solo tienes que cambiar 2 cosas
+
+Busca esto:
+
+```js
+const CANAL_TWITCH = "TU_CANAL";
+const VIDEO_URL = "TU_VIDEO";
+```
+
+Por ejemplo:
+
+```js
+const CANAL_TWITCH = "https://www.twitch.tv/tu_canal";
+const VIDEO_URL = "https://www.youtube.com/watch?v=XXXXXXXXXXX";
+```
+
+Y abres `espejo.html`.
+
+**Eso es todo por ahora.**
+
+Después de comprobar que funciona, hacemos el siguiente paso: que `espejo.html` **ya no tenga esos datos escritos dentro del código**, sino que los reciba automáticamente desde `desarrollo.html`. Ahí recién empezamos a construir el verdadero sistema espejo.
