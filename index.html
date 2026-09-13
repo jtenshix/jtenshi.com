@@ -12,12 +12,8 @@
 
     <title>Portal de Reacción</title>
 
-
-    <!-- Twitch Embed Player SDK -->
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
 
-
-    <!-- HLS.js -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 
@@ -35,9 +31,9 @@
             padding: 0;
 
             width: 100%;
-            height: 100%;
+            min-height: 100%;
 
-            background: #0f0f0f;
+            background: #0e0e10;
 
             color: white;
 
@@ -50,9 +46,7 @@
 
 
         body {
-
             min-height: 100vh;
-
         }
 
 
@@ -64,17 +58,11 @@
 
             width: 100%;
 
-            background: #181818;
+            background: #18181b;
 
-            padding: 14px 20px;
+            padding: 12px 18px;
 
-            display: flex;
-
-            justify-content: center;
-
-            position: relative;
-
-            z-index: 1000;
+            border-bottom: 1px solid #303033;
 
         }
 
@@ -83,7 +71,9 @@
 
             width: 100%;
 
-            max-width: 1100px;
+            max-width: 1400px;
+
+            margin: auto;
 
             display: flex;
 
@@ -100,13 +90,13 @@
 
             padding: 0 14px;
 
-            border: 1px solid #333;
+            border: 1px solid #3a3a3d;
 
             border-radius: 6px;
 
             outline: none;
 
-            background: #242424;
+            background: #1f1f23;
 
             color: white;
 
@@ -117,14 +107,14 @@
 
         .search input:focus {
 
-            border-color: #666;
+            border-color: #9147ff;
 
         }
 
 
         .search input::placeholder {
 
-            color: #999;
+            color: #aaa;
 
         }
 
@@ -158,36 +148,54 @@
 
 
         /* =========================================
-           SEGUNDO VIDEO
-           ESTE ES EL FONDO PRINCIPAL
+           CONTENEDOR GENERAL
         ========================================== */
 
-        .main-area {
+        .layout {
 
             width: 100%;
 
-            padding: 30px 20px 60px;
+            max-width: 1500px;
 
-            display: flex;
+            margin: 24px auto;
 
-            justify-content: center;
+            padding: 0 16px;
 
         }
 
 
-        .video-container {
+        /* =========================================
+           ÁREA TWITCH + VIDEO
+        ========================================== */
+
+        .stream-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                340px;
+
+            gap: 0;
+
+            align-items: stretch;
+
+        }
+
+
+        /* =========================================
+           ÁREA DEL VIDEO
+        ========================================== */
+
+        .video-area {
 
             position: relative;
 
             width: 100%;
 
-            max-width: 1200px;
-
             aspect-ratio: 16 / 9;
 
             background: #000;
-
-            border-radius: 8px;
 
             overflow: hidden;
 
@@ -209,6 +217,8 @@
             height: 100%;
 
             background: #000;
+
+            z-index: 1;
 
         }
 
@@ -232,50 +242,13 @@
 
             height: 100%;
 
+            border: none;
+
             display: block;
 
             object-fit: contain;
 
             background: #000;
-
-        }
-
-
-        /* =========================================
-           VENTANA TWITCH
-        ========================================== */
-
-        #twitchWindow {
-
-            position: absolute;
-
-            left: 25px;
-
-            bottom: 25px;
-
-            width: 320px;
-
-            aspect-ratio: 16 / 9;
-
-            background: #000;
-
-            border-radius: 8px;
-
-            overflow: hidden;
-
-            z-index: 20;
-
-            box-shadow:
-                0 4px 20px rgba(0, 0, 0, 0.6);
-
-        }
-
-
-        #twitchPlayer {
-
-            width: 100%;
-
-            height: 100%;
 
         }
 
@@ -300,20 +273,253 @@
 
             font-size: 16px;
 
-            pointer-events: none;
+            text-align: center;
+
+            padding: 20px;
 
         }
 
 
         /* =========================================
-           CONTROLES DEL SEGUNDO VIDEO
+           VENTANA TWITCH
+        ========================================== */
+
+        #twitchWindow {
+
+            position: absolute;
+
+            width: 320px;
+
+            aspect-ratio: 16 / 9;
+
+            background: #000;
+
+            border: 2px solid #18181b;
+
+            border-radius: 6px;
+
+            overflow: hidden;
+
+            z-index: 50;
+
+            box-shadow:
+                0 4px 18px rgba(0, 0, 0, 0.7);
+
+            transition:
+                top 0.15s ease,
+                left 0.15s ease,
+                right 0.15s ease,
+                bottom 0.15s ease;
+
+        }
+
+
+        #twitchPlayer {
+
+            width: 100%;
+
+            height: 100%;
+
+        }
+
+
+        /* =========================================
+           POSICIONES TWITCH
+        ========================================== */
+
+        .top-left {
+
+            top: 15px;
+
+            left: 15px;
+
+            right: auto;
+
+            bottom: auto;
+
+        }
+
+
+        .top-right {
+
+            top: 15px;
+
+            right: 15px;
+
+            left: auto;
+
+            bottom: auto;
+
+        }
+
+
+        .bottom-left {
+
+            bottom: 15px;
+
+            left: 15px;
+
+            right: auto;
+
+            top: auto;
+
+        }
+
+
+        .bottom-right {
+
+            bottom: 15px;
+
+            right: 15px;
+
+            left: auto;
+
+            top: auto;
+
+        }
+
+
+        /* =========================================
+           CONTROLES DE POSICIÓN
+        ========================================== */
+
+        .position-controls {
+
+            position: absolute;
+
+            z-index: 100;
+
+            left: 50%;
+
+            bottom: 15px;
+
+            transform: translateX(-50%);
+
+            display: flex;
+
+            gap: 6px;
+
+            padding: 6px;
+
+            background: rgba(24, 24, 27, 0.92);
+
+            border-radius: 7px;
+
+            opacity: 0;
+
+            transition: opacity 0.2s ease;
+
+        }
+
+
+        .video-area:hover .position-controls {
+
+            opacity: 1;
+
+        }
+
+
+        .position-controls button {
+
+            width: 34px;
+
+            height: 30px;
+
+            border: none;
+
+            border-radius: 5px;
+
+            background: #2a2a2e;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+        }
+
+
+        .position-controls button:hover {
+
+            background: #9147ff;
+
+        }
+
+
+        /* =========================================
+           CHAT
+        ========================================== */
+
+        .chat-area {
+
+            width: 100%;
+
+            aspect-ratio: 340 / 506;
+
+            background: #18181b;
+
+            border-left: 1px solid #303033;
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        .chat-header {
+
+            height: 48px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: bold;
+
+            font-size: 14px;
+
+            border-bottom: 1px solid #303033;
+
+            background: #18181b;
+
+        }
+
+
+        .chat-frame {
+
+            flex: 1;
+
+            min-height: 0;
+
+        }
+
+
+        .chat-frame iframe {
+
+            width: 100%;
+
+            height: 100%;
+
+            border: none;
+
+            display: block;
+
+        }
+
+
+        /* =========================================
+           SEGUNDO VIDEO
         ========================================== */
 
         .video-input {
 
             width: 100%;
-
-            max-width: 1200px;
 
             margin-top: 15px;
 
@@ -332,13 +538,13 @@
 
             padding: 0 14px;
 
-            border: 1px solid #333;
+            border: 1px solid #3a3a3d;
 
             border-radius: 6px;
 
             outline: none;
 
-            background: #242424;
+            background: #1f1f23;
 
             color: white;
 
@@ -349,14 +555,7 @@
 
         .video-input input:focus {
 
-            border-color: #666;
-
-        }
-
-
-        .video-input input::placeholder {
-
-            color: #999;
+            border-color: #9147ff;
 
         }
 
@@ -401,9 +600,9 @@
 
             padding: 10px;
 
-            background: #2a1717;
-
             border-radius: 6px;
+
+            background: #2a1717;
 
             color: #ffaaaa;
 
@@ -416,22 +615,31 @@
            TABLET
         ========================================== */
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
 
-            .video-container {
+            .stream-layout {
 
-                border-radius: 6px;
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .chat-area {
+
+                aspect-ratio: auto;
+
+                height: 420px;
+
+                border-left: none;
+
+                border-top: 1px solid #303033;
 
             }
 
 
             #twitchWindow {
 
-                width: 260px;
-
-                left: 18px;
-
-                bottom: 18px;
+                width: 280px;
 
             }
 
@@ -465,19 +673,11 @@
             }
 
 
-            .main-area {
+            .layout {
 
-                padding:
-                    15px
-                    10px
-                    40px;
+                padding: 0 8px;
 
-            }
-
-
-            .video-container {
-
-                border-radius: 4px;
+                margin-top: 12px;
 
             }
 
@@ -486,11 +686,21 @@
 
                 width: 180px;
 
-                left: 10px;
+            }
 
-                bottom: 10px;
 
-                border-radius: 5px;
+            .position-controls {
+
+                bottom: 5px;
+
+            }
+
+
+            .position-controls button {
+
+                width: 30px;
+
+                height: 28px;
 
             }
 
@@ -508,6 +718,13 @@
 
             }
 
+
+            .chat-area {
+
+                height: 360px;
+
+            }
+
         }
 
     </style>
@@ -519,7 +736,7 @@
 
 
     <!-- =========================================
-         BARRA TWITCH
+         TWITCH LINK
     ========================================== -->
 
     <header class="topbar">
@@ -543,71 +760,137 @@
 
 
     <!-- =========================================
-         ÁREA PRINCIPAL
+         CONTENIDO
     ========================================== -->
 
-    <main class="main-area">
+    <main class="layout">
 
-        <div style="width: 100%; max-width: 1200px;">
+
+        <div class="stream-layout">
 
 
             <!-- =====================================
-                 VIDEO PRINCIPAL + TWITCH ENCIMA
+                 VIDEO PRINCIPAL
             ===================================== -->
 
-            <div class="video-container">
+            <div class="video-area">
 
-
-                <!-- SEGUNDO VIDEO -->
 
                 <div id="secondScreen">
 
                     <div class="empty-message">
-                        Pega abajo el link del vídeo que quieras mostrar
+                        Pega abajo el link del vídeo principal
                     </div>
 
                 </div>
 
 
-                <!-- TWITCH FLOTANTE -->
+                <!-- =================================
+                     TWITCH FLOTANTE
+                ================================== -->
 
-                <div id="twitchWindow">
+                <div
+                    id="twitchWindow"
+                    class="bottom-left"
+                >
 
                     <div id="twitchPlayer"></div>
 
                 </div>
 
 
+                <!-- =================================
+                     BOTONES DE POSICIÓN
+                ================================== -->
+
+                <div class="position-controls">
+
+                    <button
+                        onclick="moverTwitch('top-left')"
+                        title="Arriba izquierda"
+                    >
+                        ↖
+                    </button>
+
+                    <button
+                        onclick="moverTwitch('top-right')"
+                        title="Arriba derecha"
+                    >
+                        ↗
+                    </button>
+
+                    <button
+                        onclick="moverTwitch('bottom-left')"
+                        title="Abajo izquierda"
+                    >
+                        ↙
+                    </button>
+
+                    <button
+                        onclick="moverTwitch('bottom-right')"
+                        title="Abajo derecha"
+                    >
+                        ↘
+                    </button>
+
+                </div>
+
+
             </div>
 
 
             <!-- =====================================
-                 LINK DEL SEGUNDO VIDEO
-            ===================================== -->
+                 CHAT TWITCH
+            ====================================== -->
 
-            <div class="video-input">
+            <aside class="chat-area">
 
-                <input
-                    id="videoUrl"
-                    type="text"
-                    placeholder="Pega aquí el link del segundo vídeo..."
-                    autocomplete="off"
-                >
+                <div class="chat-header">
+                    Chat del stream
+                </div>
 
-                <button onclick="cargarSegundoVideo()">
-                    CARGAR VIDEO
-                </button>
+                <div class="chat-frame">
 
-            </div>
+                    <iframe
+                        id="twitchChat"
+                        title="Chat de Twitch"
+                    >
+                    </iframe>
 
+                </div>
 
-            <div
-                id="videoError"
-                class="error">
-            </div>
+            </aside>
 
 
         </div>
+
+
+        <!-- =========================================
+             SEGUNDO VIDEO
+        ========================================== -->
+
+        <div class="video-input">
+
+            <input
+                id="videoUrl"
+                type="text"
+                placeholder="Pega aquí el link del segundo vídeo..."
+                autocomplete="off"
+            >
+
+            <button onclick="cargarSegundoVideo()">
+                CARGAR VIDEO
+            </button>
+
+        </div>
+
+
+        <div
+            id="videoError"
+            class="error"
+        >
+        </div>
+
 
     </main>
 
@@ -616,14 +899,14 @@
 
 
         /* =========================================
-           TWITCH
+           VARIABLES
         ========================================== */
 
         let twitchPlayer = null;
 
 
         /* =========================================
-           OBTENER CANAL
+           OBTENER CANAL TWITCH
         ========================================== */
 
         function obtenerCanal(url) {
@@ -726,19 +1009,15 @@
                 window.location.hostname;
 
 
-            const contenedor =
+            const playerContainer =
                 document.getElementById(
                     "twitchPlayer"
                 );
 
 
-            contenedor.innerHTML = "";
+            playerContainer.innerHTML =
+                "";
 
-
-            /*
-             * Creamos el reproductor oficial
-             * de Twitch.
-             */
 
             twitchPlayer =
                 new Twitch.Player(
@@ -774,6 +1053,54 @@
                 }
             );
 
+
+            /* =====================================
+               CHAT TWITCH
+            ====================================== */
+
+            const chat =
+                document.getElementById(
+                    "twitchChat"
+                );
+
+
+            chat.src =
+
+                "https://www.twitch.tv/embed/" +
+
+                encodeURIComponent(canal) +
+
+                "/chat?parent=" +
+
+                encodeURIComponent(parent);
+
+        }
+
+
+        /* =========================================
+           MOVER TWITCH
+        ========================================== */
+
+        function moverTwitch(posicion) {
+
+            const ventana =
+                document.getElementById(
+                    "twitchWindow"
+                );
+
+
+            ventana.classList.remove(
+                "top-left",
+                "top-right",
+                "bottom-left",
+                "bottom-right"
+            );
+
+
+            ventana.classList.add(
+                posicion
+            );
+
         }
 
 
@@ -793,10 +1120,6 @@
                     direccion.hostname
                         .toLowerCase();
 
-
-                /*
-                 * youtube.com/watch?v=
-                 */
 
                 if (
                     hostname.includes(
@@ -818,10 +1141,6 @@
                 }
 
 
-                /*
-                 * youtu.be/ID
-                 */
-
                 if (
                     hostname === "youtu.be"
                 ) {
@@ -834,10 +1153,6 @@
                 }
 
 
-                /*
-                 * youtube.com/live/ID
-                 */
-
                 if (
                     direccion.pathname
                         .startsWith("/live/")
@@ -848,10 +1163,6 @@
 
                 }
 
-
-                /*
-                 * youtube.com/shorts/ID
-                 */
 
                 if (
                     direccion.pathname
@@ -878,7 +1189,7 @@
 
 
         /* =========================================
-           ERROR
+           MOSTRAR ERROR
         ========================================== */
 
         function mostrarError(texto) {
@@ -900,7 +1211,7 @@
 
 
         /* =========================================
-           SEGUNDO VIDEO
+           CARGAR SEGUNDO VIDEO
         ========================================== */
 
         function cargarSegundoVideo() {
@@ -934,7 +1245,8 @@
             }
 
 
-            pantalla.innerHTML = "";
+            pantalla.innerHTML =
+                "";
 
 
             error.style.display =
@@ -958,15 +1270,23 @@
 
 
                 iframe.src =
+
                     "https://www.youtube.com/embed/" +
+
                     encodeURIComponent(
                         youtubeId
-                    ) +
-                    "?autoplay=0";
+                    );
 
 
                 iframe.allow =
-                    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+
+                    "accelerometer; " +
+                    "autoplay; " +
+                    "clipboard-write; " +
+                    "encrypted-media; " +
+                    "gyroscope; " +
+                    "picture-in-picture; " +
+                    "web-share";
 
 
                 iframe.allowFullscreen =
@@ -988,7 +1308,7 @@
 
 
             /* =====================================
-               MP4 / WEBM / OGG / MOV
+               VIDEO DIRECTO
             ===================================== */
 
             const urlSinQuery =
@@ -1040,7 +1360,7 @@
 
 
             /* =====================================
-               HLS .M3U8
+               HLS
             ===================================== */
 
             if (
@@ -1061,10 +1381,6 @@
 
                 video.playsInline =
                     true;
-
-
-                video.preload =
-                    "metadata";
 
 
                 pantalla.appendChild(
@@ -1091,27 +1407,6 @@
                     );
 
 
-                    hls.on(
-                        Hls.Events.ERROR,
-                        function(
-                            event,
-                            data
-                        ) {
-
-                            if (
-                                data.fatal
-                            ) {
-
-                                mostrarError(
-                                    "No se pudo reproducir el stream HLS."
-                                );
-
-                            }
-
-                        }
-                    );
-
-
                     return;
 
                 }
@@ -1132,7 +1427,7 @@
 
 
                 mostrarError(
-                    "Tu navegador no puede reproducir este stream HLS."
+                    "Este navegador no puede reproducir este stream."
                 );
 
 
@@ -1142,8 +1437,7 @@
 
 
             /* =====================================
-               ÚLTIMO INTENTO
-               COMO IFRAME
+               IFRAME GENÉRICO
             ===================================== */
 
             const iframe =
@@ -1170,6 +1464,7 @@
 
             pantalla.appendChild(
                 iframe
+
             );
 
         }
@@ -1200,7 +1495,7 @@
 
 
         /* =========================================
-           ENTER SEGUNDO VIDEO
+           ENTER VIDEO
         ========================================== */
 
         document
