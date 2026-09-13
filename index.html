@@ -10,12 +10,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Portal de Reacción</title>
+    <title>Control de Transmisión</title>
 
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
 
     <style>
 
@@ -23,593 +20,322 @@
             box-sizing: border-box;
         }
 
-
         html,
         body {
-
             margin: 0;
             padding: 0;
-
             width: 100%;
             min-height: 100%;
-
             background: #0e0e10;
-
             color: white;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
+            font-family: Arial, Helvetica, sans-serif;
         }
-
 
         body {
             min-height: 100vh;
         }
-
 
         /* =========================================
            BARRA SUPERIOR
         ========================================== */
 
         .topbar {
-
             width: 100%;
-
             background: #18181b;
-
             padding: 12px 18px;
-
             border-bottom: 1px solid #303033;
-
         }
-
 
         .search {
-
             width: 100%;
-
             max-width: 1400px;
-
             margin: auto;
-
             display: flex;
-
             gap: 10px;
-
         }
-
 
         .search input {
-
             flex: 1;
-
             height: 42px;
-
             padding: 0 14px;
-
             border: 1px solid #3a3a3d;
-
             border-radius: 6px;
-
             outline: none;
-
             background: #1f1f23;
-
             color: white;
-
             font-size: 15px;
-
         }
-
 
         .search input:focus {
-
             border-color: #9147ff;
-
         }
-
 
         .search input::placeholder {
-
             color: #aaa;
-
         }
-
 
         .search button {
-
             height: 42px;
-
             padding: 0 22px;
-
             border: none;
-
             border-radius: 6px;
-
             background: #9147ff;
-
             color: white;
-
             font-weight: bold;
-
             cursor: pointer;
-
         }
-
 
         .search button:hover {
-
             background: #772ce8;
-
         }
 
-
         /* =========================================
-           CONTENEDOR GENERAL
+           CONTENEDOR
         ========================================== */
 
         .layout {
-
             width: 100%;
-
             max-width: 1500px;
-
             margin: 24px auto;
-
             padding: 0 16px;
-
         }
 
-
         /* =========================================
-           ÁREA TWITCH + VIDEO
+           VIDEO + CHAT
         ========================================== */
 
         .stream-layout {
-
             display: grid;
-
-            grid-template-columns:
-                minmax(0, 1fr)
-                340px;
-
+            grid-template-columns: minmax(0, 1fr) 340px;
             gap: 0;
-
             align-items: stretch;
-
         }
 
-
         /* =========================================
-           ÁREA DEL VIDEO
+           VIDEO
         ========================================== */
 
         .video-area {
-
             position: relative;
-
             width: 100%;
-
             aspect-ratio: 16 / 9;
-
             background: #000;
-
             overflow: hidden;
-
         }
-
-
-        /* =========================================
-           SEGUNDO VIDEO
-        ========================================== */
 
         #secondScreen {
-
             position: absolute;
-
             inset: 0;
-
             width: 100%;
-
             height: 100%;
-
             background: #000;
-
             z-index: 1;
-
         }
-
 
         #secondScreen iframe {
-
             width: 100%;
-
             height: 100%;
-
             border: none;
-
             display: block;
-
         }
-
 
         #secondScreen video {
-
             width: 100%;
-
             height: 100%;
-
-            border: none;
-
             display: block;
-
             object-fit: contain;
-
             background: #000;
-
         }
-
-
-        /* =========================================
-           MENSAJE INICIAL
-        ========================================== */
 
         .empty-message {
-
             position: absolute;
-
             inset: 0;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             color: #777;
-
             font-size: 16px;
-
             text-align: center;
-
             padding: 20px;
-
         }
 
-
         /* =========================================
-           VENTANA TWITCH
+           TWITCH
         ========================================== */
 
         #twitchWindow {
-
             position: absolute;
-
             width: 320px;
-
             aspect-ratio: 16 / 9;
-
             background: #000;
-
             border: 2px solid #18181b;
-
             border-radius: 6px;
-
             overflow: hidden;
-
             z-index: 50;
-
-            box-shadow:
-                0 4px 18px rgba(0, 0, 0, 0.7);
-
-            transition:
-                top 0.15s ease,
-                left 0.15s ease,
-                right 0.15s ease,
-                bottom 0.15s ease;
-
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
         }
-
 
         #twitchPlayer {
-
             width: 100%;
-
             height: 100%;
-
         }
 
-
         /* =========================================
-           POSICIONES TWITCH
+           POSICIONES
         ========================================== */
 
         .top-left {
-
             top: 15px;
-
             left: 15px;
-
             right: auto;
-
             bottom: auto;
-
         }
-
 
         .top-right {
-
             top: 15px;
-
             right: 15px;
-
             left: auto;
-
             bottom: auto;
-
         }
-
 
         .bottom-left {
-
             bottom: 15px;
-
             left: 15px;
-
             right: auto;
-
             top: auto;
-
         }
-
 
         .bottom-right {
-
             bottom: 15px;
-
             right: 15px;
-
             left: auto;
-
             top: auto;
-
         }
 
-
         /* =========================================
-           CONTROLES DE POSICIÓN
+           CONTROLES
         ========================================== */
 
         .position-controls {
-
             position: absolute;
-
             z-index: 100;
-
             left: 50%;
-
             bottom: 15px;
-
             transform: translateX(-50%);
-
             display: flex;
-
             gap: 6px;
-
             padding: 6px;
-
             background: rgba(24, 24, 27, 0.92);
-
             border-radius: 7px;
-
-            opacity: 0;
-
-            transition: opacity 0.2s ease;
-
         }
-
-
-        .video-area:hover .position-controls {
-
-            opacity: 1;
-
-        }
-
 
         .position-controls button {
-
             width: 34px;
-
             height: 30px;
-
             border: none;
-
             border-radius: 5px;
-
             background: #2a2a2e;
-
             color: white;
-
             cursor: pointer;
-
             font-size: 15px;
-
         }
-
 
         .position-controls button:hover {
-
             background: #9147ff;
-
         }
-
 
         /* =========================================
            CHAT
         ========================================== */
 
         .chat-area {
-
             width: 100%;
-
             aspect-ratio: 340 / 506;
-
             background: #18181b;
-
             border-left: 1px solid #303033;
-
             display: flex;
-
             flex-direction: column;
-
         }
-
 
         .chat-header {
-
             height: 48px;
-
             flex-shrink: 0;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             font-weight: bold;
-
             font-size: 14px;
-
             border-bottom: 1px solid #303033;
-
             background: #18181b;
-
         }
-
 
         .chat-frame {
-
             flex: 1;
-
             min-height: 0;
-
         }
-
 
         .chat-frame iframe {
-
             width: 100%;
-
             height: 100%;
-
             border: none;
-
             display: block;
-
         }
 
-
         /* =========================================
-           SEGUNDO VIDEO
+           VIDEO INPUT
         ========================================== */
 
         .video-input {
-
             width: 100%;
-
             margin-top: 15px;
-
             display: flex;
-
             gap: 10px;
-
         }
-
 
         .video-input input {
-
             flex: 1;
-
             height: 42px;
-
             padding: 0 14px;
-
             border: 1px solid #3a3a3d;
-
             border-radius: 6px;
-
             outline: none;
-
             background: #1f1f23;
-
             color: white;
-
             font-size: 15px;
-
         }
-
 
         .video-input input:focus {
-
             border-color: #9147ff;
-
         }
-
 
         .video-input button {
-
             height: 42px;
-
             padding: 0 22px;
-
             border: none;
-
             border-radius: 6px;
-
             background: #9147ff;
-
             color: white;
-
             font-weight: bold;
-
             cursor: pointer;
-
         }
-
 
         .video-input button:hover {
-
             background: #772ce8;
-
         }
-
 
         /* =========================================
            ERROR
         ========================================== */
 
         .error {
-
             display: none;
-
             margin-top: 10px;
-
             padding: 10px;
-
             border-radius: 6px;
-
             background: #2a1717;
-
             color: #ffaaaa;
-
             font-size: 14px;
-
         }
-
 
         /* =========================================
            TABLET
@@ -618,33 +344,20 @@
         @media (max-width: 1000px) {
 
             .stream-layout {
-
                 grid-template-columns: 1fr;
-
             }
-
 
             .chat-area {
-
                 aspect-ratio: auto;
-
                 height: 420px;
-
                 border-left: none;
-
                 border-top: 1px solid #303033;
-
             }
-
 
             #twitchWindow {
-
                 width: 280px;
-
             }
-
         }
-
 
         /* =========================================
            CELULAR
@@ -653,90 +366,56 @@
         @media (max-width: 600px) {
 
             .topbar {
-
                 padding: 10px;
-
             }
-
 
             .search {
-
                 flex-direction: column;
-
             }
-
 
             .search button {
-
                 width: 100%;
-
             }
-
 
             .layout {
-
                 padding: 0 8px;
-
                 margin-top: 12px;
-
             }
-
 
             #twitchWindow {
-
                 width: 180px;
-
             }
-
 
             .position-controls {
-
                 bottom: 5px;
-
             }
-
 
             .position-controls button {
-
                 width: 30px;
-
                 height: 28px;
-
             }
-
 
             .video-input {
-
                 flex-direction: column;
-
             }
-
 
             .video-input button {
-
                 width: 100%;
-
             }
-
 
             .chat-area {
-
                 height: 360px;
-
             }
-
         }
 
     </style>
 
 </head>
 
-
 <body>
 
-
     <!-- =========================================
-         TWITCH LINK
+         TWITCH
     ========================================== -->
 
     <header class="topbar">
@@ -765,16 +444,11 @@
 
     <main class="layout">
 
-
         <div class="stream-layout">
 
-
-            <!-- =====================================
-                 VIDEO PRINCIPAL
-            ===================================== -->
+            <!-- VIDEO PRINCIPAL -->
 
             <div class="video-area">
-
 
                 <div id="secondScreen">
 
@@ -785,9 +459,7 @@
                 </div>
 
 
-                <!-- =================================
-                     TWITCH FLOTANTE
-                ================================== -->
+                <!-- TWITCH -->
 
                 <div
                     id="twitchWindow"
@@ -799,9 +471,7 @@
                 </div>
 
 
-                <!-- =================================
-                     BOTONES DE POSICIÓN
-                ================================== -->
+                <!-- CONTROLES DE POSICIÓN -->
 
                 <div class="position-controls">
 
@@ -835,13 +505,10 @@
 
                 </div>
 
-
             </div>
 
 
-            <!-- =====================================
-                 CHAT TWITCH
-            ====================================== -->
+            <!-- CHAT -->
 
             <aside class="chat-area">
 
@@ -854,20 +521,16 @@
                     <iframe
                         id="twitchChat"
                         title="Chat de Twitch"
-                    >
-                    </iframe>
+                    ></iframe>
 
                 </div>
 
             </aside>
 
-
         </div>
 
 
-        <!-- =========================================
-             SEGUNDO VIDEO
-        ========================================== -->
+        <!-- VIDEO -->
 
         <div class="video-input">
 
@@ -888,66 +551,46 @@
         <div
             id="videoError"
             class="error"
-        >
-        </div>
-
+        ></div>
 
     </main>
 
 
     <script>
 
-
-        /* =========================================
-           VARIABLES
-        ========================================== */
-
         let twitchPlayer = null;
 
 
         /* =========================================
-           OBTENER CANAL TWITCH
+           OBTENER CANAL DE TWITCH
         ========================================== */
 
         function obtenerCanal(url) {
 
             url = url.trim();
 
-
             if (!url) {
-
                 return null;
-
             }
-
 
             if (
                 !url.startsWith("http://") &&
                 !url.startsWith("https://")
             ) {
-
-                url =
-                    "https://" + url;
-
+                url = "https://" + url;
             }
-
 
             try {
 
-                const direccion =
-                    new URL(url);
-
+                const direccion = new URL(url);
 
                 if (
                     !direccion.hostname
                         .toLowerCase()
                         .includes("twitch.tv")
                 ) {
-
                     return null;
-
                 }
-
 
                 const partes =
                     direccion.pathname
@@ -955,19 +598,13 @@
                         .replace(/\/+$/, "")
                         .split("/");
 
-
                 if (!partes[0]) {
-
                     return null;
-
                 }
-
 
                 return partes[0];
 
-            }
-
-            catch (error) {
+            } catch (error) {
 
                 return null;
 
@@ -983,16 +620,10 @@
         function cargarTwitch() {
 
             const input =
-                document.getElementById(
-                    "twitchUrl"
-                );
-
+                document.getElementById("twitchUrl");
 
             const canal =
-                obtenerCanal(
-                    input.value
-                );
-
+                obtenerCanal(input.value);
 
             if (!canal) {
 
@@ -1004,74 +635,41 @@
 
             }
 
-
             const parent =
                 window.location.hostname;
-
 
             const playerContainer =
                 document.getElementById(
                     "twitchPlayer"
                 );
 
-
-            playerContainer.innerHTML =
-                "";
-
+            playerContainer.innerHTML = "";
 
             twitchPlayer =
                 new Twitch.Player(
                     "twitchPlayer",
                     {
-
                         width: "100%",
-
                         height: "100%",
-
                         channel: canal,
-
-                        parent: [
-                            parent
-                        ],
-
+                        parent: [parent],
                         autoplay: false,
-
                         muted: false
-
                     }
                 );
 
 
-            twitchPlayer.addEventListener(
-                Twitch.Player.READY,
-                function() {
-
-                    console.log(
-                        "Twitch Player listo."
-                    );
-
-                }
-            );
-
-
-            /* =====================================
-               CHAT TWITCH
-            ====================================== */
+            /* CHAT */
 
             const chat =
                 document.getElementById(
                     "twitchChat"
                 );
 
-
             chat.src =
-
                 "https://www.twitch.tv/embed/" +
-
                 encodeURIComponent(canal) +
-
                 "/chat?parent=" +
-
                 encodeURIComponent(parent);
 
         }
@@ -1088,7 +686,6 @@
                     "twitchWindow"
                 );
 
-
             ventana.classList.remove(
                 "top-left",
                 "top-right",
@@ -1096,16 +693,13 @@
                 "bottom-right"
             );
 
-
-            ventana.classList.add(
-                posicion
-            );
+            ventana.classList.add(posicion);
 
         }
 
 
         /* =========================================
-           YOUTUBE ID
+           OBTENER ID DE YOUTUBE
         ========================================== */
 
         function obtenerYoutubeId(url) {
@@ -1115,31 +709,21 @@
                 const direccion =
                     new URL(url);
 
-
                 const hostname =
-                    direccion.hostname
-                        .toLowerCase();
-
+                    direccion.hostname.toLowerCase();
 
                 if (
-                    hostname.includes(
-                        "youtube.com"
-                    )
+                    hostname.includes("youtube.com")
                 ) {
 
                     const id =
-                        direccion.searchParams
-                            .get("v");
-
+                        direccion.searchParams.get("v");
 
                     if (id) {
-
                         return id;
-
                     }
 
                 }
-
 
                 if (
                     hostname === "youtu.be"
@@ -1152,10 +736,8 @@
 
                 }
 
-
                 if (
-                    direccion.pathname
-                        .startsWith("/live/")
+                    direccion.pathname.startsWith("/live/")
                 ) {
 
                     return direccion.pathname
@@ -1163,23 +745,18 @@
 
                 }
 
-
                 if (
-                    direccion.pathname
-                        .startsWith("/shorts/")
+                    direccion.pathname.startsWith("/shorts/")
                 ) {
 
                     return direccion.pathname
                         .split("/")[2];
 
                 }
-
 
                 return null;
 
-            }
-
-            catch (error) {
+            } catch (error) {
 
                 return null;
 
@@ -1199,19 +776,15 @@
                     "videoError"
                 );
 
+            error.textContent = texto;
 
-            error.textContent =
-                texto;
-
-
-            error.style.display =
-                "block";
+            error.style.display = "block";
 
         }
 
 
         /* =========================================
-           CARGAR SEGUNDO VIDEO
+           CARGAR VIDEO
         ========================================== */
 
         function cargarSegundoVideo() {
@@ -1221,45 +794,32 @@
                     "videoUrl"
                 );
 
-
             const url =
                 input.value.trim();
-
 
             const pantalla =
                 document.getElementById(
                     "secondScreen"
                 );
 
-
             const error =
                 document.getElementById(
                     "videoError"
                 );
 
-
             if (!url) {
-
                 return;
-
             }
 
+            pantalla.innerHTML = "";
 
-            pantalla.innerHTML =
-                "";
-
-
-            error.style.display =
-                "none";
+            error.style.display = "none";
 
 
-            /* =====================================
-               YOUTUBE
-            ===================================== */
+            /* YOUTUBE */
 
             const youtubeId =
                 obtenerYoutubeId(url);
-
 
             if (youtubeId) {
 
@@ -1268,18 +828,13 @@
                         "iframe"
                     );
 
-
                 iframe.src =
-
                     "https://www.youtube.com/embed/" +
-
                     encodeURIComponent(
                         youtubeId
                     );
 
-
                 iframe.allow =
-
                     "accelerometer; " +
                     "autoplay; " +
                     "clipboard-write; " +
@@ -1288,42 +843,32 @@
                     "picture-in-picture; " +
                     "web-share";
 
-
-                iframe.allowFullscreen =
-                    true;
-
+                iframe.allowFullscreen = true;
 
                 iframe.title =
                     "Vídeo de YouTube";
 
-
                 pantalla.appendChild(
                     iframe
                 );
-
 
                 return;
 
             }
 
 
-            /* =====================================
-               VIDEO DIRECTO
-            ===================================== */
+            /* VIDEO DIRECTO */
 
             const urlSinQuery =
                 url
                     .split("?")[0]
                     .toLowerCase();
 
-
             const esVideoDirecto =
-
                 urlSinQuery.endsWith(".mp4") ||
                 urlSinQuery.endsWith(".webm") ||
                 urlSinQuery.endsWith(".ogg") ||
                 urlSinQuery.endsWith(".mov");
-
 
             if (esVideoDirecto) {
 
@@ -1332,139 +877,42 @@
                         "video"
                     );
 
+                video.src = url;
 
-                video.src =
-                    url;
+                video.controls = true;
 
+                video.playsInline = true;
 
-                video.controls =
-                    true;
-
-
-                video.playsInline =
-                    true;
-
-
-                video.preload =
-                    "metadata";
-
+                video.preload = "metadata";
 
                 pantalla.appendChild(
                     video
                 );
-
 
                 return;
 
             }
 
 
-            /* =====================================
-               HLS
-            ===================================== */
-
-            if (
-                urlSinQuery.includes(
-                    ".m3u8"
-                )
-            ) {
-
-                const video =
-                    document.createElement(
-                        "video"
-                    );
-
-
-                video.controls =
-                    true;
-
-
-                video.playsInline =
-                    true;
-
-
-                pantalla.appendChild(
-                    video
-                );
-
-
-                if (
-                    window.Hls &&
-                    Hls.isSupported()
-                ) {
-
-                    const hls =
-                        new Hls();
-
-
-                    hls.loadSource(
-                        url
-                    );
-
-
-                    hls.attachMedia(
-                        video
-                    );
-
-
-                    return;
-
-                }
-
-
-                if (
-                    video.canPlayType(
-                        "application/vnd.apple.mpegurl"
-                    )
-                ) {
-
-                    video.src =
-                        url;
-
-                    return;
-
-                }
-
-
-                mostrarError(
-                    "Este navegador no puede reproducir este stream."
-                );
-
-
-                return;
-
-            }
-
-
-            /* =====================================
-               IFRAME GENÉRICO
-            ===================================== */
+            /* IFRAME */
 
             const iframe =
                 document.createElement(
                     "iframe"
                 );
 
-
-            iframe.src =
-                url;
-
+            iframe.src = url;
 
             iframe.allow =
                 "autoplay; fullscreen; picture-in-picture";
 
-
-            iframe.allowFullscreen =
-                true;
-
+            iframe.allowFullscreen = true;
 
             iframe.title =
                 "Segundo vídeo";
 
-
             pantalla.appendChild(
                 iframe
-
             );
 
         }
@@ -1475,19 +923,13 @@
         ========================================== */
 
         document
-            .getElementById(
-                "twitchUrl"
-            )
+            .getElementById("twitchUrl")
             .addEventListener(
                 "keydown",
                 function(event) {
 
-                    if (
-                        event.key === "Enter"
-                    ) {
-
+                    if (event.key === "Enter") {
                         cargarTwitch();
-
                     }
 
                 }
@@ -1499,27 +941,19 @@
         ========================================== */
 
         document
-            .getElementById(
-                "videoUrl"
-            )
+            .getElementById("videoUrl")
             .addEventListener(
                 "keydown",
                 function(event) {
 
-                    if (
-                        event.key === "Enter"
-                    ) {
-
+                    if (event.key === "Enter") {
                         cargarSegundoVideo();
-
                     }
 
                 }
             );
 
-
     </script>
-
 
 </body>
 
