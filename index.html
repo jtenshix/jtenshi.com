@@ -13,33 +13,12 @@
     <title>Portal de Reacción</title>
 
 
-    <!-- =========================================
-         FAVICON
-    ========================================== -->
-
-    <link
-        rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>▶</text></svg>"
-    >
+    <!-- Twitch Embed Player SDK -->
+    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
 
 
-    <!-- =========================================
-         TWITCH EMBED PLAYER SDK
-    ========================================== -->
-
-    <script
-        src="https://player.twitch.tv/js/embed/v1.js"
-    ></script>
-
-
-    <!-- =========================================
-         HLS.JS
-         Para streams .m3u8
-    ========================================== -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/hls.js@latest"
-    ></script>
+    <!-- HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 
     <style>
@@ -49,23 +28,28 @@
         }
 
 
-        html {
-            background: #0f0f0f;
-        }
-
-
+        html,
         body {
 
             margin: 0;
+            padding: 0;
+
+            width: 100%;
+            height: 100%;
 
             background: #0f0f0f;
 
-            color: #ffffff;
+            color: white;
 
             font-family:
                 Arial,
                 Helvetica,
                 sans-serif;
+
+        }
+
+
+        body {
 
             min-height: 100vh;
 
@@ -87,6 +71,10 @@
             display: flex;
 
             justify-content: center;
+
+            position: relative;
+
+            z-index: 1000;
 
         }
 
@@ -170,50 +158,30 @@
 
 
         /* =========================================
-           CONTENIDO
+           SEGUNDO VIDEO
+           ESTE ES EL FONDO PRINCIPAL
         ========================================== */
 
-        .content {
+        .main-area {
 
             width: 100%;
 
-            max-width: 1200px;
+            padding: 30px 20px 60px;
 
-            margin: 30px auto;
-
-            padding: 0 20px;
-
-        }
-
-
-        /* =========================================
-           TWITCH + CHAT
-        ========================================== */
-
-        .twitch-section {
-
-            display: grid;
-
-            grid-template-columns:
-                minmax(0, 900px)
-                300px;
-
-            gap: 20px;
-
-            align-items: start;
+            display: flex;
 
             justify-content: center;
 
         }
 
 
-        /* =========================================
-           CONTENEDOR TWITCH
-        ========================================== */
+        .video-container {
 
-        .player {
+            position: relative;
 
             width: 100%;
+
+            max-width: 1200px;
 
             aspect-ratio: 16 / 9;
 
@@ -226,10 +194,82 @@
         }
 
 
-        /*
-         * El SDK de Twitch colocará
-         * su propio iframe aquí.
-         */
+        /* =========================================
+           SEGUNDO VIDEO
+        ========================================== */
+
+        #secondScreen {
+
+            position: absolute;
+
+            inset: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            background: #000;
+
+        }
+
+
+        #secondScreen iframe {
+
+            width: 100%;
+
+            height: 100%;
+
+            border: none;
+
+            display: block;
+
+        }
+
+
+        #secondScreen video {
+
+            width: 100%;
+
+            height: 100%;
+
+            display: block;
+
+            object-fit: contain;
+
+            background: #000;
+
+        }
+
+
+        /* =========================================
+           VENTANA TWITCH
+        ========================================== */
+
+        #twitchWindow {
+
+            position: absolute;
+
+            left: 25px;
+
+            bottom: 25px;
+
+            width: 320px;
+
+            aspect-ratio: 16 / 9;
+
+            background: #000;
+
+            border-radius: 8px;
+
+            overflow: hidden;
+
+            z-index: 20;
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.6);
+
+        }
+
 
         #twitchPlayer {
 
@@ -241,113 +281,41 @@
 
 
         /* =========================================
-           CHAT
+           MENSAJE INICIAL
         ========================================== */
 
-        .chat {
+        .empty-message {
 
-            width: 100%;
+            position: absolute;
 
-            height: 506px;
+            inset: 0;
 
-            background: #181818;
+            display: flex;
 
-            border-radius: 8px;
+            align-items: center;
 
-            overflow: hidden;
+            justify-content: center;
 
-        }
+            color: #777;
 
+            font-size: 16px;
 
-        .chat iframe {
-
-            width: 100%;
-
-            height: 100%;
-
-            border: none;
-
-            display: block;
+            pointer-events: none;
 
         }
 
 
         /* =========================================
-           SEGUNDA PANTALLA
+           CONTROLES DEL SEGUNDO VIDEO
         ========================================== */
 
-        .second-section {
+        .video-input {
 
             width: 100%;
 
-            max-width: 900px;
+            max-width: 1200px;
 
-            margin: 35px auto 60px;
-
-        }
-
-
-        .second-title {
-
-            font-size: 18px;
-
-            font-weight: bold;
-
-            margin-bottom: 12px;
-
-        }
-
-
-        .second-screen {
-
-            width: 100%;
-
-            aspect-ratio: 16 / 9;
-
-            background: #000;
-
-            border-radius: 8px;
-
-            overflow: hidden;
-
-        }
-
-
-        .second-screen iframe {
-
-            width: 100%;
-
-            height: 100%;
-
-            border: none;
-
-            display: block;
-
-        }
-
-
-        .second-screen video {
-
-            width: 100%;
-
-            height: 100%;
-
-            display: block;
-
-            background: #000;
-
-        }
-
-
-        /* =========================================
-           CONTROL SEGUNDA PANTALLA
-        ========================================== */
-
-        .video-controls {
-
-            width: 100%;
-
-            margin-top: 12px;
+            margin-top: 15px;
 
             display: flex;
 
@@ -356,7 +324,7 @@
         }
 
 
-        .video-controls input {
+        .video-input input {
 
             flex: 1;
 
@@ -379,25 +347,25 @@
         }
 
 
-        .video-controls input:focus {
+        .video-input input:focus {
 
             border-color: #666;
 
         }
 
 
-        .video-controls input::placeholder {
+        .video-input input::placeholder {
 
             color: #999;
 
         }
 
 
-        .video-controls button {
+        .video-input button {
 
             height: 42px;
 
-            padding: 0 20px;
+            padding: 0 22px;
 
             border: none;
 
@@ -414,7 +382,7 @@
         }
 
 
-        .video-controls button:hover {
+        .video-input button:hover {
 
             background: #772ce8;
 
@@ -422,22 +390,22 @@
 
 
         /* =========================================
-           ERROR SEGUNDA PANTALLA
+           ERROR
         ========================================== */
 
-        .video-error {
+        .error {
 
             display: none;
 
-            padding: 12px;
-
             margin-top: 10px;
 
-            background: #241818;
+            padding: 10px;
+
+            background: #2a1717;
 
             border-radius: 6px;
 
-            color: #ffb3b3;
+            color: #ffaaaa;
 
             font-size: 14px;
 
@@ -448,18 +416,22 @@
            TABLET
         ========================================== */
 
-        @media (max-width: 1000px) {
+        @media (max-width: 900px) {
 
-            .twitch-section {
+            .video-container {
 
-                grid-template-columns: 1fr;
+                border-radius: 6px;
 
             }
 
 
-            .chat {
+            #twitchWindow {
 
-                height: 400px;
+                width: 260px;
+
+                left: 18px;
+
+                bottom: 18px;
 
             }
 
@@ -493,39 +465,44 @@
             }
 
 
-            .content {
+            .main-area {
 
-                padding: 0 10px;
-
-                margin-top: 15px;
+                padding:
+                    15px
+                    10px
+                    40px;
 
             }
 
 
-            .player {
+            .video-container {
 
                 border-radius: 4px;
 
             }
 
 
-            .chat {
+            #twitchWindow {
 
-                height: 400px;
+                width: 180px;
 
-                border-radius: 4px;
+                left: 10px;
+
+                bottom: 10px;
+
+                border-radius: 5px;
 
             }
 
 
-            .video-controls {
+            .video-input {
 
                 flex-direction: column;
 
             }
 
 
-            .video-controls button {
+            .video-input button {
 
                 width: 100%;
 
@@ -557,7 +534,7 @@
             >
 
             <button onclick="cargarTwitch()">
-                CARGAR
+                CARGAR TWITCH
             </button>
 
         </div>
@@ -566,66 +543,49 @@
 
 
     <!-- =========================================
-         CONTENIDO
+         ÁREA PRINCIPAL
     ========================================== -->
 
-    <main class="content">
+    <main class="main-area">
+
+        <div style="width: 100%; max-width: 1200px;">
 
 
-        <!-- =====================================
-             TWITCH + CHAT
-        ===================================== -->
+            <!-- =====================================
+                 VIDEO PRINCIPAL + TWITCH ENCIMA
+            ===================================== -->
 
-        <section class="twitch-section">
+            <div class="video-container">
 
 
-            <!-- TWITCH -->
+                <!-- SEGUNDO VIDEO -->
 
-            <div class="player">
+                <div id="secondScreen">
 
-                <div id="twitchPlayer"></div>
+                    <div class="empty-message">
+                        Pega abajo el link del vídeo que quieras mostrar
+                    </div>
+
+                </div>
+
+
+                <!-- TWITCH FLOTANTE -->
+
+                <div id="twitchWindow">
+
+                    <div id="twitchPlayer"></div>
+
+                </div>
+
 
             </div>
 
 
-            <!-- CHAT -->
+            <!-- =====================================
+                 LINK DEL SEGUNDO VIDEO
+            ===================================== -->
 
-            <div class="chat">
-
-                <iframe
-                    id="twitchChat"
-                    title="Twitch Chat">
-                </iframe>
-
-            </div>
-
-
-        </section>
-
-
-        <!-- =====================================
-             SEGUNDA PANTALLA
-        ===================================== -->
-
-        <section class="second-section">
-
-
-            <div class="second-title">
-
-                Segunda pantalla
-
-            </div>
-
-
-            <div
-                class="second-screen"
-                id="secondScreen"
-            >
-
-            </div>
-
-
-            <div class="video-controls">
+            <div class="video-input">
 
                 <input
                     id="videoUrl"
@@ -634,28 +594,20 @@
                     autocomplete="off"
                 >
 
-
                 <button onclick="cargarSegundoVideo()">
-
-                    CARGAR
-
+                    CARGAR VIDEO
                 </button>
 
             </div>
 
 
             <div
-                class="video-error"
                 id="videoError"
-            >
-
-                No se pudo reproducir esta URL.
-
+                class="error">
             </div>
 
 
-        </section>
-
+        </div>
 
     </main>
 
@@ -664,14 +616,14 @@
 
 
         /* =========================================
-           VARIABLES TWITCH
+           TWITCH
         ========================================== */
 
         let twitchPlayer = null;
 
 
         /* =========================================
-           OBTENER CANAL DE TWITCH
+           OBTENER CANAL
         ========================================== */
 
         function obtenerCanal(url) {
@@ -691,7 +643,8 @@
                 !url.startsWith("https://")
             ) {
 
-                url = "https://" + url;
+                url =
+                    "https://" + url;
 
             }
 
@@ -713,20 +666,21 @@
                 }
 
 
-                let canal =
+                const partes =
                     direccion.pathname
                         .replace(/^\/+/, "")
-                        .replace(/\/+$/, "");
+                        .replace(/\/+$/, "")
+                        .split("/");
 
 
-                if (!canal) {
+                if (!partes[0]) {
 
                     return null;
 
                 }
 
 
-                return canal.split("/")[0];
+                return partes[0];
 
             }
 
@@ -740,7 +694,7 @@
 
 
         /* =========================================
-           CARGAR TWITCH MEDIANTE SDK OFICIAL
+           CARGAR TWITCH
         ========================================== */
 
         function cargarTwitch() {
@@ -752,15 +706,15 @@
 
 
             const canal =
-                obtenerCanal(input.value);
+                obtenerCanal(
+                    input.value
+                );
 
 
             if (!canal) {
 
                 alert(
-                    "Introduce un enlace válido de Twitch.\n\n" +
-                    "Ejemplo:\n" +
-                    "https://www.twitch.tv/nombrecanal"
+                    "Introduce un link válido de Twitch."
                 );
 
                 return;
@@ -768,20 +722,9 @@
             }
 
 
-            /*
-             * Dominio actual de GitHub Pages.
-             *
-             * Twitch exige indicar el dominio
-             * que está utilizando el embed.
-             */
-
             const parent =
                 window.location.hostname;
 
-
-            /* =====================================
-               ELIMINAR PLAYER ANTERIOR
-            ===================================== */
 
             const contenedor =
                 document.getElementById(
@@ -792,12 +735,10 @@
             contenedor.innerHTML = "";
 
 
-            twitchPlayer = null;
-
-
-            /* =====================================
-               CREAR PLAYER SDK
-            ===================================== */
+            /*
+             * Creamos el reproductor oficial
+             * de Twitch.
+             */
 
             twitchPlayer =
                 new Twitch.Player(
@@ -822,10 +763,6 @@
                 );
 
 
-            /*
-             * Evento READY.
-             */
-
             twitchPlayer.addEventListener(
                 Twitch.Player.READY,
                 function() {
@@ -837,45 +774,11 @@
                 }
             );
 
-
-            /*
-             * Si el canal se desconecta.
-             */
-
-            twitchPlayer.addEventListener(
-                Twitch.Player.OFFLINE,
-                function() {
-
-                    console.log(
-                        "El canal está offline."
-                    );
-
-                }
-            );
-
-
-            /* =====================================
-               CHAT
-            ===================================== */
-
-            const chat =
-                document.getElementById(
-                    "twitchChat"
-                );
-
-
-            chat.src =
-                "https://www.twitch.tv/embed/" +
-                encodeURIComponent(canal) +
-                "/chat" +
-                "?parent=" +
-                encodeURIComponent(parent);
-
         }
 
 
         /* =========================================
-           OBTENER ID DE YOUTUBE
+           YOUTUBE ID
         ========================================== */
 
         function obtenerYoutubeId(url) {
@@ -887,21 +790,30 @@
 
 
                 const hostname =
-                    direccion.hostname.toLowerCase();
+                    direccion.hostname
+                        .toLowerCase();
 
 
                 /*
-                 * youtube.com/watch?v=ID
+                 * youtube.com/watch?v=
                  */
 
                 if (
-                    hostname.includes("youtube.com") &&
-                    direccion.searchParams.get("v")
+                    hostname.includes(
+                        "youtube.com"
+                    )
                 ) {
 
-                    return direccion
-                        .searchParams
-                        .get("v");
+                    const id =
+                        direccion.searchParams
+                            .get("v");
+
+
+                    if (id) {
+
+                        return id;
+
+                    }
 
                 }
 
@@ -914,24 +826,10 @@
                     hostname === "youtu.be"
                 ) {
 
-                    return direccion.pathname
+                    return direccion
+                        .pathname
                         .replace(/^\/+/, "")
                         .split("/")[0];
-
-                }
-
-
-                /*
-                 * youtube.com/shorts/ID
-                 */
-
-                if (
-                    direccion.pathname
-                        .startsWith("/shorts/")
-                ) {
-
-                    return direccion.pathname
-                        .split("/")[2];
 
                 }
 
@@ -943,6 +841,21 @@
                 if (
                     direccion.pathname
                         .startsWith("/live/")
+                ) {
+
+                    return direccion.pathname
+                        .split("/")[2];
+
+                }
+
+
+                /*
+                 * youtube.com/shorts/ID
+                 */
+
+                if (
+                    direccion.pathname
+                        .startsWith("/shorts/")
                 ) {
 
                     return direccion.pathname
@@ -965,10 +878,10 @@
 
 
         /* =========================================
-           MOSTRAR ERROR
+           ERROR
         ========================================== */
 
-        function mostrarError(mensaje) {
+        function mostrarError(texto) {
 
             const error =
                 document.getElementById(
@@ -977,7 +890,7 @@
 
 
             error.textContent =
-                mensaje;
+                texto;
 
 
             error.style.display =
@@ -987,7 +900,7 @@
 
 
         /* =========================================
-           CARGAR SEGUNDA PANTALLA
+           SEGUNDO VIDEO
         ========================================== */
 
         function cargarSegundoVideo() {
@@ -1048,11 +961,16 @@
                     "https://www.youtube.com/embed/" +
                     encodeURIComponent(
                         youtubeId
-                    );
+                    ) +
+                    "?autoplay=0";
 
 
                 iframe.allow =
                     "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+
+
+                iframe.allowFullscreen =
+                    true;
 
 
                 iframe.title =
@@ -1070,7 +988,7 @@
 
 
             /* =====================================
-               VÍDEOS DIRECTOS
+               MP4 / WEBM / OGG / MOV
             ===================================== */
 
             const urlSinQuery =
@@ -1122,11 +1040,13 @@
 
 
             /* =====================================
-               M3U8 / HLS
+               HLS .M3U8
             ===================================== */
 
             if (
-                urlSinQuery.includes(".m3u8")
+                urlSinQuery.includes(
+                    ".m3u8"
+                )
             ) {
 
                 const video =
@@ -1151,10 +1071,6 @@
                     video
                 );
 
-
-                /*
-                 * HLS.js
-                 */
 
                 if (
                     window.Hls &&
@@ -1187,7 +1103,7 @@
                             ) {
 
                                 mostrarError(
-                                    "El stream HLS no pudo reproducirse."
+                                    "No se pudo reproducir el stream HLS."
                                 );
 
                             }
@@ -1201,10 +1117,6 @@
                 }
 
 
-                /*
-                 * HLS nativo.
-                 */
-
                 if (
                     video.canPlayType(
                         "application/vnd.apple.mpegurl"
@@ -1214,14 +1126,13 @@
                     video.src =
                         url;
 
-
                     return;
 
                 }
 
 
                 mostrarError(
-                    "Este navegador no puede reproducir directamente esta señal HLS."
+                    "Tu navegador no puede reproducir este stream HLS."
                 );
 
 
@@ -1231,7 +1142,8 @@
 
 
             /* =====================================
-               ÚLTIMO INTENTO: IFRAME
+               ÚLTIMO INTENTO
+               COMO IFRAME
             ===================================== */
 
             const iframe =
@@ -1248,8 +1160,12 @@
                 "autoplay; fullscreen; picture-in-picture";
 
 
+            iframe.allowFullscreen =
+                true;
+
+
             iframe.title =
-                "Segunda fuente";
+                "Segundo vídeo";
 
 
             pantalla.appendChild(
@@ -1284,7 +1200,7 @@
 
 
         /* =========================================
-           ENTER SEGUNDA PANTALLA
+           ENTER SEGUNDO VIDEO
         ========================================== */
 
         document
@@ -1306,6 +1222,10 @@
                 }
             );
 
+
     </script>
+
+
 </body>
+
 </html>
