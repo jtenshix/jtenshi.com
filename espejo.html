@@ -85,12 +85,6 @@
             display: block;
         }
 
-        .bloqueo-mouse {
-            position: absolute;
-            inset: 0;
-            z-index: 10;
-        }
-
         .donation-links {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -125,6 +119,43 @@
         .donation-btn:hover {
             background: #2d2d30;
             border-color: #9147ff;
+        }
+
+        .stream-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .ctrl-btn {
+            height: 38px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-play {
+            background: #9147ff;
+            color: white;
+        }
+
+        .btn-play:hover {
+            background: #772ce8;
+        }
+
+        .ctrl-btn.btn-recargar {
+            background: #ff9800;
+            color: black;
+        }
+
+        .ctrl-btn.btn-recargar:hover {
+            background: #f57c00;
         }
 
         .center-area {
@@ -234,7 +265,6 @@
                         <div id="twitchPlayer">
                             <div class="empty-message" style="background:#111;">Esperando stream...</div>
                         </div>
-                        <div class="bloqueo-mouse"></div>
                     </div>
                 </div>
 
@@ -251,6 +281,11 @@
                         <i class="fa-solid fa-hand-holding-dollar" style="color: #2ed573;"></i>
                         Tips
                     </a>
+                </div>
+
+                <div class="stream-controls">
+                    <button class="ctrl-btn btn-play" onclick="forzarPlayTwitchEspejo()"><i class="fa-solid fa-play"></i> Play</button>
+                    <button class="ctrl-btn btn-recargar" onclick="recargarStreamerEspejo()"><i class="fa-solid fa-rotate"></i> Recargar</button>
                 </div>
             </aside>
 
@@ -328,6 +363,16 @@
 
             const chat = document.getElementById("twitchChat");
             chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
+        }
+
+        function forzarPlayTwitchEspejo() {
+            const twitchUrl = localStorage.getItem("twitchUrl");
+            if (twitchUrl) cargarTwitchEspejo(twitchUrl);
+        }
+
+        function recargarStreamerEspejo() {
+            const twitchUrl = localStorage.getItem("twitchUrl");
+            if (twitchUrl) cargarTwitchEspejo(twitchUrl);
         }
 
         function cargarVideoEspejo(videoUrl) {
