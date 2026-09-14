@@ -167,17 +167,17 @@
             min-height: 0;
             padding: 10px;
             gap: 10px;
-            justify-content: center;
+            justify-content: stretch;
         }
 
         .streamer-widget {
             position: relative;
             width: 100%;
-            aspect-ratio: 16 / 15;
+            flex: 1; /* Estirado verticalmente al máximo del espacio disponible */
             background: #000;
             border-radius: 4px;
             overflow: hidden;
-            flex-shrink: 0;
+            min-height: 0;
         }
 
         #twitchPlayer {
