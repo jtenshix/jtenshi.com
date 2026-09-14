@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espejo - Transmisión</title>
-    <!-- FontAwesome para los iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <style>
@@ -76,6 +75,14 @@
         #twitchPlayer {
             width: 100%;
             height: 100%;
+        }
+
+        /* Capa bloqueadora para que el mouse no active la interfaz de Twitch en el espejo */
+        .bloqueo-mouse {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
         }
 
         .donation-links {
@@ -219,11 +226,11 @@
                     <div class="recommended-header">Canales recomendados</div>
                     <div class="streamer-widget">
                         <div id="twitchPlayer"></div>
+                        <div class="bloqueo-mouse"></div>
                         <div id="twitchPlaceholder" class="empty-message" style="background:#111;">Esperando stream...</div>
                     </div>
                 </div>
 
-                <!-- Enlaces de apoyo -->
                 <div class="donation-links">
                     <a href="https://ko-fi.com/cotecreator/shop" target="_blank" class="donation-btn" title="Ko-fi">
                         <i class="fa-solid fa-mug-hot" style="color: #29abe0;"></i>
@@ -365,9 +372,8 @@
         }
 
         window.addEventListener("DOMContentLoaded", () => {
-            const params = new URLSearchParams(window.location.search);
-            const twitchUrl = params.get("twitch");
-            const videoUrl = params.get("video");
+            const twitchUrl = localStorage.getItem("twitchUrl");
+            const videoUrl = localStorage.getItem("videoUrl");
 
             if (twitchUrl) cargarTwitchEspejo(twitchUrl);
             if (videoUrl) cargarVideoEspejo(videoUrl);
