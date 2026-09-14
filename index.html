@@ -28,16 +28,17 @@
 
         .layout {
             width: 100%;
-            max-width: 1500px;
-            margin: 24px auto;
+            max-width: 1600px;
+            margin: 20px auto;
             padding: 0 16px;
         }
 
+        /* Estructura principal: Video grande a la izquierda, barra lateral a la derecha */
         .stream-layout {
             display: grid;
             grid-template-columns: minmax(0, 1fr) 340px;
-            gap: 0;
-            align-items: stretch;
+            gap: 16px;
+            align-items: start;
         }
 
         .video-area {
@@ -46,6 +47,7 @@
             aspect-ratio: 16 / 9;
             background: #000;
             overflow: hidden;
+            border-radius: 8px;
         }
 
         #mainVideo {
@@ -54,22 +56,15 @@
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 1;
         }
 
-        #mainVideo iframe {
+        #mainVideo iframe,
+        #mainVideo video {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
-        }
-
-        #mainVideo video {
-            width: 100%;
-            height: 100%;
-            display: block;
             object-fit: contain;
-            background: #000;
         }
 
         .empty-message {
@@ -84,25 +79,20 @@
             padding: 20px;
         }
 
-        /* Cuadro fijo en la esquina superior izquierda, compacto y sin estorbar */
-        #twitchWindow {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 260px;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            overflow: hidden;
-            z-index: 50;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
-            opacity: 0.95;
-            transition: opacity 0.2s ease;
+        /* Columna lateral estilo Twitch (aquí van el reproductor secundario y el chat ordenados) */
+        .sidebar-area {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        #twitchWindow:hover {
-            opacity: 1;
+        .twitch-box {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border: 1px solid #303033;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         #twitchPlayer {
@@ -112,15 +102,17 @@
 
         .chat-area {
             width: 100%;
-            aspect-ratio: 340 / 506;
+            height: 450px;
             background: #18181b;
-            border-left: 1px solid #303033;
+            border: 1px solid #303033;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .chat-header {
-            height: 48px;
+            height: 44px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -133,7 +125,7 @@
         }
 
         .btn-actualizar {
-            padding: 6px 12px;
+            padding: 5px 10px;
             border: none;
             border-radius: 4px;
             background: #9147ff;
@@ -159,35 +151,14 @@
             display: block;
         }
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1100px) {
             .stream-layout {
                 grid-template-columns: 1fr;
             }
-
-            .chat-area {
-                aspect-ratio: auto;
-                height: 420px;
-                border-left: none;
-                border-top: 1px solid #303033;
-            }
-
-            #twitchWindow {
-                width: 220px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .layout {
-                padding: 0 8px;
-                margin-top: 12px;
-            }
-
-            #twitchWindow {
-                width: 140px;
-            }
-
-            .chat-area {
-                height: 360px;
+            .sidebar-area {
+                max-width: 500px;
+                margin: 0 auto;
+                width: 100%;
             }
         }
     </style>
@@ -196,23 +167,28 @@
 <body>
     <main class="layout">
         <div class="stream-layout">
+            <!-- Video principal limpio sin nada encima -->
             <div class="video-area">
                 <div id="mainVideo">
                     <div class="empty-message">Esperando transmisión...</div>
                 </div>
-                <div id="twitchWindow">
+            </div>
+
+            <!-- Columna lateral con el reproductor secundario y el chat -->
+            <div class="sidebar-area">
+                <div class="twitch-box">
                     <div id="twitchPlayer"></div>
                 </div>
+                <aside class="chat-area">
+                    <div class="chat-header">
+                        <span>Chat del stream</span>
+                        <button class="btn-actualizar" onclick="window.location.reload()">🔄 Actualizar</button>
+                    </div>
+                    <div class="chat-frame">
+                        <iframe id="twitchChat" title="Chat de Twitch"></iframe>
+                    </div>
+                </aside>
             </div>
-            <aside class="chat-area">
-                <div class="chat-header">
-                    <span>Chat del stream</span>
-                    <button class="btn-actualizar" onclick="window.location.reload()">🔄 Actualizar</button>
-                </div>
-                <div class="chat-frame">
-                    <iframe id="twitchChat" title="Chat de Twitch"></iframe>
-                </div>
-            </aside>
         </div>
     </main>
 
