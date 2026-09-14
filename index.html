@@ -200,10 +200,12 @@
             background: #46464f;
         }
 
+        /* Contenedor del video con un poco más de altura vertical sin exagerar */
         .streamer-widget {
             position: relative;
             width: 100%;
-            aspect-ratio: 16 / 9;
+            /* Ajustado a una proporción ligeramente más alta para que el contenido del stream respire bien */
+            aspect-ratio: 16 / 11;
             background: #000;
             border-radius: 4px;
             overflow: hidden;
@@ -469,10 +471,10 @@
                     <div class="recommended-header">Canales recomendados</div>
                     
                     <div class="streamer-widget-content">
-                        <!-- Info de Twitch arriba ordenadita -->
+                        <!-- Título y botones de Twitch arriba -->
                         <div class="twitch-info-top">
                             <div id="twitchTitle" class="twitch-channel-title">Canal no cargado</div>
-                            <div id="twitchDesc" class="twitch-channel-desc">Pega el enlace arriba para empezar a transmitir.</div>
+                            <div id="twitchDesc" class="twitch-channel-desc">Pega el enlace arriba para empezar.</div>
                             <div class="twitch-actions">
                                 <button class="twitch-btn" style="background:#9147ff;"><i class="fa-solid fa-heart"></i> Seguir</button>
                                 <button class="twitch-btn" style="background:#2f2f35;"><i class="fa-solid fa-gift"></i> Regalar</button>
@@ -480,7 +482,7 @@
                             </div>
                         </div>
 
-                        <!-- Video limpio abajo -->
+                        <!-- Reproductor abajo con el contenedor un poco más alto -->
                         <div class="streamer-widget">
                             <div id="twitchPlayer">
                                 <div class="empty-message" style="background:#111;">Sin canal cargado</div>
@@ -583,7 +585,6 @@
             const playerDiv = document.getElementById("twitchPlayer");
             playerDiv.innerHTML = "";
 
-            // Cambiamos a player.twitch.tv sin elementos de interfaz extra flotando
             const iframe = document.createElement("iframe");
             iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true`;
             iframe.allowFullscreen = true;
