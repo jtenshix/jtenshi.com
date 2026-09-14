@@ -80,6 +80,22 @@
             background: #772ce8;
         }
 
+        .btn-espejo {
+            height: 42px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 6px;
+            background: #00e676;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-espejo:hover {
+            background: #00c853;
+        }
+
         /* =========================================
             CONTENEDOR
         ========================================== */
@@ -362,7 +378,8 @@
                 flex-direction: column;
             }
 
-            .search button {
+            .search button,
+            .btn-espejo {
                 width: 100%;
             }
 
@@ -402,7 +419,7 @@
 <body>
 
     <!-- =========================================
-         TWITCH
+         TWITCH Y BOTÓN ESPEJO
     ========================================== -->
 
     <header class="topbar">
@@ -415,6 +432,9 @@
             >
             <button onclick="cargarTwitch()">
                 CARGAR TWITCH
+            </button>
+            <button class="btn-espejo" onclick="abrirEspejo()">
+                🔗 Abrir Espejo
             </button>
         </div>
     </header>
@@ -509,6 +529,18 @@
         let twitchPlayer = null;
 
         /* =========================================
+            ABRIR PÁGINA ESPEJO AUTOMÁTICA
+        ========================================== */
+
+        function abrirEspejo() {
+            const twitchUrl = document.getElementById("twitchUrl").value.trim();
+            const videoUrl = document.getElementById("videoUrl").value.trim();
+
+            const urlEspejo = `espejo.html?twitch=${encodeURIComponent(twitchUrl)}&video=${encodeURIComponent(videoUrl)}`;
+            window.open(urlEspejo, "_blank");
+        }
+
+        /* =========================================
             OBTENER CANAL DE TWITCH
         ========================================== */
 
@@ -555,7 +587,7 @@
         }
 
         /* =========================================
-            CARGAR TWITCH + GUARDAR EN LOCALSTORAGE
+            CARGAR TWITCH LOCAL
         ========================================== */
 
         function cargarTwitch() {
@@ -567,9 +599,6 @@
                 alert("Introduce un link válido de Twitch.");
                 return;
             }
-
-            // Sincroniza con el espejo
-            localStorage.setItem("stream_twitch", valorInput);
 
             const parent = window.location.hostname || "localhost";
             const playerContainer = document.getElementById("twitchPlayer");
@@ -598,7 +627,7 @@
         }
 
         /* =========================================
-            MOVER TWITCH + GUARDAR POSICIÓN
+            MOVER TWITCH LOCAL
         ========================================== */
 
         function moverTwitch(posicion) {
@@ -612,9 +641,6 @@
             );
 
             ventana.classList.add(posicion);
-
-            // Sincroniza la posición con el espejo
-            localStorage.setItem("stream_posicion", posicion);
         }
 
         /* =========================================
@@ -662,7 +688,7 @@
         }
 
         /* =========================================
-            CARGAR VIDEO + GUARDAR EN LOCALSTORAGE
+            CARGAR VIDEO LOCAL
         ========================================== */
 
         function cargarSegundoVideo() {
@@ -674,9 +700,6 @@
             if (!url) {
                 return;
             }
-
-            // Sincroniza con el espejo
-            localStorage.setItem("stream_video", url);
 
             pantalla.innerHTML = "";
             error.style.display = "none";
