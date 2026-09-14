@@ -99,10 +99,10 @@
             padding: 0 16px;
         }
 
-        /* Reducimos los laterales (240px y 260px) para darle el máximo protagonismo a la columna central (minmax(0, 1fr)) */
+        /* Balance óptimo: un poco más de espacio en la izquierda para la streamer y un chat más compacto a la derecha */
         .stream-layout {
             display: grid;
-            grid-template-columns: 240px minmax(0, 1fr) 280px;
+            grid-template-columns: 300px minmax(0, 1fr) 260px;
             gap: 16px;
             align-items: start;
         }
@@ -235,7 +235,7 @@
             border-radius: 6px;
             display: flex;
             flex-direction: column;
-            min-height: 480px;
+            height: 520px; /* Altura fija estable para evitar que se bugee */
         }
 
         .chat-header {
@@ -294,7 +294,7 @@
 
     <main class="layout">
         <div class="stream-layout">
-            <!-- Columna Izquierda: Reducida de ancho -->
+            <!-- Columna Izquierda: Streamer con tamaño mejorado -->
             <aside class="sidebar-left">
                 <div class="recommended-section">
                     <div class="recommended-header">Canales recomendados</div>
@@ -305,7 +305,7 @@
                 </div>
             </aside>
 
-            <!-- Columna Central: Video Principal con máxima prioridad de espacio -->
+            <!-- Columna Central: Video Principal -->
             <section class="center-area">
                 <div class="video-area">
                     <div id="secondScreen">
@@ -322,7 +322,7 @@
                 <div id="videoError" class="error"></div>
             </section>
 
-            <!-- Columna Derecha: Chat también ajustado -->
+            <!-- Columna Derecha: Chat más angosto y estable -->
             <aside class="chat-area">
                 <div class="chat-header">
                     Chat del stream
