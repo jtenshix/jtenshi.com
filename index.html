@@ -92,22 +92,6 @@
             background: #00c853;
         }
 
-        .btn-recargar {
-            height: 42px;
-            padding: 0 18px;
-            border: none;
-            border-radius: 6px;
-            background: #ff9800;
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .btn-recargar:hover {
-            background: #f57c00;
-        }
-
         .layout {
             width: 100%;
             max-width: 1700px;
@@ -164,12 +148,6 @@
             display: block;
         }
 
-        .bloqueo-mouse {
-            position: absolute;
-            inset: 0;
-            z-index: 10;
-        }
-
         .donation-links {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -204,6 +182,43 @@
         .donation-btn:hover {
             background: #2d2d30;
             border-color: #9147ff;
+        }
+
+        .stream-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .ctrl-btn {
+            height: 38px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-play {
+            background: #9147ff;
+            color: white;
+        }
+
+        .btn-play:hover {
+            background: #772ce8;
+        }
+
+        .ctrl-btn.btn-recargar {
+            background: #ff9800;
+            color: black;
+        }
+
+        .ctrl-btn.btn-recargar:hover {
+            background: #f57c00;
         }
 
         .center-area {
@@ -355,7 +370,6 @@
         <div class="search">
             <input id="twitchUrl" type="text" placeholder="Pega aquí el link de Twitch de la streamer..." autocomplete="off">
             <button onclick="cargarTwitch()">CARGAR STREAMER</button>
-            <button class="btn-recargar" onclick="recargarStreamer()"><i class="fa-solid fa-rotate"></i> Recargar Stream</button>
             <button class="btn-espejo" onclick="abrirEspejo()">🔗 Abrir Espejo</button>
         </div>
     </header>
@@ -369,7 +383,6 @@
                         <div id="twitchPlayer">
                             <div class="empty-message" style="background:#111;">Sin canal cargado</div>
                         </div>
-                        <div class="bloqueo-mouse"></div>
                     </div>
                 </div>
 
@@ -386,6 +399,11 @@
                         <i class="fa-solid fa-hand-holding-dollar" style="color: #2ed573;"></i>
                         Tips
                     </a>
+                </div>
+
+                <div class="stream-controls">
+                    <button class="ctrl-btn btn-play" onclick="forzarPlayTwitch()"><i class="fa-solid fa-play"></i> Play</button>
+                    <button class="ctrl-btn btn-recargar" onclick="recargarStreamer()"><i class="fa-solid fa-rotate"></i> Recargar</button>
                 </div>
             </aside>
 
@@ -473,6 +491,13 @@
         }
 
         function recargarStreamer() {
+            const input = document.getElementById("twitchUrl");
+            if (input.value.trim()) {
+                cargarTwitch();
+            }
+        }
+
+        function forzarPlayTwitch() {
             const input = document.getElementById("twitchUrl");
             if (input.value.trim()) {
                 cargarTwitch();
