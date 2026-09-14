@@ -89,10 +89,32 @@
             height: 100%;
         }
 
+        /* POSICIONES DEL REPRODUCTOR DE TWITCH */
+        .top-left {
+            top: 15px;
+            left: 15px;
+            right: auto;
+            bottom: auto;
+        }
+
+        .top-right {
+            top: 15px;
+            right: 15px;
+            left: auto;
+            bottom: auto;
+        }
+
         .bottom-left {
             bottom: 15px;
             left: 15px;
             right: auto;
+            top: auto;
+        }
+
+        .bottom-right {
+            bottom: 15px;
+            right: 15px;
+            left: auto;
             top: auto;
         }
 
@@ -184,9 +206,9 @@
     </main>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const CANAL_TWITCH = urlParams.get("twitch");
-        const VIDEO_URL = urlParams.get("video");
+        let ultimoCanal = "";
+        let ultimoVideo = "";
+        let ultimaPosicion = "";
 
         function obtenerCanal(url) {
             if (!url) return null;
@@ -204,9 +226,13 @@
             }
         }
 
-        function cargarTwitch() {
-            const canal = obtenerCanal(CANAL_TWITCH);
+        function cargarTwitch(urlTwitch) {
+            const canal = obtenerCanal(urlTwitch);
             if (!canal) return;
+
+            if (canal === ultimoCanal) return; // Evita recargar si es el mismo
+            ultimoCanal = canal;
+
             const parent = window.location.hostname;
             const playerContainer = document.getElementById("twitchPlayer");
             playerContainer.innerHTML = "";
@@ -244,12 +270,14 @@
             }
         }
 
-        function cargarVideo() {
+        function cargarVideo(videoUrl) {
+            if (!videoUrl || videoUrl === ultimoVideo) return;
+            ultimoVideo = videoUrl;
+
             const pantalla = document.getElementById("mainVideo");
             pantalla.innerHTML = "";
-            if (!VIDEO_URL) return;
 
-            const youtubeId = obtenerYoutubeId(VIDEO_URL);
+            const youtubeId = obtenerYoutubeId(videoUrl);
             if (youtubeId) {
                 const iframe = document.createElement("iframe");
                 iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId) + "?autoplay=1";
@@ -260,12 +288,12 @@
                 return;
             }
 
-            const urlSinQuery = VIDEO_URL.split("?")[0].toLowerCase();
+            const urlSinQuery = videoUrl.split("?")[0].toLowerCase();
             const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
 
             if (esVideoDirecto) {
                 const video = document.createElement("video");
-                video.src = VIDEO_URL;
+                video.src = videoUrl;
                 video.controls = true;
                 video.autoplay = true;
                 video.playsInline = true;
@@ -275,15 +303,36 @@
             }
 
             const iframe = document.createElement("iframe");
-            iframe.src = VIDEO_URL;
+            iframe.src = videoUrl;
             iframe.allow = "autoplay; fullscreen; picture-in-picture";
             iframe.allowFullscreen = true;
             iframe.title = "Video principal";
             pantalla.appendChild(iframe);
         }
 
-        cargarTwitch();
-        cargarVideo();
+        function actualizarPosicion(posicion) {
+            if (!posicion || posicion === ultimaPosicion) return;
+            ultimaPosicion = posicion;
+
+            const ventana = document.getElementById("twitchWindow");
+            ventana.classList.remove("top-left", "top-right", "bottom-left", "bottom-right");
+            ventana.classList.add(posicion);
+        }
+
+        // Revisa constantemente el almacenamiento local sincronizado con el panel de comandos
+        function sincronizar() {
+            const twitchUrl = localStorage.getItem("stream_twitch") || "";
+            const videoUrl = localStorage.getItem("stream_video") || "";
+            const posicion = localStorage.getItem("stream_posicion") || "bottom-left";
+
+            cargarTwitch(twitchUrl);
+            cargarVideo(videoUrl);
+            actualizarPosicion(posicion);
+        }
+
+        // Ejecuta la sincronización cada segundo para reflejar los cambios al instante
+        setInterval(sincronizar, 1000);
+        sincronizar();
     </script>
 </body>
 
