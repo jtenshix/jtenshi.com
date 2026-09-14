@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espejo - Transmisión</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -73,16 +72,23 @@
         }
 
         #twitchPlayer {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
         }
 
-        /* Capa bloqueadora para que el mouse no active la interfaz de Twitch en el espejo */
+        #twitchPlayer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
         .bloqueo-mouse {
             position: absolute;
             inset: 0;
             z-index: 10;
-            pointer-events: none;
         }
 
         .donation-links {
@@ -170,6 +176,7 @@
             font-size: 15px;
             text-align: center;
             padding: 20px;
+            pointer-events: none;
         }
 
         .chat-area {
@@ -220,14 +227,14 @@
 
     <main class="layout">
         <div class="stream-layout">
-            <!-- Columna Izquierda: Streamer y Enlaces -->
             <aside class="sidebar-left">
                 <div class="recommended-section">
                     <div class="recommended-header">Canales recomendados</div>
                     <div class="streamer-widget">
-                        <div id="twitchPlayer"></div>
+                        <div id="twitchPlayer">
+                            <div class="empty-message" style="background:#111;">Esperando stream...</div>
+                        </div>
                         <div class="bloqueo-mouse"></div>
-                        <div id="twitchPlaceholder" class="empty-message" style="background:#111;">Esperando stream...</div>
                     </div>
                 </div>
 
@@ -247,7 +254,6 @@
                 </div>
             </aside>
 
-            <!-- Columna Central: Video Principal -->
             <section class="center-area">
                 <div class="video-area">
                     <div id="secondScreen">
@@ -258,7 +264,6 @@
                 </div>
             </section>
 
-            <!-- Columna Derecha: Chat -->
             <aside class="chat-area">
                 <div class="chat-header">
                     Chat del stream
@@ -312,21 +317,14 @@
             if (!canal) return;
 
             const parent = window.location.hostname || "localhost";
-            const placeholder = document.getElementById("twitchPlaceholder");
-            if (placeholder) placeholder.style.display = "none";
+            const playerDiv = document.getElementById("twitchPlayer");
+            playerDiv.innerHTML = "";
 
-            try {
-                new Twitch.Player("twitchPlayer", {
-                    width: "100%",
-                    height: "100%",
-                    channel: canal,
-                    parent: [parent, "localhost", "127.0.0.1"],
-                    autoplay: true,
-                    muted: true
-                });
-            } catch (e) {
-                console.error("Error al iniciar Twitch en el espejo:", e);
-            }
+            const iframe = document.createElement("iframe");
+            iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true`;
+            iframe.allowFullscreen = true;
+            iframe.allow = "autoplay; encrypted-media; fullscreen";
+            playerDiv.appendChild(iframe);
 
             const chat = document.getElementById("twitchChat");
             chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
