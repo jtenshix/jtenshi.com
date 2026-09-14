@@ -227,7 +227,7 @@
         const videoUrl = urlParams.get("video");
         const posTwitch = urlParams.get("pos") || "bottom-left";
 
-        // Aplica la posición del cuadro que guardó la streamer
+        // Aplica automáticamente la posición del cuadro que guardaste desde tu panel
         const ventanaTwitch = document.getElementById("twitchWindow");
         ventanaTwitch.classList.remove("top-left", "top-right", "bottom-left", "bottom-right");
         ventanaTwitch.classList.add(posTwitch);
