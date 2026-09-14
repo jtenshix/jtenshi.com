@@ -184,12 +184,13 @@
     </main>
 
     <script>
-        const CANAL_TWITCH = "TU_CANAL";
-        const VIDEO_URL = "TU_VIDEO";
+        const urlParams = new URLSearchParams(window.location.search);
+        const CANAL_TWITCH = urlParams.get("twitch");
+        const VIDEO_URL = urlParams.get("video");
 
         function obtenerCanal(url) {
-            url = url.trim();
             if (!url) return null;
+            url = url.trim();
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "https://" + url;
             }
@@ -205,10 +206,7 @@
 
         function cargarTwitch() {
             const canal = obtenerCanal(CANAL_TWITCH);
-            if (!canal) {
-                console.error("Canal de Twitch inválido.");
-                return;
-            }
+            if (!canal) return;
             const parent = window.location.hostname;
             const playerContainer = document.getElementById("twitchPlayer");
             playerContainer.innerHTML = "";
@@ -218,7 +216,7 @@
                 height: "100%",
                 channel: canal,
                 parent: [parent],
-                autoplay: false,
+                autoplay: true,
                 muted: false
             });
 
@@ -254,7 +252,7 @@
             const youtubeId = obtenerYoutubeId(VIDEO_URL);
             if (youtubeId) {
                 const iframe = document.createElement("iframe");
-                iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId);
+                iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId) + "?autoplay=1";
                 iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
                 iframe.allowFullscreen = true;
                 iframe.title = "Video principal";
@@ -269,6 +267,7 @@
                 const video = document.createElement("video");
                 video.src = VIDEO_URL;
                 video.controls = true;
+                video.autoplay = true;
                 video.playsInline = true;
                 video.preload = "metadata";
                 pantalla.appendChild(video);
