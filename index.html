@@ -164,7 +164,6 @@
             display: block;
         }
 
-        /* Capa bloqueadora total para que no aparezca nada de Twitch al pasar el mouse */
         .bloqueo-mouse {
             position: absolute;
             inset: 0;
@@ -363,7 +362,6 @@
 
     <main class="layout">
         <div class="stream-layout">
-            <!-- Columna Izquierda: Streamer y Enlaces -->
             <aside class="sidebar-left">
                 <div class="recommended-section">
                     <div class="recommended-header">Canales recomendados</div>
@@ -391,7 +389,6 @@
                 </div>
             </aside>
 
-            <!-- Columna Central: Video Principal -->
             <section class="center-area">
                 <div class="video-area">
                     <div id="secondScreen">
@@ -408,7 +405,6 @@
                 <div id="videoError" class="error"></div>
             </section>
 
-            <!-- Columna Derecha: Chat -->
             <aside class="chat-area">
                 <div class="chat-header">
                     Chat del stream
@@ -469,7 +465,7 @@
             const iframe = document.createElement("iframe");
             iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true`;
             iframe.allowFullscreen = true;
-            iframe.allow = "autoplay; fullscreen";
+            iframe.allow = "autoplay; encrypted-media; fullscreen";
             playerDiv.appendChild(iframe);
 
             const chat = document.getElementById("twitchChat");
