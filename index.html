@@ -4,299 +4,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espejo de Transmisión</title>
-    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
+    <title>Panel de Control - Stream</title>
     <style>
         * {
             box-sizing: border-box;
         }
 
-        html,
         body {
             margin: 0;
-            padding: 0;
-            width: 100%;
-            min-height: 100%;
+            padding: 20px;
             background: #0e0e10;
             color: white;
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        body {
-            min-height: 100vh;
-        }
-
-        .layout {
-            width: 100%;
-            max-width: 1600px;
-            margin: 20px auto;
-            padding: 0 16px;
-        }
-
-        /* Estructura principal: Video grande a la izquierda, barra lateral a la derecha */
-        .stream-layout {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 340px;
-            gap: 16px;
-            align-items: start;
-        }
-
-        .video-area {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            overflow: hidden;
-            border-radius: 8px;
-        }
-
-        #mainVideo {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-
-        #mainVideo iframe,
-        #mainVideo video {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            object-fit: contain;
-        }
-
-        .empty-message {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #777;
-            font-size: 16px;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* Columna lateral estilo Twitch (aquí van el reproductor secundario y el chat ordenados) */
-        .sidebar-area {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .twitch-box {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border: 1px solid #303033;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        #twitchPlayer {
-            width: 100%;
-            height: 100%;
-        }
-
-        .chat-area {
-            width: 100%;
-            height: 450px;
+        .panel-container {
+            max-width: 600px;
+            margin: 0 auto;
             background: #18181b;
-            border: 1px solid #303033;
+            padding: 24px;
             border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            border: 1px solid #303033;
         }
 
-        .chat-header {
-            height: 44px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 14px;
-            font-weight: bold;
-            font-size: 14px;
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #bf94ff;
             border-bottom: 1px solid #303033;
-            background: #18181b;
+            padding-bottom: 10px;
         }
 
-        .btn-actualizar {
-            padding: 5px 10px;
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            background: #0e0e10;
+            border: 1px solid #303033;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #9147ff;
+            outline: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button, a.btn-link {
+            flex: 1;
+            padding: 10px 16px;
             border: none;
             border-radius: 4px;
-            background: #9147ff;
-            color: white;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 14px;
             cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .btn-actualizar:hover {
+        .btn-guardar {
+            background: #9147ff;
+            color: white;
+        }
+
+        .btn-guardar:hover {
             background: #772ce8;
         }
 
-        .chat-frame {
-            flex: 1;
-            min-height: 0;
+        .btn-espejo {
+            background: #2f2f35;
+            color: white;
+            border: 1px solid #46464f;
         }
 
-        .chat-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
+        .btn-espejo:hover {
+            background: #3a3a42;
         }
 
-        @media (max-width: 1100px) {
-            .stream-layout {
-                grid-template-columns: 1fr;
-            }
-            .sidebar-area {
-                max-width: 500px;
-                margin: 0 auto;
-                width: 100%;
-            }
+        .status-msg {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #00ff7f;
+            text-align: center;
+            height: 18px;
         }
     </style>
 </head>
 
 <body>
-    <main class="layout">
-        <div class="stream-layout">
-            <!-- Video principal limpio sin nada encima -->
-            <div class="video-area">
-                <div id="mainVideo">
-                    <div class="empty-message">Esperando transmisión...</div>
-                </div>
-            </div>
-
-            <!-- Columna lateral con el reproductor secundario y el chat -->
-            <div class="sidebar-area">
-                <div class="twitch-box">
-                    <div id="twitchPlayer"></div>
-                </div>
-                <aside class="chat-area">
-                    <div class="chat-header">
-                        <span>Chat del stream</span>
-                        <button class="btn-actualizar" onclick="window.location.reload()">🔄 Actualizar</button>
-                    </div>
-                    <div class="chat-frame">
-                        <iframe id="twitchChat" title="Chat de Twitch"></iframe>
-                    </div>
-                </aside>
-            </div>
+    <div class="panel-container">
+        <h2>Panel de Configuración</h2>
+        
+        <div class="form-group">
+            <label for="twitchUrl">Canal de Twitch (URL o nombre):</label>
+            <input type="text" id="twitchUrl" placeholder="Ej: https://www.twitch.tv/tu_canal">
         </div>
-    </main>
+
+        <div class="form-group">
+            <label for="videoUrl">Video Principal (YouTube, MP4, etc.):</label>
+            <input type="text" id="videoUrl" placeholder="Ej: https://www.youtube.com/watch?v=...">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-guardar" onclick="guardarDatos()">Guardar Cambios</button>
+            <a id="linkEspejo" href="mi-sitio-web.html" target="_blank" class="btn-espejo">Abrir Espejo ↗</a>
+        </div>
+
+        <div id="mensajeEstado" class="status-msg"></div>
+    </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        const canalTwitch = urlParams.get("twitch") || localStorage.getItem("stream_twitch") || "";
-        const videoUrl = urlParams.get("video") || localStorage.getItem("stream_video") || "";
+        // Cargar datos previos al abrir el panel
+        window.addEventListener("DOMContentLoaded", () => {
+            const twitchGuardado = localStorage.getItem("stream_twitch") || "";
+            const videoGuardado = localStorage.getItem("stream_video") || "";
 
-        function obtenerCanal(url) {
-            if (!url) return null;
-            url = url.trim();
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "https://" + url;
-            }
-            try {
-                const direccion = new URL(url);
-                if (!direccion.hostname.toLowerCase().includes("twitch.tv")) return null;
-                const partes = direccion.pathname.replace(/^\/+/, "").replace(/\/+$/, "").split("/");
-                return partes[0] || null;
-            } catch (error) {
-                return null;
-            }
+            document.getElementById("twitchUrl").value = twitchGuardado;
+            document.getElementById("videoUrl").value = videoGuardado;
+
+            actualizarEnlaceEspejo(twitchGuardado, videoGuardado);
+        });
+
+        function guardarDatos() {
+            const twitchVal = document.getElementById("twitchUrl").value.trim();
+            const videoVal = document.getElementById("videoUrl").value.trim();
+
+            // Guardar en localStorage para que el espejo los lea al actualizar
+            localStorage.setItem("stream_twitch", twitchVal);
+            localStorage.setItem("stream_video", videoVal);
+
+            actualizarEnlaceEspejo(twitchVal, videoVal);
+
+            const msg = document.getElementById("mensajeEstado");
+            msg.textContent = "¡Cambios guardados con éxito!";
+            setTimeout(() => {
+                msg.textContent = "";
+            }, 3000);
         }
 
-        function cargarTwitch() {
-            const canal = obtenerCanal(canalTwitch);
-            if (!canal) return;
-            const parent = window.location.hostname || "localhost";
-            const playerContainer = document.getElementById("twitchPlayer");
-            playerContainer.innerHTML = "";
+        function actualizarEnlaceEspejo(twitch, video) {
+            const linkEspejo = document.getElementById("linkEspejo");
+            const params = new URLSearchParams();
+            if (twitch) params.set("twitch", twitch);
+            if (video) params.set("video", video);
 
-            new Twitch.Player("twitchPlayer", {
-                width: "100%",
-                height: "100%",
-                channel: canal,
-                parent: [parent, "localhost", "127.0.0.1"],
-                autoplay: true,
-                muted: false
-            });
-
-            const chat = document.getElementById("twitchChat");
-            chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
+            linkEspejo.href = "mi-sitio-web.html" + (params.toString() ? "?" + params.toString() : "");
         }
-
-        function obtenerYoutubeId(url) {
-            try {
-                const direccion = new URL(url);
-                const hostname = direccion.hostname.toLowerCase();
-                if (hostname.includes("youtube.com")) {
-                    const id = direccion.searchParams.get("v");
-                    if (id) return id;
-                }
-                if (hostname === "youtu.be") {
-                    return direccion.pathname.replace(/^\/+/, "").split("/")[0];
-                }
-                if (direccion.pathname.startsWith("/live/") || direccion.pathname.startsWith("/shorts/")) {
-                    return direccion.pathname.split("/")[2];
-                }
-                return null;
-            } catch (error) {
-                return null;
-            }
-        }
-
-        function cargarVideo() {
-            const pantalla = document.getElementById("mainVideo");
-            pantalla.innerHTML = "";
-            if (!videoUrl) {
-                pantalla.innerHTML = '<div class="empty-message">No hay video configurado</div>';
-                return;
-            }
-
-            const youtubeId = obtenerYoutubeId(videoUrl);
-            if (youtubeId) {
-                const iframe = document.createElement("iframe");
-                iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId) + "?autoplay=1";
-                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-                iframe.allowFullscreen = true;
-                iframe.title = "Video principal";
-                pantalla.appendChild(iframe);
-                return;
-            }
-
-            const urlSinQuery = videoUrl.split("?")[0].toLowerCase();
-            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
-
-            if (esVideoDirecto) {
-                const video = document.createElement("video");
-                video.src = videoUrl;
-                video.controls = true;
-                video.autoplay = true;
-                video.playsInline = true;
-                video.preload = "metadata";
-                pantalla.appendChild(video);
-                return;
-            }
-
-            const iframe = document.createElement("iframe");
-            iframe.src = videoUrl;
-            iframe.allow = "autoplay; fullscreen; picture-in-picture";
-            iframe.allowFullscreen = true;
-            iframe.title = "Video principal";
-            pantalla.appendChild(iframe);
-        }
-
-        cargarTwitch();
-        cargarVideo();
     </script>
 </body>
 
