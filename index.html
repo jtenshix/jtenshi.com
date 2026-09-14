@@ -35,7 +35,7 @@
 
         .search {
             width: 100%;
-            max-width: 1600px;
+            max-width: 1700px;
             margin: auto;
             display: flex;
             gap: 10px;
@@ -94,15 +94,15 @@
 
         .layout {
             width: 100%;
-            max-width: 1600px;
+            max-width: 1700px;
             margin: 20px auto;
             padding: 0 16px;
         }
 
-        /* Estructura estilo Twitch de 3 columnas: [Izquierda: Recomendados/Streamer] [Centro: Video Principal] [Derecha: Chat] */
+        /* Reducimos los laterales (240px y 260px) para darle el máximo protagonismo a la columna central (minmax(0, 1fr)) */
         .stream-layout {
             display: grid;
-            grid-template-columns: 320px minmax(0, 1fr) 340px;
+            grid-template-columns: 240px minmax(0, 1fr) 280px;
             gap: 16px;
             align-items: start;
         }
@@ -121,9 +121,9 @@
         }
 
         .recommended-header {
-            padding: 12px;
+            padding: 10px 12px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             border-bottom: 1px solid #303033;
             background: #18181b;
         }
@@ -235,18 +235,17 @@
             border-radius: 6px;
             display: flex;
             flex-direction: column;
-            height: calc(16/9 * (100vw - 692px) / 3); /* Ajuste dinámico aproximado o fijo */
             min-height: 480px;
         }
 
         .chat-header {
-            height: 48px;
+            height: 42px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             border-bottom: 1px solid #303033;
         }
 
@@ -272,7 +271,7 @@
             font-size: 14px;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1100px) {
             .stream-layout {
                 grid-template-columns: 1fr;
             }
@@ -295,7 +294,7 @@
 
     <main class="layout">
         <div class="stream-layout">
-            <!-- Columna Izquierda: Panel de recomendados / Streamer -->
+            <!-- Columna Izquierda: Reducida de ancho -->
             <aside class="sidebar-left">
                 <div class="recommended-section">
                     <div class="recommended-header">Canales recomendados</div>
@@ -306,7 +305,7 @@
                 </div>
             </aside>
 
-            <!-- Columna Central: Video Principal -->
+            <!-- Columna Central: Video Principal con máxima prioridad de espacio -->
             <section class="center-area">
                 <div class="video-area">
                     <div id="secondScreen">
@@ -323,7 +322,7 @@
                 <div id="videoError" class="error"></div>
             </section>
 
-            <!-- Columna Derecha: Chat -->
+            <!-- Columna Derecha: Chat también ajustado -->
             <aside class="chat-area">
                 <div class="chat-header">
                     Chat del stream
