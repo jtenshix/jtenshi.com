@@ -34,15 +34,14 @@
             padding: 10px 18px;
             border-bottom: 1px solid #303033;
             flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
 
         .search {
             width: 100%;
+            margin: auto;
             display: flex;
             gap: 10px;
+            padding: 0 10px;
         }
 
         .search input {
@@ -96,33 +95,6 @@
             background: #00c853;
         }
 
-        .twitch-quick-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .q-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 5px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            text-decoration: none;
-            color: white;
-            transition: opacity 0.2s;
-        }
-
-        .q-btn:hover {
-            opacity: 0.85;
-        }
-
-        .btn-seguir { background: #9147ff; }
-        .btn-regalar { background: #3a3a3d; }
-        .btn-sub { background: #2f2f35; border: 1px solid #53535f; }
-
         .layout {
             flex: 1;
             width: 100%;
@@ -167,17 +139,17 @@
             min-height: 0;
             padding: 10px;
             gap: 10px;
-            justify-content: stretch;
+            justify-content: center;
         }
 
         .streamer-widget {
             position: relative;
             width: 100%;
-            flex: 1;
+            aspect-ratio: 16 / 11;
             background: #000;
             border-radius: 4px;
             overflow: hidden;
-            min-height: 0;
+            flex-shrink: 0;
         }
 
         #twitchPlayer {
@@ -430,11 +402,6 @@
             <button onclick="cargarTwitch()">CARGAR STREAMER</button>
             <button class="btn-espejo" onclick="abrirEspejo()">🔗 Abrir Espejo</button>
         </div>
-        <div class="twitch-quick-actions">
-            <a id="btnSeguir" href="#" target="_blank" class="q-btn btn-seguir"><i class="fa-solid fa-heart"></i> Seguir</a>
-            <a id="btnRegalar" href="#" target="_blank" class="q-btn btn-regalar"><i class="fa-solid fa-gift"></i> Regalar</a>
-            <a id="btnSub" href="#" target="_blank" class="q-btn btn-sub"><i class="fa-solid fa-star"></i> Suscribirse</a>
-        </div>
     </header>
 
     <main class="layout">
@@ -539,11 +506,6 @@
 
             const videoUrl = document.getElementById("videoUrl").value.trim();
             guardarDatosSesion(urlVal, videoUrl);
-
-            const canalUrl = `https://www.twitch.tv/${encodeURIComponent(canal)}`;
-            document.getElementById("btnSeguir").href = canalUrl;
-            document.getElementById("btnRegalar").href = `${canalUrl}/subscribe`;
-            document.getElementById("btnSub").href = `${canalUrl}/subscribe`;
 
             const parent = window.location.hostname || "localhost";
             const playerDiv = document.getElementById("twitchPlayer");
