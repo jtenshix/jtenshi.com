@@ -2,20 +2,11 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Transmisión</title>
-
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
-
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -36,7 +27,7 @@
         }
 
         /* =========================================
-           BARRA SUPERIOR
+            BARRA SUPERIOR
         ========================================== */
 
         .topbar {
@@ -90,7 +81,7 @@
         }
 
         /* =========================================
-           CONTENEDOR
+            CONTENEDOR
         ========================================== */
 
         .layout {
@@ -101,7 +92,7 @@
         }
 
         /* =========================================
-           VIDEO + CHAT
+            VIDEO + CHAT
         ========================================== */
 
         .stream-layout {
@@ -112,7 +103,7 @@
         }
 
         /* =========================================
-           VIDEO
+            VIDEO
         ========================================== */
 
         .video-area {
@@ -160,7 +151,7 @@
         }
 
         /* =========================================
-           TWITCH
+            TWITCH
         ========================================== */
 
         #twitchWindow {
@@ -181,7 +172,7 @@
         }
 
         /* =========================================
-           POSICIONES
+            POSICIONES
         ========================================== */
 
         .top-left {
@@ -213,7 +204,7 @@
         }
 
         /* =========================================
-           CONTROLES
+            CONTROLES
         ========================================== */
 
         .position-controls {
@@ -245,7 +236,7 @@
         }
 
         /* =========================================
-           CHAT
+            CHAT
         ========================================== */
 
         .chat-area {
@@ -282,7 +273,7 @@
         }
 
         /* =========================================
-           VIDEO INPUT
+            VIDEO INPUT
         ========================================== */
 
         .video-input {
@@ -324,7 +315,7 @@
         }
 
         /* =========================================
-           ERROR
+            ERROR
         ========================================== */
 
         .error {
@@ -338,11 +329,10 @@
         }
 
         /* =========================================
-           TABLET
+            TABLET
         ========================================== */
 
         @media (max-width: 1000px) {
-
             .stream-layout {
                 grid-template-columns: 1fr;
             }
@@ -360,11 +350,10 @@
         }
 
         /* =========================================
-           CELULAR
+            CELULAR
         ========================================== */
 
         @media (max-width: 600px) {
-
             .topbar {
                 padding: 10px;
             }
@@ -407,9 +396,7 @@
                 height: 360px;
             }
         }
-
     </style>
-
 </head>
 
 <body>
@@ -419,154 +406,113 @@
     ========================================== -->
 
     <header class="topbar">
-
         <div class="search">
-
             <input
                 id="twitchUrl"
                 type="text"
                 placeholder="Pega aquí el link de Twitch..."
                 autocomplete="off"
             >
-
             <button onclick="cargarTwitch()">
                 CARGAR TWITCH
             </button>
-
         </div>
-
     </header>
-
 
     <!-- =========================================
          CONTENIDO
     ========================================== -->
 
     <main class="layout">
-
         <div class="stream-layout">
 
             <!-- VIDEO PRINCIPAL -->
-
             <div class="video-area">
-
                 <div id="secondScreen">
-
                     <div class="empty-message">
                         Pega abajo el link del vídeo principal
                     </div>
-
                 </div>
 
-
                 <!-- TWITCH -->
-
                 <div
                     id="twitchWindow"
                     class="bottom-left"
                 >
-
                     <div id="twitchPlayer"></div>
-
                 </div>
 
-
                 <!-- CONTROLES DE POSICIÓN -->
-
                 <div class="position-controls">
-
                     <button
                         onclick="moverTwitch('top-left')"
                         title="Arriba izquierda"
                     >
                         ↖
                     </button>
-
                     <button
                         onclick="moverTwitch('top-right')"
                         title="Arriba derecha"
                     >
                         ↗
                     </button>
-
                     <button
                         onclick="moverTwitch('bottom-left')"
                         title="Abajo izquierda"
                     >
                         ↙
                     </button>
-
                     <button
                         onclick="moverTwitch('bottom-right')"
                         title="Abajo derecha"
                     >
                         ↘
                     </button>
-
                 </div>
-
             </div>
 
-
             <!-- CHAT -->
-
             <aside class="chat-area">
-
                 <div class="chat-header">
                     Chat del stream
                 </div>
-
                 <div class="chat-frame">
-
                     <iframe
                         id="twitchChat"
                         title="Chat de Twitch"
                     ></iframe>
-
                 </div>
-
             </aside>
 
         </div>
 
-
         <!-- VIDEO -->
-
         <div class="video-input">
-
             <input
                 id="videoUrl"
                 type="text"
                 placeholder="Pega aquí el link del segundo vídeo..."
                 autocomplete="off"
             >
-
             <button onclick="cargarSegundoVideo()">
                 CARGAR VIDEO
             </button>
-
         </div>
-
 
         <div
             id="videoError"
             class="error"
         ></div>
-
     </main>
 
-
     <script>
-
         let twitchPlayer = null;
 
-
         /* =========================================
-           OBTENER CANAL DE TWITCH
+            OBTENER CANAL DE TWITCH
         ========================================== */
 
         function obtenerCanal(url) {
-
             url = url.trim();
 
             if (!url) {
@@ -581,7 +527,6 @@
             }
 
             try {
-
                 const direccion = new URL(url);
 
                 if (
@@ -605,20 +550,15 @@
                 return partes[0];
 
             } catch (error) {
-
                 return null;
-
             }
-
         }
 
-
         /* =========================================
-           CARGAR TWITCH
+            CARGAR TWITCH
         ========================================== */
 
         function cargarTwitch() {
-
             const input =
                 document.getElementById("twitchUrl");
 
@@ -626,13 +566,10 @@
                 obtenerCanal(input.value);
 
             if (!canal) {
-
                 alert(
                     "Introduce un link válido de Twitch."
                 );
-
                 return;
-
             }
 
             const parent =
@@ -658,7 +595,6 @@
                     }
                 );
 
-
             /* CHAT */
 
             const chat =
@@ -671,16 +607,13 @@
                 encodeURIComponent(canal) +
                 "/chat?parent=" +
                 encodeURIComponent(parent);
-
         }
 
-
         /* =========================================
-           MOVER TWITCH
+            MOVER TWITCH
         ========================================== */
 
         function moverTwitch(posicion) {
-
             const ventana =
                 document.getElementById(
                     "twitchWindow"
@@ -694,18 +627,14 @@
             );
 
             ventana.classList.add(posicion);
-
         }
 
-
         /* =========================================
-           OBTENER ID DE YOUTUBE
+            OBTENER ID DE YOUTUBE
         ========================================== */
 
         function obtenerYoutubeId(url) {
-
             try {
-
                 const direccion =
                     new URL(url);
 
@@ -715,80 +644,63 @@
                 if (
                     hostname.includes("youtube.com")
                 ) {
-
                     const id =
                         direccion.searchParams.get("v");
 
                     if (id) {
                         return id;
                     }
-
                 }
 
                 if (
                     hostname === "youtu.be"
                 ) {
-
                     return direccion
                         .pathname
                         .replace(/^\/+/, "")
                         .split("/")[0];
-
                 }
 
                 if (
                     direccion.pathname.startsWith("/live/")
                 ) {
-
                     return direccion.pathname
                         .split("/")[2];
-
                 }
 
                 if (
                     direccion.pathname.startsWith("/shorts/")
                 ) {
-
                     return direccion.pathname
                         .split("/")[2];
-
                 }
 
                 return null;
 
             } catch (error) {
-
                 return null;
-
             }
-
         }
 
-
         /* =========================================
-           MOSTRAR ERROR
+            MOSTRAR ERROR
         ========================================== */
 
         function mostrarError(texto) {
-
             const error =
                 document.getElementById(
                     "videoError"
                 );
 
             error.textContent = texto;
-
             error.style.display = "block";
-
         }
 
-
         /* =========================================
-           CARGAR VIDEO
+            CARGAR VIDEO
         ========================================== */
 
         function cargarSegundoVideo() {
-
             const input =
                 document.getElementById(
                     "videoUrl"
@@ -812,9 +724,7 @@
             }
 
             pantalla.innerHTML = "";
-
             error.style.display = "none";
-
 
             /* YOUTUBE */
 
@@ -822,7 +732,6 @@
                 obtenerYoutubeId(url);
 
             if (youtubeId) {
-
                 const iframe =
                     document.createElement(
                         "iframe"
@@ -853,9 +762,7 @@
                 );
 
                 return;
-
             }
-
 
             /* VIDEO DIRECTO */
 
@@ -871,18 +778,14 @@
                 urlSinQuery.endsWith(".mov");
 
             if (esVideoDirecto) {
-
                 const video =
                     document.createElement(
                         "video"
                     );
 
                 video.src = url;
-
                 video.controls = true;
-
                 video.playsInline = true;
-
                 video.preload = "metadata";
 
                 pantalla.appendChild(
@@ -890,9 +793,7 @@
                 );
 
                 return;
-
             }
-
 
             /* IFRAME */
 
@@ -902,24 +803,19 @@
                 );
 
             iframe.src = url;
-
             iframe.allow =
                 "autoplay; fullscreen; picture-in-picture";
-
             iframe.allowFullscreen = true;
-
             iframe.title =
                 "Segundo vídeo";
 
             pantalla.appendChild(
                 iframe
             );
-
         }
 
-
         /* =========================================
-           ENTER TWITCH
+            ENTER TWITCH
         ========================================== */
 
         document
@@ -927,17 +823,14 @@
             .addEventListener(
                 "keydown",
                 function(event) {
-
                     if (event.key === "Enter") {
                         cargarTwitch();
                     }
-
                 }
             );
 
-
         /* =========================================
-           ENTER VIDEO
+            ENTER VIDEO
         ========================================== */
 
         document
@@ -945,14 +838,11 @@
             .addEventListener(
                 "keydown",
                 function(event) {
-
                     if (event.key === "Enter") {
                         cargarSegundoVideo();
                     }
-
                 }
             );
-
     </script>
 
 </body>
