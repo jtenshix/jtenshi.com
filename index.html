@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Transmisión</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Script oficial de la API de Twitch -->
-    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -18,21 +16,24 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            min-height: 100%;
+            height: 100%;
             background: #0e0e10;
             color: white;
             font-family: Arial, Helvetica, sans-serif;
+            overflow: hidden;
         }
 
         body {
-            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .topbar {
             width: 100%;
             background: #18181b;
-            padding: 12px 18px;
+            padding: 10px 18px;
             border-bottom: 1px solid #303033;
+            flex-shrink: 0;
         }
 
         .search {
@@ -45,14 +46,14 @@
 
         .search input {
             flex: 1;
-            height: 42px;
+            height: 38px;
             padding: 0 14px;
             border: 1px solid #3a3a3d;
             border-radius: 6px;
             outline: none;
             background: #1f1f23;
             color: white;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .search input:focus {
@@ -64,8 +65,8 @@
         }
 
         .search button {
-            height: 42px;
-            padding: 0 22px;
+            height: 38px;
+            padding: 0 20px;
             border: none;
             border-radius: 6px;
             background: #9147ff;
@@ -79,8 +80,8 @@
         }
 
         .btn-espejo {
-            height: 42px;
-            padding: 0 18px;
+            height: 38px;
+            padding: 0 16px;
             border: none;
             border-radius: 6px;
             background: #00e676;
@@ -95,23 +96,30 @@
         }
 
         .layout {
+            flex: 1;
             width: 100%;
             max-width: 1700px;
-            margin: 20px auto;
-            padding: 0 16px;
+            margin: 0 auto;
+            padding: 16px;
+            display: flex;
+            min-height: 0;
         }
 
         .stream-layout {
+            width: 100%;
             display: grid;
-            grid-template-columns: 300px minmax(0, 1fr) 260px;
+            grid-template-columns: 300px minmax(0, 1fr) 280px;
             gap: 16px;
-            align-items: start;
+            align-items: stretch;
+            height: 100%;
         }
 
         .sidebar-left {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 10px;
+            height: 100%;
+            min-height: 0;
         }
 
         .recommended-section {
@@ -119,21 +127,27 @@
             border: 1px solid #303033;
             border-radius: 6px;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
         }
 
         .recommended-header {
-            padding: 10px 12px;
+            padding: 8px 12px;
             font-weight: bold;
             font-size: 13px;
             border-bottom: 1px solid #303033;
             background: #18181b;
+            flex-shrink: 0;
         }
 
         .streamer-widget {
             position: relative;
             width: 100%;
-            aspect-ratio: 16 / 9;
+            flex: 1;
             background: #000;
+            min-height: 0;
         }
 
         #twitchPlayer {
@@ -148,16 +162,18 @@
             height: 100%;
             border: none;
             display: block;
+            object-fit: fill;
         }
 
         .donation-links {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 10px;
+            gap: 6px;
+            padding: 8px;
             background: #18181b;
             border: 1px solid #303033;
             border-radius: 6px;
+            flex-shrink: 0;
         }
 
         .donation-btn {
@@ -165,20 +181,20 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            padding: 8px 4px;
+            gap: 2px;
+            padding: 6px 2px;
             background: #1f1f23;
             border: 1px solid #3a3a3d;
             border-radius: 5px;
             color: #efeff1;
             text-decoration: none;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             transition: background 0.2s, border-color 0.2s;
         }
 
         .donation-btn i {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .donation-btn:hover {
@@ -189,11 +205,12 @@
         .stream-controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 6px;
+            flex-shrink: 0;
         }
 
         .ctrl-btn {
-            height: 38px;
+            height: 34px;
             border: none;
             border-radius: 5px;
             font-weight: bold;
@@ -226,17 +243,20 @@
         .center-area {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
+            height: 100%;
+            min-height: 0;
         }
 
         .video-area {
             position: relative;
             width: 100%;
-            aspect-ratio: 16 / 9;
+            flex: 1;
             background: #000;
             border-radius: 6px;
             overflow: hidden;
             border: 1px solid #303033;
+            min-height: 0;
         }
 
         #secondScreen {
@@ -258,7 +278,7 @@
             width: 100%;
             height: 100%;
             display: block;
-            object-fit: contain;
+            object-fit: cover; /* Aprovecha todo el ancho y alto estirando si hace falta */
             background: #000;
         }
 
@@ -279,18 +299,19 @@
             width: 100%;
             display: flex;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .video-input input {
             flex: 1;
-            height: 42px;
+            height: 38px;
             padding: 0 14px;
             border: 1px solid #3a3a3d;
             border-radius: 6px;
             outline: none;
             background: #1f1f23;
             color: white;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .video-input input:focus {
@@ -298,8 +319,8 @@
         }
 
         .video-input button {
-            height: 42px;
-            padding: 0 22px;
+            height: 38px;
+            padding: 0 20px;
             border: none;
             border-radius: 6px;
             background: #9147ff;
@@ -319,11 +340,12 @@
             border-radius: 6px;
             display: flex;
             flex-direction: column;
-            height: 520px;
+            height: 100%;
+            min-height: 0;
         }
 
         .chat-header {
-            height: 42px;
+            height: 38px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -347,19 +369,24 @@
 
         .error {
             display: none;
-            margin-top: 10px;
-            padding: 10px;
+            margin-top: 5px;
+            padding: 8px;
             border-radius: 6px;
             background: #2a1717;
             color: #ffaaaa;
-            font-size: 14px;
+            font-size: 13px;
+            flex-shrink: 0;
         }
 
         @media (max-width: 1100px) {
+            html, body {
+                overflow: auto;
+            }
             .stream-layout {
                 grid-template-columns: 1fr;
+                height: auto;
             }
-            .chat-area {
+            .sidebar-left, .center-area, .chat-area {
                 height: 450px;
             }
         }
@@ -482,15 +509,11 @@
             const playerDiv = document.getElementById("twitchPlayer");
             playerDiv.innerHTML = "";
 
-            // Reproductor limpio mediante la API oficial de Twitch
-            new Twitch.Player("twitchPlayer", {
-                channel: canal,
-                parent: [parent],
-                muted: true,
-                autoplay: true,
-                width: "100%",
-                height: "100%"
-            });
+            const iframe = document.createElement("iframe");
+            iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true`;
+            iframe.allowFullscreen = true;
+            iframe.allow = "autoplay; encrypted-media; fullscreen";
+            playerDiv.appendChild(iframe);
 
             const chat = document.getElementById("twitchChat");
             chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
