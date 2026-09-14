@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Transmisión</title>
-    <!-- FontAwesome para los iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <style>
@@ -94,6 +93,22 @@
             background: #00c853;
         }
 
+        .btn-recargar {
+            height: 42px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 6px;
+            background: #ff9800;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-recargar:hover {
+            background: #f57c00;
+        }
+
         .layout {
             width: 100%;
             max-width: 1700px;
@@ -141,7 +156,14 @@
             height: 100%;
         }
 
-        /* Estilos para la botonera de enlaces debajo de la streamer */
+        /* Capa bloqueadora para que el mouse no active la interfaz de Twitch */
+        .bloqueo-mouse {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+
         .donation-links {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -326,6 +348,7 @@
         <div class="search">
             <input id="twitchUrl" type="text" placeholder="Pega aquí el link de Twitch de la streamer..." autocomplete="off">
             <button onclick="cargarTwitch()">CARGAR STREAMER</button>
+            <button class="btn-recargar" onclick="recargarStreamer()"><i class="fa-solid fa-rotate"></i> Recargar Stream</button>
             <button class="btn-espejo" onclick="abrirEspejo()">🔗 Abrir Espejo</button>
         </div>
     </header>
@@ -338,11 +361,11 @@
                     <div class="recommended-header">Canales recomendados</div>
                     <div class="streamer-widget">
                         <div id="twitchPlayer"></div>
+                        <div class="bloqueo-mouse"></div>
                         <div id="twitchPlaceholder" class="empty-message" style="background:#111;">Sin canal cargado</div>
                     </div>
                 </div>
 
-                <!-- Enlaces de apoyo -->
                 <div class="donation-links">
                     <a href="https://ko-fi.com/cotecreator/shop" target="_blank" class="donation-btn" title="Ko-fi">
                         <i class="fa-solid fa-mug-hot" style="color: #29abe0;"></i>
@@ -391,11 +414,16 @@
     <script>
         let twitchPlayer = null;
 
+        function guardarDatosSesion(twitchUrl, videoUrl) {
+            localStorage.setItem("twitchUrl", twitchUrl);
+            localStorage.setItem("videoUrl", videoUrl);
+        }
+
         function abrirEspejo() {
             const twitchUrl = document.getElementById("twitchUrl").value.trim();
             const videoUrl = document.getElementById("videoUrl").value.trim();
-            const urlEspejo = `espejo.html?twitch=${encodeURIComponent(twitchUrl)}&video=${encodeURIComponent(videoUrl)}`;
-            window.open(urlEspejo, "_blank");
+            guardarDatosSesion(twitchUrl, videoUrl);
+            window.open("espejo.html", "_blank");
         }
 
         function obtenerCanal(url) {
@@ -416,16 +444,22 @@
 
         function cargarTwitch() {
             const input = document.getElementById("twitchUrl");
-            const canal = obtenerCanal(input.value.trim());
+            const urlVal = input.value.trim();
+            const canal = obtenerCanal(urlVal);
 
             if (!canal) {
                 alert("Introduce un link válido de Twitch.");
                 return;
             }
 
+            const videoUrl = document.getElementById("videoUrl").value.trim();
+            guardarDatosSesion(urlVal, videoUrl);
+
             const parent = window.location.hostname || "localhost";
             const placeholder = document.getElementById("twitchPlaceholder");
             if (placeholder) placeholder.style.display = "none";
+
+            document.getElementById("twitchPlayer").innerHTML = "";
 
             try {
                 twitchPlayer = new Twitch.Player("twitchPlayer", {
@@ -442,6 +476,13 @@
 
             const chat = document.getElementById("twitchChat");
             chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
+        }
+
+        function recargarStreamer() {
+            const input = document.getElementById("twitchUrl");
+            if (input.value.trim()) {
+                cargarTwitch();
+            }
         }
 
         function obtenerYoutubeId(url) {
@@ -471,6 +512,9 @@
             const error = document.getElementById("videoError");
 
             if (!url) return;
+
+            const twitchUrl = document.getElementById("twitchUrl").value.trim();
+            guardarDatosSesion(twitchUrl, url);
 
             pantalla.innerHTML = "";
             error.style.display = "none";
