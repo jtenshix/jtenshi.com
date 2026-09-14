@@ -74,6 +74,7 @@
 
         #twitchWindow {
             position: absolute;
+            width: 320px;
             aspect-ratio: 16 / 9;
             background: #000;
             border: 2px solid #18181b;
@@ -93,27 +94,6 @@
             left: 15px;
             right: auto;
             top: auto;
-        }
-
-        .bottom-right {
-            bottom: 15px;
-            right: 15px;
-            left: auto;
-            top: auto;
-        }
-
-        .top-left {
-            top: 15px;
-            left: 15px;
-            right: auto;
-            bottom: auto;
-        }
-
-        .top-right {
-            top: 15px;
-            right: 15px;
-            left: auto;
-            bottom: auto;
         }
 
         .chat-area {
@@ -160,12 +140,20 @@
                 border-left: none;
                 border-top: 1px solid #303033;
             }
+
+            #twitchWindow {
+                width: 280px;
+            }
         }
 
         @media (max-width: 600px) {
             .layout {
                 padding: 0 8px;
                 margin-top: 12px;
+            }
+
+            #twitchWindow {
+                width: 180px;
             }
 
             .chat-area {
@@ -196,9 +184,12 @@
     </main>
 
     <script>
+        const CANAL_TWITCH = "TU_CANAL";
+        const VIDEO_URL = "TU_VIDEO";
+
         function obtenerCanal(url) {
-            if (!url) return null;
             url = url.trim();
+            if (!url) return null;
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "https://" + url;
             }
@@ -210,6 +201,29 @@
             } catch (error) {
                 return null;
             }
+        }
+
+        function cargarTwitch() {
+            const canal = obtenerCanal(CANAL_TWITCH);
+            if (!canal) {
+                console.error("Canal de Twitch inválido.");
+                return;
+            }
+            const parent = window.location.hostname;
+            const playerContainer = document.getElementById("twitchPlayer");
+            playerContainer.innerHTML = "";
+
+            new Twitch.Player("twitchPlayer", {
+                width: "100%",
+                height: "100%",
+                channel: canal,
+                parent: [parent],
+                autoplay: false,
+                muted: false
+            });
+
+            const chat = document.getElementById("twitchChat");
+            chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
         }
 
         function obtenerYoutubeId(url) {
@@ -232,84 +246,45 @@
             }
         }
 
-        async function iniciar() {
-            let config = {
-                twitch: "",
-                position: "bottom-left",
-                width: 320,
-                video: ""
-            };
-
-            try {
-                const res = await fetch("config.json");
-                if (res.ok) {
-                    const data = await res.json();
-                    config = { ...config, ...data };
-                }
-            } catch (e) {
-                console.error("No se pudo cargar config.json, usando valores por defecto.");
-            }
-
-            const params = new URLSearchParams(window.location.search);
-            const videoUrl = params.get("video") || config.video;
-            const twitchCanal = params.get("twitch") || config.twitch;
-
-            const twitchWindow = document.getElementById("twitchWindow");
-            twitchWindow.style.width = (config.width || 320) + "px";
-            twitchWindow.className = config.position || "bottom-left";
-
-            const canal = obtenerCanal(twitchCanal);
-            if (canal) {
-                const parent = window.location.hostname;
-                document.getElementById("twitchPlayer").innerHTML = "";
-                new Twitch.Player("twitchPlayer", {
-                    width: "100%",
-                    height: "100%",
-                    channel: canal,
-                    parent: [parent],
-                    autoplay: false,
-                    muted: false
-                });
-
-                const chat = document.getElementById("twitchChat");
-                chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
-            }
-
+        function cargarVideo() {
             const pantalla = document.getElementById("mainVideo");
             pantalla.innerHTML = "";
-            if (videoUrl) {
-                const youtubeId = obtenerYoutubeId(videoUrl);
-                if (youtubeId) {
-                    const iframe = document.createElement("iframe");
-                    iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId);
-                    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-                    iframe.allowFullscreen = true;
-                    iframe.title = "Video principal";
-                    pantalla.appendChild(iframe);
-                } else {
-                    const urlSinQuery = videoUrl.split("?")[0].toLowerCase();
-                    const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
+            if (!VIDEO_URL) return;
 
-                    if (esVideoDirecto) {
-                        const video = document.createElement("video");
-                        video.src = videoUrl;
-                        video.controls = true;
-                        video.playsInline = true;
-                        video.preload = "metadata";
-                        pantalla.appendChild(video);
-                    } else {
-                        const iframe = document.createElement("iframe");
-                        iframe.src = videoUrl;
-                        iframe.allow = "autoplay; fullscreen; picture-in-picture";
-                        iframe.allowFullscreen = true;
-                        iframe.title = "Video principal";
-                        pantalla.appendChild(iframe);
-                    }
-                }
+            const youtubeId = obtenerYoutubeId(VIDEO_URL);
+            if (youtubeId) {
+                const iframe = document.createElement("iframe");
+                iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId);
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+                iframe.allowFullscreen = true;
+                iframe.title = "Video principal";
+                pantalla.appendChild(iframe);
+                return;
             }
+
+            const urlSinQuery = VIDEO_URL.split("?")[0].toLowerCase();
+            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
+
+            if (esVideoDirecto) {
+                const video = document.createElement("video");
+                video.src = VIDEO_URL;
+                video.controls = true;
+                video.playsInline = true;
+                video.preload = "metadata";
+                pantalla.appendChild(video);
+                return;
+            }
+
+            const iframe = document.createElement("iframe");
+            iframe.src = VIDEO_URL;
+            iframe.allow = "autoplay; fullscreen; picture-in-picture";
+            iframe.allowFullscreen = true;
+            iframe.title = "Video principal";
+            pantalla.appendChild(iframe);
         }
 
-        iniciar();
+        cargarTwitch();
+        cargarVideo();
     </script>
 </body>
 
