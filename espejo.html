@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espejo - Transmisión</title>
+    <!-- FontAwesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <style>
         * {
@@ -74,6 +76,42 @@
         #twitchPlayer {
             width: 100%;
             height: 100%;
+        }
+
+        .donation-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 10px;
+            background: #18181b;
+            border: 1px solid #303033;
+            border-radius: 6px;
+        }
+
+        .donation-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 4px;
+            background: #1f1f23;
+            border: 1px solid #3a3a3d;
+            border-radius: 5px;
+            color: #efeff1;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: bold;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .donation-btn i {
+            font-size: 18px;
+        }
+
+        .donation-btn:hover {
+            background: #2d2d30;
+            border-color: #9147ff;
         }
 
         .center-area {
@@ -175,7 +213,7 @@
 
     <main class="layout">
         <div class="stream-layout">
-            <!-- Columna Izquierda: Streamer -->
+            <!-- Columna Izquierda: Streamer y Enlaces -->
             <aside class="sidebar-left">
                 <div class="recommended-section">
                     <div class="recommended-header">Canales recomendados</div>
@@ -183,6 +221,22 @@
                         <div id="twitchPlayer"></div>
                         <div id="twitchPlaceholder" class="empty-message" style="background:#111;">Esperando stream...</div>
                     </div>
+                </div>
+
+                <!-- Enlaces de apoyo -->
+                <div class="donation-links">
+                    <a href="https://ko-fi.com/cotecreator/shop" target="_blank" class="donation-btn" title="Ko-fi">
+                        <i class="fa-solid fa-mug-hot" style="color: #29abe0;"></i>
+                        Ko-fi
+                    </a>
+                    <a href="https://ceneka.net/coteparrague" target="_blank" class="donation-btn" title="Ceneka">
+                        <i class="fa-solid fa-heart" style="color: #ff4757;"></i>
+                        Ceneka
+                    </a>
+                    <a href="https://streamelements.com/coteparrague/tip" target="_blank" class="donation-btn" title="StreamElements">
+                        <i class="fa-solid fa-hand-holding-dollar" style="color: #2ed573;"></i>
+                        Tips
+                    </a>
                 </div>
             </aside>
 
@@ -310,7 +364,6 @@
             pantalla.appendChild(iframe);
         }
 
-        // Leer los parámetros enviados desde la ventana principal al abrir el espejo
         window.addEventListener("DOMContentLoaded", () => {
             const params = new URLSearchParams(window.location.search);
             const twitchUrl = params.get("twitch");
