@@ -89,7 +89,6 @@
             height: 100%;
         }
 
-        /* POSICIONES DEL REPRODUCTOR DE TWITCH */
         .top-left {
             top: 15px;
             left: 15px;
@@ -115,7 +114,7 @@
             bottom: 15px;
             right: 15px;
             left: auto;
-            top: auto;
+            bottom: auto;
         }
 
         .chat-area {
@@ -132,11 +131,27 @@
             flex-shrink: 0;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            padding: 0 14px;
             font-weight: bold;
             font-size: 14px;
             border-bottom: 1px solid #303033;
             background: #18181b;
+        }
+
+        .btn-actualizar {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            background: #9147ff;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-actualizar:hover {
+            background: #772ce8;
         }
 
         .chat-frame {
@@ -196,7 +211,8 @@
             </div>
             <aside class="chat-area">
                 <div class="chat-header">
-                    Chat del stream
+                    <span>Chat del stream</span>
+                    <button class="btn-actualizar" onclick="window.location.reload()">🔄 Actualizar</button>
                 </div>
                 <div class="chat-frame">
                     <iframe id="twitchChat" title="Chat de Twitch"></iframe>
@@ -206,9 +222,15 @@
     </main>
 
     <script>
-        let ultimoCanal = "";
-        let ultimoVideo = "";
-        let ultimaPosicion = "";
+        const urlParams = new URLSearchParams(window.location.search);
+        const canalTwitch = urlParams.get("twitch");
+        const videoUrl = urlParams.get("video");
+        const posTwitch = urlParams.get("pos") || "bottom-left";
+
+        // Aplica la posición del cuadro que guardó la streamer
+        const ventanaTwitch = document.getElementById("twitchWindow");
+        ventanaTwitch.classList.remove("top-left", "top-right", "bottom-left", "bottom-right");
+        ventanaTwitch.classList.add(posTwitch);
 
         function obtenerCanal(url) {
             if (!url) return null;
@@ -226,14 +248,10 @@
             }
         }
 
-        function cargarTwitch(urlTwitch) {
-            const canal = obtenerCanal(urlTwitch);
+        function cargarTwitch() {
+            const canal = obtenerCanal(canalTwitch);
             if (!canal) return;
-
-            if (canal === ultimoCanal) return; // Evita recargar si es el mismo
-            ultimoCanal = canal;
-
-            const parent = window.location.hostname;
+            const parent = window.location.hostname || "localhost";
             const playerContainer = document.getElementById("twitchPlayer");
             playerContainer.innerHTML = "";
 
@@ -241,7 +259,7 @@
                 width: "100%",
                 height: "100%",
                 channel: canal,
-                parent: [parent],
+                parent: [parent, "localhost", "127.0.0.1"],
                 autoplay: true,
                 muted: false
             });
@@ -270,12 +288,10 @@
             }
         }
 
-        function cargarVideo(videoUrl) {
-            if (!videoUrl || videoUrl === ultimoVideo) return;
-            ultimoVideo = videoUrl;
-
+        function cargarVideo() {
             const pantalla = document.getElementById("mainVideo");
             pantalla.innerHTML = "";
+            if (!videoUrl) return;
 
             const youtubeId = obtenerYoutubeId(videoUrl);
             if (youtubeId) {
@@ -310,29 +326,8 @@
             pantalla.appendChild(iframe);
         }
 
-        function actualizarPosicion(posicion) {
-            if (!posicion || posicion === ultimaPosicion) return;
-            ultimaPosicion = posicion;
-
-            const ventana = document.getElementById("twitchWindow");
-            ventana.classList.remove("top-left", "top-right", "bottom-left", "bottom-right");
-            ventana.classList.add(posicion);
-        }
-
-        // Revisa constantemente el almacenamiento local sincronizado con el panel de comandos
-        function sincronizar() {
-            const twitchUrl = localStorage.getItem("stream_twitch") || "";
-            const videoUrl = localStorage.getItem("stream_video") || "";
-            const posicion = localStorage.getItem("stream_posicion") || "bottom-left";
-
-            cargarTwitch(twitchUrl);
-            cargarVideo(videoUrl);
-            actualizarPosicion(posicion);
-        }
-
-        // Ejecuta la sincronización cada segundo para reflejar los cambios al instante
-        setInterval(sincronizar, 1000);
-        sincronizar();
+        cargarTwitch();
+        cargarVideo();
     </script>
 </body>
 
