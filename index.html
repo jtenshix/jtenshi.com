@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Control de Transmisión</title>
 
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+
 * {
     box-sizing: border-box;
 }
@@ -73,6 +75,7 @@ body {
     background: #00a86b;
 }
 
+
 /* =========================
    CONTENEDOR PRINCIPAL
 ========================= */
@@ -85,18 +88,14 @@ body {
     padding: 10px;
 }
 
+
 /* =========================
-   COLUMNAS
+   SIDEBAR
 ========================= */
 
-.sidebar,
-.center,
-.chat-column {
+.sidebar {
     min-width: 0;
     min-height: 0;
-}
-
-.sidebar {
     background: #111;
     border: 1px solid #292929;
     border-radius: 8px;
@@ -104,36 +103,16 @@ body {
     overflow-y: auto;
 }
 
-.center {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 0;
+.sidebar-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
-.chat-column {
-    background: #111;
-    border: 1px solid #292929;
-    border-radius: 8px;
-    overflow: hidden;
-}
 
 /* =========================
-   STREAMER
+   TWITCH
 ========================= */
-
-/*
-   IMPORTANTE:
-
-   Antes el iframe ocupaba solamente el tamaño
-   visible del reproductor.
-
-   Ahora le damos más altura para que Twitch
-   genere espacio negro alrededor del video.
-
-   El contenedor sigue mostrando solamente
-   la zona que queremos.
-*/
 
 .streamer-widget {
     width: 100%;
@@ -145,23 +124,20 @@ body {
 }
 
 /*
-   ESTA ES LA MODIFICACIÓN PRINCIPAL.
+    LA CAJA VISIBLE SIGUE MIDiendo 290px.
 
-   El iframe es más alto que el contenedor.
-   Twitch mantiene el video en proporción 16:9,
-   por lo que aparece una zona negra adicional.
+    Solamente hacemos que el contenido interno
+    de Twitch sea más alto.
 
-   El contenido superior de Twitch queda dentro
-   de esa zona negra y deja más despejada la
-   imagen del juego.
+    No usamos top negativo.
 */
 
 #twitchPlayer {
     position: absolute;
     left: 0;
-    top: -25px;
+    top: 0;
     width: 100%;
-    height: 340px;
+    height: 430px;
     overflow: hidden;
     background: #000;
 }
@@ -171,12 +147,15 @@ body {
     left: 0;
     top: 0;
     width: 100%;
-    height: 340px;
+    height: 430px;
     border: none;
     display: block;
 }
 
-/* Mensaje inicial */
+
+/* =========================
+   MENSAJE VACÍO
+========================= */
 
 .empty-message {
     width: 100%;
@@ -188,15 +167,10 @@ body {
     font-size: 14px;
 }
 
-/* =========================
-   SIDEBAR
-========================= */
 
-.sidebar-title {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+/* =========================
+   BOTONES SIDEBAR
+========================= */
 
 .sidebar button {
     width: 100%;
@@ -212,6 +186,11 @@ body {
 .sidebar button:hover {
     background: #333;
 }
+
+
+/* =========================
+   ENLACES
+========================= */
 
 .donation-links {
     margin-top: 15px;
@@ -229,13 +208,29 @@ body {
     color: white;
 }
 
+
 /* =========================
-   VIDEO CENTRAL
+   CENTRO
+========================= */
+
+.center {
+    min-width: 0;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+/* =========================
+   SEGUNDO VIDEO
 ========================= */
 
 .video-box {
     flex: 1;
     min-height: 0;
+
     background: #000;
     border: 1px solid #292929;
     border-radius: 8px;
@@ -246,7 +241,9 @@ body {
 #secondVideo {
     width: 100%;
     height: 100%;
+
     background: #000;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -259,8 +256,9 @@ body {
     border: none;
 }
 
+
 /* =========================
-   INPUT VIDEO
+   CONTROLES VIDEO
 ========================= */
 
 .video-controls {
@@ -271,27 +269,45 @@ body {
 
 .video-controls input {
     flex: 1;
+
     background: #111;
     color: white;
+
     border: 1px solid #333;
     border-radius: 6px;
+
     padding: 0 12px;
     outline: none;
 }
 
 .video-controls button {
     width: 100px;
+
     border: none;
     border-radius: 6px;
+
     background: #9147ff;
     color: white;
+
     font-weight: bold;
     cursor: pointer;
 }
 
+
 /* =========================
    CHAT
 ========================= */
+
+.chat-column {
+    min-width: 0;
+    min-height: 0;
+
+    background: #111;
+    border: 1px solid #292929;
+    border-radius: 8px;
+
+    overflow: hidden;
+}
 
 .chat-column iframe {
     width: 100%;
@@ -299,11 +315,13 @@ body {
     border: none;
 }
 
+
 /* =========================
    RESPONSIVE
 ========================= */
 
 @media (max-width: 1000px) {
+
     .main {
         grid-template-columns: 220px 1fr;
     }
@@ -313,7 +331,9 @@ body {
     }
 }
 
+
 @media (max-width: 700px) {
+
     .main {
         grid-template-columns: 1fr;
     }
@@ -322,10 +342,13 @@ body {
         display: none;
     }
 }
+
 </style>
 </head>
 
+
 <body>
+
 
 <!-- =========================
      BARRA SUPERIOR
@@ -343,7 +366,9 @@ body {
         CARGAR STREAMER
     </button>
 
-    <button class="mirror-button" onclick="abrirEspejo()">
+    <button
+        class="mirror-button"
+        onclick="abrirEspejo()">
         🔗 Abrir Espejo
     </button>
 
@@ -351,13 +376,14 @@ body {
 
 
 <!-- =========================
-     CONTENIDO
+     CONTENIDO PRINCIPAL
 ========================= -->
 
 <div class="main">
 
+
     <!-- =====================
-         SIDEBAR
+         COLUMNA IZQUIERDA
     ====================== -->
 
     <div class="sidebar">
@@ -366,14 +392,14 @@ body {
             STREAMER
         </div>
 
+
         <div class="streamer-widget">
 
             <div id="twitchPlayer">
 
                 <div
                     class="empty-message"
-                    style="background:#111;"
-                >
+                    style="background:#111;">
                     Sin canal cargado
                 </div>
 
@@ -381,15 +407,18 @@ body {
 
         </div>
 
+
         <button onclick="forzarPlayTwitch()">
             <i class="fa-solid fa-play"></i>
             Play
         </button>
 
+
         <button onclick="recargarStreamer()">
             <i class="fa-solid fa-rotate"></i>
             Recargar
         </button>
+
 
         <div class="donation-links">
 
@@ -397,15 +426,18 @@ body {
                 ENLACES
             </div>
 
+
             <a href="#" target="_blank">
                 <i class="fa-solid fa-gift"></i>
                 Donaciones
             </a>
 
+
             <a href="#" target="_blank">
                 <i class="fa-brands fa-twitter"></i>
                 Twitter
             </a>
+
 
             <a href="#" target="_blank">
                 <i class="fa-brands fa-instagram"></i>
@@ -418,10 +450,11 @@ body {
 
 
     <!-- =====================
-         VIDEO CENTRAL
+         COLUMNA CENTRAL
     ====================== -->
 
     <div class="center">
+
 
         <div class="video-box">
 
@@ -434,6 +467,7 @@ body {
             </div>
 
         </div>
+
 
         <div class="video-controls">
 
@@ -471,8 +505,9 @@ body {
 
 <script>
 
+
 /* =========================
-   GUARDAR DATOS
+   GUARDAR DATOS DE SESIÓN
 ========================= */
 
 function guardarDatosSesion(twitchUrl, videoUrl) {
@@ -496,15 +531,23 @@ function guardarDatosSesion(twitchUrl, videoUrl) {
 function abrirEspejo() {
 
     const twitchUrl =
-        document.getElementById("twitchUrl").value.trim();
+        document
+            .getElementById("twitchUrl")
+            .value
+            .trim();
 
     const videoUrl =
-        document.getElementById("videoUrl").value.trim();
+        document
+            .getElementById("videoUrl")
+            .value
+            .trim();
+
 
     guardarDatosSesion(
         twitchUrl,
         videoUrl
     );
+
 
     window.open(
         "espejo.html",
@@ -514,7 +557,7 @@ function abrirEspejo() {
 
 
 /* =========================
-   OBTENER CANAL TWITCH
+   OBTENER CANAL
 ========================= */
 
 function obtenerCanal(url) {
@@ -525,7 +568,9 @@ function obtenerCanal(url) {
             return null;
         }
 
+
         let texto = url.trim();
+
 
         if (
             !texto.startsWith("http://") &&
@@ -534,7 +579,10 @@ function obtenerCanal(url) {
             texto = "https://" + texto;
         }
 
-        const parsed = new URL(texto);
+
+        const parsed =
+            new URL(texto);
+
 
         if (
             !parsed.hostname
@@ -544,14 +592,17 @@ function obtenerCanal(url) {
             return null;
         }
 
+
         const partes =
             parsed.pathname
                 .split("/")
                 .filter(Boolean);
 
+
         if (!partes.length) {
             return null;
         }
+
 
         return partes[0];
 
@@ -570,13 +621,18 @@ function obtenerCanal(url) {
 function cargarTwitch() {
 
     const input =
-        document.getElementById("twitchUrl");
+        document.getElementById(
+            "twitchUrl"
+        );
+
 
     const twitchUrl =
         input.value.trim();
 
+
     const canal =
         obtenerCanal(twitchUrl);
+
 
     if (!canal) {
 
@@ -587,10 +643,13 @@ function cargarTwitch() {
         return;
     }
 
+
     const videoUrl =
-        document.getElementById("videoUrl")
+        document
+            .getElementById("videoUrl")
             .value
             .trim();
+
 
     guardarDatosSesion(
         twitchUrl,
@@ -599,26 +658,28 @@ function cargarTwitch() {
 
 
     /* =====================
-       PLAYER
+       PLAYER TWITCH
     ====================== */
 
     const playerDiv =
-        document.getElementById("twitchPlayer");
+        document.getElementById(
+            "twitchPlayer"
+        );
+
 
     playerDiv.innerHTML = "";
 
 
-    /*
-       Usamos el hostname actual como parent
-       requerido por Twitch.
-    */
-
     const parent =
-        window.location.hostname || "localhost";
+        window.location.hostname ||
+        "localhost";
 
 
     const iframe =
-        document.createElement("iframe");
+        document.createElement(
+            "iframe"
+        );
+
 
     iframe.src =
         "https://player.twitch.tv/?" +
@@ -630,21 +691,28 @@ function cargarTwitch() {
         "&autoplay=true";
 
 
-    iframe.allowFullscreen = true;
+    iframe.allowFullscreen =
+        true;
+
 
     iframe.allow =
         "autoplay; encrypted-media; fullscreen";
 
 
-    playerDiv.appendChild(iframe);
+    playerDiv.appendChild(
+        iframe
+    );
 
 
     /* =====================
-       CHAT
+       CHAT TWITCH
     ====================== */
 
     const chat =
-        document.getElementById("twitchChat");
+        document.getElementById(
+            "twitchChat"
+        );
+
 
     chat.src =
         "https://www.twitch.tv/embed/" +
@@ -661,35 +729,45 @@ function cargarTwitch() {
 function recargarStreamer() {
 
     const input =
-        document.getElementById("twitchUrl");
+        document.getElementById(
+            "twitchUrl"
+        );
+
 
     if (
         input.value.trim()
     ) {
+
         cargarTwitch();
+
     }
 }
 
 
 /* =========================
-   FORZAR PLAY
+   PLAY TWITCH
 ========================= */
 
 function forzarPlayTwitch() {
 
     const input =
-        document.getElementById("twitchUrl");
+        document.getElementById(
+            "twitchUrl"
+        );
+
 
     if (
         input.value.trim()
     ) {
+
         cargarTwitch();
+
     }
 }
 
 
 /* =========================
-   YOUTUBE ID
+   OBTENER ID YOUTUBE
 ========================= */
 
 function obtenerYoutubeId(url) {
@@ -699,8 +777,11 @@ function obtenerYoutubeId(url) {
         const parsed =
             new URL(url);
 
+
         if (
-            parsed.hostname.includes("youtu.be")
+            parsed.hostname.includes(
+                "youtu.be"
+            )
         ) {
 
             return parsed.pathname
@@ -709,14 +790,18 @@ function obtenerYoutubeId(url) {
 
         }
 
+
         if (
-            parsed.hostname.includes("youtube.com")
+            parsed.hostname.includes(
+                "youtube.com"
+            )
         ) {
 
             return parsed.searchParams
                 .get("v");
 
         }
+
 
         return null;
 
@@ -729,18 +814,22 @@ function obtenerYoutubeId(url) {
 
 
 /* =========================
-   SEGUNDO VIDEO
+   CARGAR SEGUNDO VIDEO
 ========================= */
 
 function cargarSegundoVideo() {
 
     const url =
-        document.getElementById("videoUrl")
+        document
+            .getElementById("videoUrl")
             .value
             .trim();
 
+
     const container =
-        document.getElementById("secondVideo");
+        document.getElementById(
+            "secondVideo"
+        );
 
 
     if (!url) {
@@ -756,7 +845,8 @@ function cargarSegundoVideo() {
 
     guardarDatosSesion(
 
-        document.getElementById("twitchUrl")
+        document
+            .getElementById("twitchUrl")
             .value
             .trim(),
 
@@ -771,13 +861,16 @@ function cargarSegundoVideo() {
     const youtubeId =
         obtenerYoutubeId(url);
 
+
     if (youtubeId) {
 
         container.innerHTML =
 
             '<iframe ' +
             'src="https://www.youtube.com/embed/' +
-            encodeURIComponent(youtubeId) +
+            encodeURIComponent(
+                youtubeId
+            ) +
             '?autoplay=1&rel=0" ' +
             'allow="autoplay; encrypted-media; fullscreen" ' +
             'allowfullscreen>' +
@@ -793,6 +886,7 @@ function cargarSegundoVideo() {
 
     const lowerUrl =
         url.toLowerCase();
+
 
     if (
         lowerUrl.endsWith(".mp4") ||
@@ -833,7 +927,7 @@ function cargarSegundoVideo() {
 
 
 /* =========================
-   ENTER TWITCH
+   ENTER EN TWITCH
 ========================= */
 
 document
@@ -855,7 +949,7 @@ document
 
 
 /* =========================
-   ENTER VIDEO
+   ENTER EN VIDEO
 ========================= */
 
 document
@@ -889,6 +983,7 @@ window.addEventListener(
                 "twitchUrl"
             );
 
+
         const videoUrl =
             localStorage.getItem(
                 "videoUrl"
@@ -898,7 +993,9 @@ window.addEventListener(
         if (twitchUrl) {
 
             document
-                .getElementById("twitchUrl")
+                .getElementById(
+                    "twitchUrl"
+                )
                 .value = twitchUrl;
 
             cargarTwitch();
@@ -909,7 +1006,9 @@ window.addEventListener(
         if (videoUrl) {
 
             document
-                .getElementById("videoUrl")
+                .getElementById(
+                    "videoUrl"
+                )
                 .value = videoUrl;
 
             cargarSegundoVideo();
