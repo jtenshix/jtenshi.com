@@ -132,16 +132,6 @@
             min-height: 0;
         }
 
-        .recommended-header {
-            padding: 8px 12px;
-            font-weight: bold;
-            font-size: 13px;
-            border-bottom: 1px solid #303033;
-            background: #18181b;
-            flex-shrink: 0;
-            text-transform: capitalize;
-        }
-
         .streamer-widget-content {
             display: flex;
             flex-direction: column;
@@ -467,8 +457,6 @@
         <div class="stream-layout">
             <aside class="sidebar-left">
                 <div class="recommended-section">
-                    <div id="sectionHeader" class="recommended-header">Canal</div>
-                    
                     <div class="streamer-widget-content">
                         <div class="twitch-info-top">
                             <div id="twitchTitle" class="twitch-channel-title">Canal no cargado</div>
@@ -591,7 +579,6 @@
             const chat = document.getElementById("twitchChat");
             chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
             
-            document.getElementById("sectionHeader").textContent = canal;
             document.getElementById("twitchTitle").textContent = canal;
             document.getElementById("twitchDesc").textContent = "Transmisión en directo de " + canal;
         }
