@@ -555,53 +555,41 @@
         }
 
         /* =========================================
-            CARGAR TWITCH
+            CARGAR TWITCH + GUARDAR EN LOCALSTORAGE
         ========================================== */
 
         function cargarTwitch() {
-            const input =
-                document.getElementById("twitchUrl");
-
-            const canal =
-                obtenerCanal(input.value);
+            const input = document.getElementById("twitchUrl");
+            const valorInput = input.value.trim();
+            const canal = obtenerCanal(valorInput);
 
             if (!canal) {
-                alert(
-                    "Introduce un link válido de Twitch."
-                );
+                alert("Introduce un link válido de Twitch.");
                 return;
             }
 
-            const parent =
-                window.location.hostname;
+            // Sincroniza con el espejo
+            localStorage.setItem("stream_twitch", valorInput);
 
-            const playerContainer =
-                document.getElementById(
-                    "twitchPlayer"
-                );
-
+            const parent = window.location.hostname || "localhost";
+            const playerContainer = document.getElementById("twitchPlayer");
             playerContainer.innerHTML = "";
 
-            twitchPlayer =
-                new Twitch.Player(
-                    "twitchPlayer",
-                    {
-                        width: "100%",
-                        height: "100%",
-                        channel: canal,
-                        parent: [parent],
-                        autoplay: false,
-                        muted: false
-                    }
-                );
+            try {
+                twitchPlayer = new Twitch.Player("twitchPlayer", {
+                    width: "100%",
+                    height: "100%",
+                    channel: canal,
+                    parent: [parent, "localhost", "127.0.0.1"],
+                    autoplay: true,
+                    muted: false
+                });
+            } catch (e) {
+                console.error("Error al iniciar el reproductor de Twitch:", e);
+            }
 
             /* CHAT */
-
-            const chat =
-                document.getElementById(
-                    "twitchChat"
-                );
-
+            const chat = document.getElementById("twitchChat");
             chat.src =
                 "https://www.twitch.tv/embed/" +
                 encodeURIComponent(canal) +
@@ -610,14 +598,11 @@
         }
 
         /* =========================================
-            MOVER TWITCH
+            MOVER TWITCH + GUARDAR POSICIÓN
         ========================================== */
 
         function moverTwitch(posicion) {
-            const ventana =
-                document.getElementById(
-                    "twitchWindow"
-                );
+            const ventana = document.getElementById("twitchWindow");
 
             ventana.classList.remove(
                 "top-left",
@@ -627,6 +612,9 @@
             );
 
             ventana.classList.add(posicion);
+
+            // Sincroniza la posición con el espejo
+            localStorage.setItem("stream_posicion", posicion);
         }
 
         /* =========================================
@@ -635,48 +623,29 @@
 
         function obtenerYoutubeId(url) {
             try {
-                const direccion =
-                    new URL(url);
+                const direccion = new URL(url);
+                const hostname = direccion.hostname.toLowerCase();
 
-                const hostname =
-                    direccion.hostname.toLowerCase();
-
-                if (
-                    hostname.includes("youtube.com")
-                ) {
-                    const id =
-                        direccion.searchParams.get("v");
-
+                if (hostname.includes("youtube.com")) {
+                    const id = direccion.searchParams.get("v");
                     if (id) {
                         return id;
                     }
                 }
 
-                if (
-                    hostname === "youtu.be"
-                ) {
-                    return direccion
-                        .pathname
-                        .replace(/^\/+/, "")
-                        .split("/")[0];
+                if (hostname === "youtu.be") {
+                    return direccion.pathname.replace(/^\/+/, "").split("/")[0];
                 }
 
-                if (
-                    direccion.pathname.startsWith("/live/")
-                ) {
-                    return direccion.pathname
-                        .split("/")[2];
+                if (direccion.pathname.startsWith("/live/")) {
+                    return direccion.pathname.split("/")[2];
                 }
 
-                if (
-                    direccion.pathname.startsWith("/shorts/")
-                ) {
-                    return direccion.pathname
-                        .split("/")[2];
+                if (direccion.pathname.startsWith("/shorts/")) {
+                    return direccion.pathname.split("/")[2];
                 }
 
                 return null;
-
             } catch (error) {
                 return null;
             }
@@ -687,90 +656,52 @@
         ========================================== */
 
         function mostrarError(texto) {
-            const error =
-                document.getElementById(
-                    "videoError"
-                );
-
+            const error = document.getElementById("videoError");
             error.textContent = texto;
             error.style.display = "block";
         }
 
         /* =========================================
-            CARGAR VIDEO
+            CARGAR VIDEO + GUARDAR EN LOCALSTORAGE
         ========================================== */
 
         function cargarSegundoVideo() {
-            const input =
-                document.getElementById(
-                    "videoUrl"
-                );
-
-            const url =
-                input.value.trim();
-
-            const pantalla =
-                document.getElementById(
-                    "secondScreen"
-                );
-
-            const error =
-                document.getElementById(
-                    "videoError"
-                );
+            const input = document.getElementById("videoUrl");
+            const url = input.value.trim();
+            const pantalla = document.getElementById("secondScreen");
+            const error = document.getElementById("videoError");
 
             if (!url) {
                 return;
             }
 
+            // Sincroniza con el espejo
+            localStorage.setItem("stream_video", url);
+
             pantalla.innerHTML = "";
             error.style.display = "none";
 
             /* YOUTUBE */
-
-            const youtubeId =
-                obtenerYoutubeId(url);
+            const youtubeId = obtenerYoutubeId(url);
 
             if (youtubeId) {
-                const iframe =
-                    document.createElement(
-                        "iframe"
-                    );
-
+                const iframe = document.createElement("iframe");
                 iframe.src =
                     "https://www.youtube.com/embed/" +
-                    encodeURIComponent(
-                        youtubeId
-                    );
+                    encodeURIComponent(youtubeId) +
+                    "?autoplay=1";
 
                 iframe.allow =
-                    "accelerometer; " +
-                    "autoplay; " +
-                    "clipboard-write; " +
-                    "encrypted-media; " +
-                    "gyroscope; " +
-                    "picture-in-picture; " +
-                    "web-share";
-
+                    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
                 iframe.allowFullscreen = true;
+                iframe.title = "Vídeo de YouTube";
 
-                iframe.title =
-                    "Vídeo de YouTube";
-
-                pantalla.appendChild(
-                    iframe
-                );
-
+                pantalla.appendChild(iframe);
                 return;
             }
 
             /* VIDEO DIRECTO */
-
-            const urlSinQuery =
-                url
-                    .split("?")[0]
-                    .toLowerCase();
-
+            const urlSinQuery = url.split("?")[0].toLowerCase();
             const esVideoDirecto =
                 urlSinQuery.endsWith(".mp4") ||
                 urlSinQuery.endsWith(".webm") ||
@@ -778,71 +709,42 @@
                 urlSinQuery.endsWith(".mov");
 
             if (esVideoDirecto) {
-                const video =
-                    document.createElement(
-                        "video"
-                    );
-
+                const video = document.createElement("video");
                 video.src = url;
                 video.controls = true;
+                video.autoplay = true;
                 video.playsInline = true;
                 video.preload = "metadata";
 
-                pantalla.appendChild(
-                    video
-                );
-
+                pantalla.appendChild(video);
                 return;
             }
 
-            /* IFRAME */
-
-            const iframe =
-                document.createElement(
-                    "iframe"
-                );
-
+            /* IFRAME GENERAL */
+            const iframe = document.createElement("iframe");
             iframe.src = url;
-            iframe.allow =
-                "autoplay; fullscreen; picture-in-picture";
+            iframe.allow = "autoplay; fullscreen; picture-in-picture";
             iframe.allowFullscreen = true;
-            iframe.title =
-                "Segundo vídeo";
+            iframe.title = "Segundo vídeo";
 
-            pantalla.appendChild(
-                iframe
-            );
+            pantalla.appendChild(iframe);
         }
 
         /* =========================================
-            ENTER TWITCH
+            EVENTOS ENTER
         ========================================== */
 
-        document
-            .getElementById("twitchUrl")
-            .addEventListener(
-                "keydown",
-                function(event) {
-                    if (event.key === "Enter") {
-                        cargarTwitch();
-                    }
-                }
-            );
+        document.getElementById("twitchUrl").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                cargarTwitch();
+            }
+        });
 
-        /* =========================================
-            ENTER VIDEO
-        ========================================== */
-
-        document
-            .getElementById("videoUrl")
-            .addEventListener(
-                "keydown",
-                function(event) {
-                    if (event.key === "Enter") {
-                        cargarSegundoVideo();
-                    }
-                }
-            );
+        document.getElementById("videoUrl").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                cargarSegundoVideo();
+            }
+        });
     </script>
 
 </body>
