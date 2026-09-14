@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Transmisión</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Script oficial de la API de Twitch -->
+    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -480,11 +482,15 @@
             const playerDiv = document.getElementById("twitchPlayer");
             playerDiv.innerHTML = "";
 
-            const iframe = document.createElement("iframe");
-            iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true`;
-            iframe.allowFullscreen = true;
-            iframe.allow = "autoplay; encrypted-media; fullscreen";
-            playerDiv.appendChild(iframe);
+            // Reproductor limpio mediante la API oficial de Twitch
+            new Twitch.Player("twitchPlayer", {
+                channel: canal,
+                parent: [parent],
+                muted: true,
+                autoplay: true,
+                width: "100%",
+                height: "100%"
+            });
 
             const chat = document.getElementById("twitchChat");
             chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
