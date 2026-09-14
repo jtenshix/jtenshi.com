@@ -35,7 +35,7 @@
 
         .search {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: auto;
             display: flex;
             gap: 10px;
@@ -94,16 +94,56 @@
 
         .layout {
             width: 100%;
-            max-width: 1500px;
-            margin: 24px auto;
+            max-width: 1600px;
+            margin: 20px auto;
             padding: 0 16px;
         }
 
+        /* Estructura estilo Twitch de 3 columnas: [Izquierda: Recomendados/Streamer] [Centro: Video Principal] [Derecha: Chat] */
         .stream-layout {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 340px;
-            gap: 0;
-            align-items: stretch;
+            grid-template-columns: 320px minmax(0, 1fr) 340px;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .sidebar-left {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .recommended-section {
+            background: #18181b;
+            border: 1px solid #303033;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .recommended-header {
+            padding: 12px;
+            font-weight: bold;
+            font-size: 14px;
+            border-bottom: 1px solid #303033;
+            background: #18181b;
+        }
+
+        .streamer-widget {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+        }
+
+        #twitchPlayer {
+            width: 100%;
+            height: 100%;
+        }
+
+        .center-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .video-area {
@@ -111,7 +151,9 @@
             width: 100%;
             aspect-ratio: 16 / 9;
             background: #000;
+            border-radius: 6px;
             overflow: hidden;
+            border: 1px solid #303033;
         }
 
         #secondScreen {
@@ -120,7 +162,6 @@
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 1;
         }
 
         #secondScreen iframe {
@@ -145,133 +186,13 @@
             align-items: center;
             justify-content: center;
             color: #777;
-            font-size: 16px;
+            font-size: 15px;
             text-align: center;
             padding: 20px;
         }
 
-        #twitchWindow {
-            position: absolute;
-            width: 320px;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border: 2px solid #18181b;
-            border-radius: 6px;
-            overflow: hidden;
-            z-index: 50;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
-        }
-
-        #twitchPlayer {
-            width: 100%;
-            height: 100%;
-        }
-
-        .top-left {
-            top: 15px;
-            left: 15px;
-            right: auto;
-            bottom: auto;
-        }
-
-        .top-right {
-            top: 15px;
-            right: 15px;
-            left: auto;
-            bottom: auto;
-        }
-
-        .bottom-left {
-            bottom: 15px;
-            left: 15px;
-            right: auto;
-            top: auto;
-        }
-
-        .bottom-right {
-            bottom: 15px;
-            right: 15px;
-            left: auto;
-            bottom: auto;
-        }
-
-        .position-controls {
-            position: absolute;
-            z-index: 100;
-            left: 50%;
-            bottom: 15px;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 6px;
-            padding: 6px;
-            background: rgba(24, 24, 27, 0.92);
-            border-radius: 7px;
-        }
-
-        .position-controls button {
-            width: 34px;
-            height: 30px;
-            border: none;
-            border-radius: 5px;
-            background: #2a2a2e;
-            color: white;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        .position-controls button:hover {
-            background: #9147ff;
-        }
-
-        .btn-guardar {
-            background: #ff9800 !important;
-            color: black;
-            font-weight: bold;
-            padding: 0 12px;
-            font-size: 13px !important;
-            width: auto !important;
-        }
-
-        .btn-guardar:hover {
-            background: #f57c00 !important;
-        }
-
-        .chat-area {
-            width: 100%;
-            aspect-ratio: 340 / 506;
-            background: #18181b;
-            border-left: 1px solid #303033;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-header {
-            height: 48px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            border-bottom: 1px solid #303033;
-            background: #18181b;
-        }
-
-        .chat-frame {
-            flex: 1;
-            min-height: 0;
-        }
-
-        .chat-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
         .video-input {
             width: 100%;
-            margin-top: 15px;
             display: flex;
             gap: 10px;
         }
@@ -307,6 +228,40 @@
             background: #772ce8;
         }
 
+        .chat-area {
+            width: 100%;
+            background: #18181b;
+            border: 1px solid #303033;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            height: calc(16/9 * (100vw - 692px) / 3); /* Ajuste dinámico aproximado o fijo */
+            min-height: 480px;
+        }
+
+        .chat-header {
+            height: 48px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            border-bottom: 1px solid #303033;
+        }
+
+        .chat-frame {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .chat-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
         .error {
             display: none;
             margin-top: 10px;
@@ -317,65 +272,12 @@
             font-size: 14px;
         }
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1200px) {
             .stream-layout {
                 grid-template-columns: 1fr;
             }
-
             .chat-area {
-                aspect-ratio: auto;
-                height: 420px;
-                border-left: none;
-                border-top: 1px solid #303033;
-            }
-
-            #twitchWindow {
-                width: 280px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .topbar {
-                padding: 10px;
-            }
-
-            .search {
-                flex-direction: column;
-            }
-
-            .search button,
-            .btn-espejo {
-                width: 100%;
-            }
-
-            .layout {
-                padding: 0 8px;
-                margin-top: 12px;
-            }
-
-            #twitchWindow {
-                width: 180px;
-            }
-
-            .position-controls {
-                bottom: 5px;
-            }
-
-            .position-controls button {
-                width: 30px;
-                height: 28px;
-            }
-
-            .video-input {
-                flex-direction: column;
-            }
-
-            .video-input button {
-                width: 100%;
-            }
-
-            .chat-area {
-                height: 360px;
+                height: 450px;
             }
         }
     </style>
@@ -385,34 +287,43 @@
 
     <header class="topbar">
         <div class="search">
-            <input id="twitchUrl" type="text" placeholder="Pega aquí el link de Twitch..." autocomplete="off">
-            <button onclick="cargarTwitch()">CARGAR TWITCH</button>
+            <input id="twitchUrl" type="text" placeholder="Pega aquí el link de Twitch de la streamer..." autocomplete="off">
+            <button onclick="cargarTwitch()">CARGAR STREAMER</button>
             <button class="btn-espejo" onclick="abrirEspejo()">🔗 Abrir Espejo</button>
         </div>
     </header>
 
     <main class="layout">
         <div class="stream-layout">
-            <div class="video-area">
-                <div id="secondScreen">
-                    <div class="empty-message">
-                        Pega abajo el link del vídeo principal
+            <!-- Columna Izquierda: Panel de recomendados / Streamer -->
+            <aside class="sidebar-left">
+                <div class="recommended-section">
+                    <div class="recommended-header">Canales recomendados</div>
+                    <div class="streamer-widget">
+                        <div id="twitchPlayer"></div>
+                        <div id="twitchPlaceholder" class="empty-message" style="background:#111;">Sin canal cargado</div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Columna Central: Video Principal -->
+            <section class="center-area">
+                <div class="video-area">
+                    <div id="secondScreen">
+                        <div class="empty-message">
+                            Pega abajo el link del vídeo principal
+                        </div>
                     </div>
                 </div>
 
-                <div id="twitchWindow" class="bottom-left">
-                    <div id="twitchPlayer"></div>
+                <div class="video-input">
+                    <input id="videoUrl" type="text" placeholder="Pega aquí el link del vídeo principal..." autocomplete="off">
+                    <button onclick="cargarSegundoVideo()">CARGAR VIDEO</button>
                 </div>
+                <div id="videoError" class="error"></div>
+            </section>
 
-                <div class="position-controls">
-                    <button onclick="moverTwitch('top-left')" title="Arriba izquierda">↖</button>
-                    <button onclick="moverTwitch('top-right')" title="Arriba derecha">↗</button>
-                    <button onclick="moverTwitch('bottom-left')" title="Abajo izquierda">↙</button>
-                    <button onclick="moverTwitch('bottom-right')" title="Abajo derecha">↘</button>
-                    <button class="btn-guardar" onclick="guardarPosicion()" title="Guardar posición actual">💾 Guardar</button>
-                </div>
-            </div>
-
+            <!-- Columna Derecha: Chat -->
             <aside class="chat-area">
                 <div class="chat-header">
                     Chat del stream
@@ -422,24 +333,15 @@
                 </div>
             </aside>
         </div>
-
-        <div class="video-input">
-            <input id="videoUrl" type="text" placeholder="Pega aquí el link del segundo vídeo..." autocomplete="off">
-            <button onclick="cargarSegundoVideo()">CARGAR VIDEO</button>
-        </div>
-
-        <div id="videoError" class="error"></div>
     </main>
 
     <script>
         let twitchPlayer = null;
-        let posicionActualTwitch = "bottom-left";
 
         function abrirEspejo() {
             const twitchUrl = document.getElementById("twitchUrl").value.trim();
             const videoUrl = document.getElementById("videoUrl").value.trim();
-
-            const urlEspejo = `espejo.html?twitch=${encodeURIComponent(twitchUrl)}&video=${encodeURIComponent(videoUrl)}&pos=${posicionActualTwitch}`;
+            const urlEspejo = `espejo.html?twitch=${encodeURIComponent(twitchUrl)}&video=${encodeURIComponent(videoUrl)}`;
             window.open(urlEspejo, "_blank");
         }
 
@@ -469,8 +371,8 @@
             }
 
             const parent = window.location.hostname || "localhost";
-            const playerContainer = document.getElementById("twitchPlayer");
-            playerContainer.innerHTML = "";
+            const placeholder = document.getElementById("twitchPlaceholder");
+            if (placeholder) placeholder.style.display = "none";
 
             try {
                 twitchPlayer = new Twitch.Player("twitchPlayer", {
@@ -479,7 +381,7 @@
                     channel: canal,
                     parent: [parent, "localhost", "127.0.0.1"],
                     autoplay: true,
-                    muted: false
+                    muted: true
                 });
             } catch (e) {
                 console.error("Error al iniciar el reproductor de Twitch:", e);
@@ -487,18 +389,6 @@
 
             const chat = document.getElementById("twitchChat");
             chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
-        }
-
-        function moverTwitch(posicion) {
-            const ventana = document.getElementById("twitchWindow");
-            ventana.classList.remove("top-left", "top-right", "bottom-left", "bottom-right");
-            ventana.classList.add(posicion);
-            posicionActualTwitch = posicion;
-        }
-
-        function guardarPosicion() {
-            // Esto avisa visualmente que se guardó para que ella sepa que el espejo lo leerá al actualizar
-            alert("¡Posición guardada! Cuando tus espectadores le den a 'Actualizar' en el espejo, se moverá aquí.");
         }
 
         function obtenerYoutubeId(url) {
