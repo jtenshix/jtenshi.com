@@ -146,7 +146,7 @@
             position: relative;
             width: 100%;
             aspect-ratio: 16 / 15;
-            background: #0e0e10; /* Igualado al tono de Twitch */
+            background: #0e0e10;
             border-radius: 4px;
             overflow: hidden;
             flex-shrink: 0;
@@ -442,13 +442,13 @@
                 <div class="video-area">
                     <div id="secondScreen">
                         <div class="empty-message">
-                            Pega abajo el link del vídeo principal
+                            Pega abajo el link del vídeo o stream principal (YouTube, Patreon, etc.)
                         </div>
                     </div>
                 </div>
 
                 <div class="video-input">
-                    <input id="videoUrl" type="text" placeholder="Pega aquí el link del vídeo principal..." autocomplete="off">
+                    <input id="videoUrl" type="text" placeholder="Pega aquí el link del vídeo principal o embed de Patreon..." autocomplete="off">
                     <button onclick="cargarSegundoVideo()">CARGAR VIDEO</button>
                 </div>
                 <div id="videoError" class="error"></div>
@@ -557,7 +557,7 @@
 
         function cargarSegundoVideo() {
             const input = document.getElementById("videoUrl");
-            const url = input.value.trim();
+            let url = input.value.trim();
             const pantalla = document.getElementById("secondScreen");
             const error = document.getElementById("videoError");
 
@@ -568,6 +568,18 @@
 
             pantalla.innerHTML = "";
             error.style.display = "none";
+
+            // Si pegan directamente un tag iframe completo de Patreon u otro servicio
+            if (url.toLowerCase().startsWith("<iframe")) {
+                pantalla.innerHTML = url;
+                const iframeElement = pantalla.querySelector("iframe");
+                if (iframeElement) {
+                    iframeElement.style.width = "100%";
+                    iframeElement.style.height = "100%";
+                    iframeElement.style.border = "none";
+                }
+                return;
+            }
 
             const youtubeId = obtenerYoutubeId(url);
             if (youtubeId) {
@@ -594,11 +606,12 @@
                 return;
             }
 
+            // Manejo por defecto para URLs de Patreon o iframes externos directos
             const iframe = document.createElement("iframe");
             iframe.src = url;
             iframe.allow = "autoplay; fullscreen; picture-in-picture";
             iframe.allowFullscreen = true;
-            iframe.title = "Segundo vídeo";
+            iframe.title = "Transmisión principal";
             pantalla.appendChild(iframe);
         }
 
