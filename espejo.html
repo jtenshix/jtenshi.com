@@ -114,7 +114,7 @@
             bottom: 15px;
             right: 15px;
             left: auto;
-            bottom: auto;
+            top: auto;
         }
 
         .chat-area {
@@ -227,7 +227,6 @@
         const videoUrl = urlParams.get("video");
         const posTwitch = urlParams.get("pos") || "bottom-left";
 
-        // Aplica automáticamente la posición del cuadro que guardaste desde tu panel
         const ventanaTwitch = document.getElementById("twitchWindow");
         ventanaTwitch.classList.remove("top-left", "top-right", "bottom-left", "bottom-right");
         ventanaTwitch.classList.add(posTwitch);
@@ -291,7 +290,7 @@
         function cargarVideo() {
             const pantalla = document.getElementById("mainVideo");
             pantalla.innerHTML = "";
-            if (!videoUrl) return;
+            if (!videoUrl || videoUrl === "null" || videoUrl === "undefined") return;
 
             const youtubeId = obtenerYoutubeId(videoUrl);
             if (youtubeId) {
