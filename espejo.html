@@ -4,429 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espejo - Transmisión</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Script oficial de la API de Twitch -->
-    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
+    <title>Espejo - Control de Transmisión</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
-            min-height: 100%;
-            background: #0e0e10;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .layout {
-            width: 100%;
-            max-width: 1700px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
-        .stream-layout {
-            display: grid;
-            grid-template-columns: 300px minmax(0, 1fr) 260px;
-            gap: 16px;
-            align-items: start;
-        }
-
-        .sidebar-left {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .recommended-section {
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .recommended-header {
-            padding: 10px 12px;
-            font-weight: bold;
-            font-size: 13px;
-            border-bottom: 1px solid #303033;
-            background: #18181b;
-        }
-
-        .streamer-widget {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
+            height: 100%;
             background: #000;
-        }
-
-        #twitchPlayer {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        #twitchPlayer iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        .donation-links {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 10px;
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-        }
-
-        .donation-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            padding: 8px 4px;
-            background: #1f1f23;
-            border: 1px solid #3a3a3d;
-            border-radius: 5px;
-            color: #efeff1;
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: bold;
-            transition: background 0.2s, border-color 0.2s;
-        }
-
-        .donation-btn i {
-            font-size: 18px;
-        }
-
-        .donation-btn:hover {
-            background: #2d2d30;
-            border-color: #9147ff;
-        }
-
-        .stream-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .ctrl-btn {
-            height: 38px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
         }
 
-        .btn-play {
-            background: #9147ff;
-            color: white;
-        }
-
-        .btn-play:hover {
-            background: #772ce8;
-        }
-
-        .ctrl-btn.btn-recargar {
-            background: #ff9800;
-            color: black;
-        }
-
-        .ctrl-btn.btn-recargar:hover {
-            background: #f57c00;
-        }
-
-        .center-area {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .video-area {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #303033;
-        }
-
-        #secondScreen {
-            position: absolute;
-            inset: 0;
+        #espejoContainer {
             width: 100%;
             height: 100%;
-            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        #secondScreen iframe {
+        iframe, video {
             width: 100%;
             height: 100%;
             border: none;
-            display: block;
-        }
-
-        #secondScreen video {
-            width: 100%;
-            height: 100%;
-            display: block;
             object-fit: contain;
             background: #000;
         }
 
-        .empty-message {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #777;
-            font-size: 15px;
-            text-align: center;
-            padding: 20px;
-            pointer-events: none;
-        }
-
-        .chat-area {
-            width: 100%;
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            height: 520px;
-        }
-
-        .chat-header {
-            height: 42px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 13px;
-            border-bottom: 1px solid #303033;
-        }
-
-        .chat-frame {
-            flex: 1;
-            min-height: 0;
-        }
-
-        .chat-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        @media (max-width: 1100px) {
-            .stream-layout {
-                grid-template-columns: 1fr;
-            }
-            .chat-area {
-                height: 450px;
-            }
+        .empty {
+            color: #555;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
         }
     </style>
 </head>
 
 <body>
 
-    <main class="layout">
-        <div class="stream-layout">
-            <aside class="sidebar-left">
-                <div class="recommended-section">
-                    <div class="recommended-header">Canales recomendados</div>
-                    <div class="streamer-widget">
-                        <div id="twitchPlayer">
-                            <div class="empty-message" style="background:#111;">Esperando stream...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="donation-links">
-                    <a href="https://ko-fi.com/cotecreator/shop" target="_blank" class="donation-btn" title="Ko-fi">
-                        <i class="fa-solid fa-mug-hot" style="color: #29abe0;"></i>
-                        Ko-fi
-                    </a>
-                    <a href="https://ceneka.net/coteparrague" target="_blank" class="donation-btn" title="Ceneka">
-                        <i class="fa-solid fa-heart" style="color: #ff4757;"></i>
-                        Ceneka
-                    </a>
-                    <a href="https://streamelements.com/coteparrague/tip" target="_blank" class="donation-btn" title="StreamElements">
-                        <i class="fa-solid fa-hand-holding-dollar" style="color: #2ed573;"></i>
-                        Tips
-                    </a>
-                </div>
-
-                <div class="stream-controls">
-                    <button class="ctrl-btn btn-play" onclick="forzarPlayTwitchEspejo()"><i class="fa-solid fa-play"></i> Play</button>
-                    <button class="ctrl-btn btn-recargar" onclick="recargarStreamerEspejo()"><i class="fa-solid fa-rotate"></i> Recargar</button>
-                </div>
-            </aside>
-
-            <section class="center-area">
-                <div class="video-area">
-                    <div id="secondScreen">
-                        <div class="empty-message">
-                            Esperando vídeo principal...
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <aside class="chat-area">
-                <div class="chat-header">
-                    Chat del stream
-                </div>
-                <div class="chat-frame">
-                    <iframe id="twitchChat" title="Chat de Twitch"></iframe>
-                </div>
-            </aside>
-        </div>
-    </main>
+    <div id="espejoContainer">
+        <div class="empty">Esperando transmisión...</div>
+    </div>
 
     <script>
-        function obtenerCanal(url) {
-            url = url.trim();
-            if (!url) return null;
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "https://" + url;
-            }
-            try {
-                const direccion = new URL(url);
-                if (!direccion.hostname.toLowerCase().includes("twitch.tv")) return null;
-                const partes = direccion.pathname.replace(/^\/+/, "").replace(/\/+$/, "").split("/");
-                return partes[0] || null;
-            } catch (error) {
-                return null;
-            }
-        }
+        const container = document.getElementById("espejoContainer");
 
-        function obtenerYoutubeId(url) {
-            try {
-                const direccion = new URL(url);
-                const hostname = direccion.hostname.toLowerCase();
-                if (hostname.includes("youtube.com")) {
-                    const id = direccion.searchParams.get("v");
-                    if (id) return id;
-                }
-                if (hostname === "youtu.be") {
-                    return direccion.pathname.replace(/^\/+/, "").split("/")[0];
-                }
-                if (direccion.pathname.startsWith("/live/") || direccion.pathname.startsWith("/shorts/")) {
-                    return direccion.pathname.split("/")[2];
-                }
-                return null;
-            } catch (error) {
-                return null;
+        // Si se abrió una captura de pantalla reciente en la sesión principal
+        if (window.opener && window.opener.document) {
+            const videoPrincipal = window.opener.document.querySelector("#secondScreen video");
+            if (videoPrincipal && videoPrincipal.srcObject) {
+                container.innerHTML = "";
+                const videoEspejo = document.createElement("video");
+                videoEspejo.srcObject = videoPrincipal.srcObject;
+                videoEspejo.autoplay = true;
+                videoEspejo.playsInline = true;
+                videoEspejo.controls = false; // Sin controles para que quede limpio de pantalla completa
+                container.appendChild(videoEspejo);
             }
         }
 
-        function cargarTwitchEspejo(twitchUrl) {
-            const canal = obtenerCanal(twitchUrl);
-            if (!canal) return;
-
-            const parent = window.location.hostname || "localhost";
-            const playerDiv = document.getElementById("twitchPlayer");
-            playerDiv.innerHTML = "";
-
-            // API oficial limpia de Twitch en el espejo
-            new Twitch.Player("twitchPlayer", {
-                channel: canal,
-                parent: [parent],
-                muted: true,
-                autoplay: true,
-                width: "100%",
-                height: "100%"
-            });
-
-            const chat = document.getElementById("twitchChat");
-            chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
-        }
-
-        function forzarPlayTwitchEspejo() {
-            const twitchUrl = localStorage.getItem("twitchUrl");
-            if (twitchUrl) cargarTwitchEspejo(twitchUrl);
-        }
-
-        function recargarStreamerEspejo() {
-            const twitchUrl = localStorage.getItem("twitchUrl");
-            if (twitchUrl) cargarTwitchEspejo(twitchUrl);
-        }
-
-        function cargarVideoEspejo(videoUrl) {
-            const pantalla = document.getElementById("secondScreen");
-            if (!videoUrl) return;
-
-            pantalla.innerHTML = "";
-
-            const youtubeId = obtenerYoutubeId(videoUrl);
-            if (youtubeId) {
-                const iframe = document.createElement("iframe");
-                iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId) + "?autoplay=1";
-                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-                iframe.allowFullscreen = true;
-                iframe.title = "Vídeo de YouTube";
-                pantalla.appendChild(iframe);
-                return;
-            }
-
-            const urlSinQuery = videoUrl.split("?")[0].toLowerCase();
-            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
-
-            if (esVideoDirecto) {
-                const video = document.createElement("video");
-                video.src = videoUrl;
-                video.controls = true;
-                video.autoplay = true;
-                video.playsInline = true;
-                video.preload = "metadata";
-                pantalla.appendChild(video);
-                return;
-            }
-
-            const iframe = document.createElement("iframe");
-            iframe.src = videoUrl;
-            iframe.allow = "autoplay; fullscreen; picture-in-picture";
-            iframe.allowFullscreen = true;
-            iframe.title = "Segundo vídeo";
-            pantalla.appendChild(iframe);
-        }
-
-        window.addEventListener("DOMContentLoaded", () => {
-            const twitchUrl = localStorage.getItem("twitchUrl");
+        // Si no hay video en vivo pero sí un link guardado en localStorage
+        if (container.children.length > 0 && container.querySelector(".empty")) {
             const videoUrl = localStorage.getItem("videoUrl");
-
-            if (twitchUrl) cargarTwitchEspejo(twitchUrl);
-            if (videoUrl) cargarVideoEspejo(videoUrl);
-        });
+            if (videoUrl) {
+                container.innerHTML = "";
+                if (videoUrl.toLowerCase().startsWith("<iframe")) {
+                    container.innerHTML = videoUrl;
+                } else {
+                    const iframe = document.createElement("iframe");
+                    iframe.src = videoUrl;
+                    iframe.allow = "autoplay; fullscreen; picture-in-picture";
+                    container.appendChild(iframe);
+                }
+            }
+        }
     </script>
 
 </body>
