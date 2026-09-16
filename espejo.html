@@ -24,6 +24,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
         iframe, video {
@@ -51,32 +52,21 @@
     <script>
         const container = document.getElementById("espejoContainer");
 
-        // Si se abrió una captura de pantalla reciente en la sesión principal
         if (window.opener && window.opener.document) {
-            const videoPrincipal = window.opener.document.querySelector("#secondScreen video");
-            if (videoPrincipal && videoPrincipal.srcObject) {
-                container.innerHTML = "";
-                const videoEspejo = document.createElement("video");
-                videoEspejo.srcObject = videoPrincipal.srcObject;
-                videoEspejo.autoplay = true;
-                videoEspejo.playsInline = true;
-                videoEspejo.controls = false; // Sin controles para que quede limpio de pantalla completa
-                container.appendChild(videoEspejo);
-            }
-        }
+            const pantallaPrincipal = window.opener.document.getElementById("secondScreen");
+            
+            if (pantallaPrincipal) {
+                // Copia exactamente lo que hay dentro del contenedor principal
+                container.innerHTML = pantallaPrincipal.innerHTML;
 
-        // Si no hay video en vivo pero sí un link guardado en localStorage
-        if (container.children.length > 0 && container.querySelector(".empty")) {
-            const videoUrl = localStorage.getItem("videoUrl");
-            if (videoUrl) {
-                container.innerHTML = "";
-                if (videoUrl.toLowerCase().startsWith("<iframe")) {
-                    container.innerHTML = videoUrl;
-                } else {
-                    const iframe = document.createElement("iframe");
-                    iframe.src = videoUrl;
-                    iframe.allow = "autoplay; fullscreen; picture-in-picture";
-                    container.appendChild(iframe);
+                // Si lo que se está mostrando es una captura de pantalla (un elemento video con stream en vivo)
+                const videoEspejo = container.querySelector("video");
+                const videoPrincipal = pantallaPrincipal.querySelector("video");
+
+                if (videoEspejo && videoPrincipal && videoPrincipal.srcObject) {
+                    videoEspejo.srcObject = videoPrincipal.srcObject;
+                    videoEspejo.muted = true; // Silenciado en el espejo para evitar eco
+                    videoEspejo.play();
                 }
             }
         }
