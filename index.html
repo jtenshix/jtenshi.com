@@ -321,7 +321,7 @@
 
         .video-input button {
             height: 38px;
-            padding: 0 20px;
+            padding: 0 16px;
             border: none;
             border-radius: 6px;
             background: #9147ff;
@@ -332,6 +332,14 @@
 
         .video-input button:hover {
             background: #772ce8;
+        }
+
+        .btn-capturar {
+            background: #ff4757 !important;
+        }
+
+        .btn-capturar:hover {
+            background: #ff6b81 !important;
         }
 
         .chat-area {
@@ -442,14 +450,15 @@
                 <div class="video-area">
                     <div id="secondScreen">
                         <div class="empty-message">
-                            Pega abajo el link del vídeo o stream principal (YouTube, Patreon, etc.)
+                            Pega abajo un link o captura tu pestaña de anime
                         </div>
                     </div>
                 </div>
 
                 <div class="video-input">
-                    <input id="videoUrl" type="text" placeholder="Pega aquí el link del vídeo principal o embed de Patreon..." autocomplete="off">
+                    <input id="videoUrl" type="text" placeholder="Pega link o usa el botón de captura..." autocomplete="off">
                     <button onclick="cargarSegundoVideo()">CARGAR VIDEO</button>
+                    <button class="btn-capturar" onclick="capturarPantallaWeb()" title="Capturar pestaña o ventana"><i class="fa-solid fa-desktop"></i> Capturar</button>
                 </div>
                 <div id="videoError" class="error"></div>
             </section>
@@ -535,6 +544,36 @@
             }
         }
 
+        async function capturarPantallaWeb() {
+            const pantalla = document.getElementById("secondScreen");
+            const error = document.getElementById("videoError");
+            error.style.display = "none";
+
+            try {
+                // Abre el selector nativo del navegador (igual que Discord) para elegir pestaña o ventana
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { cursor: "always" },
+                    audio: true
+                });
+
+                pantalla.innerHTML = "";
+                const video = document.createElement("video");
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.playsInline = true;
+                video.controls = true;
+                pantalla.appendChild(video);
+
+                // Si el usuario detiene la captura desde la barra del navegador, limpia la pantalla
+                stream.getVideoTracks()[0].onended = () => {
+                    pantalla.innerHTML = `<div class="empty-message">Captura finalizada</div>`;
+                };
+
+            } catch (err) {
+                console.error("Error al capturar pantalla:", err);
+            }
+        }
+
         function obtenerYoutubeId(url) {
             try {
                 const direccion = new URL(url);
@@ -569,7 +608,6 @@
             pantalla.innerHTML = "";
             error.style.display = "none";
 
-            // Si pegan directamente un tag iframe completo de Patreon u otro servicio
             if (url.toLowerCase().startsWith("<iframe")) {
                 pantalla.innerHTML = url;
                 const iframeElement = pantalla.querySelector("iframe");
@@ -606,7 +644,6 @@
                 return;
             }
 
-            // Manejo por defecto para URLs de Patreon o iframes externos directos
             const iframe = document.createElement("iframe");
             iframe.src = url;
             iframe.allow = "autoplay; fullscreen; picture-in-picture";
@@ -625,5 +662,4 @@
     </script>
 
 </body>
-
 </html>
