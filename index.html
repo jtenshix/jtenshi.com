@@ -337,49 +337,456 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #555;
-            font-size: 16px;
+            color: #777;
+            font-size: 15px;
+            text-align: center;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        .video-input {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .video-input input {
+            flex: 1;
+            height: 38px;
+            padding: 0 14px;
+            border: 1px solid #3a3a3d;
+            border-radius: 6px;
+            outline: none;
+            background: #1f1f23;
+            color: white;
+            font-size: 14px;
+        }
+
+        .video-input input:focus {
+            border-color: #9147ff;
+        }
+
+        .video-input button {
+            height: 38px;
+            padding: 0 16px;
+            border: none;
+            border-radius: 6px;
+            background: #9147ff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .video-input button:hover {
+            background: #772ce8;
+        }
+
+        .btn-capturar {
+            background: #ff4757 !important;
+        }
+
+        .btn-capturar:hover {
+            background: #ff6b81 !important;
+        }
+
+        .chat-area {
+            width: 100%;
+            background: #18181b;
+            border: 1px solid #303033;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .chat-header {
+            height: 38px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #303033;
+        }
+
+        .chat-frame {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .chat-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .error {
+            display: none;
+            margin-top: 5px;
+            padding: 8px;
+            border-radius: 6px;
+            background: #2a1717;
+            color: #ffaaaa;
+            font-size: 13px;
+            flex-shrink: 0;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="topbar">
+    <header class="topbar">
         <div class="search">
-            <input type="text" id="urlInput" placeholder="Pega un enlace de Kick, YouTube o Twitch aquí...">
-            <button onclick="cargarContenidoCentral()">Cargar Contenido</button>
-            <button class="btn-espejo" onclick="recargarPantallaCentral()">Recargar Tele</button>
+            <input id="twitchUrl" type="text" placeholder="Pega aquí el link de Twitch o Kick de la streamer..." autocomplete="off">
+            <button onclick="cargarStreamerPrincipal()">CARGAR STREAMER</button>
+            <button class="btn-espejo" onclick="abrirEspejo()">🔗 Abrir Espejo</button>
         </div>
-    </div>
+    </header>
 
-    <div class="layout">
+    <main class="layout">
         <div class="stream-layout">
-            
-            <!-- COLUMNA IZQUIERDA: Tu reproductor fijo de Twitch principal -->
-            <div class="sidebar-left">
+            <aside class="sidebar-left">
                 <div class="recommended-section">
                     <div class="streamer-widget-content">
                         <div class="streamer-widget">
                             <div id="twitchPlayer">
-                                <!-- Reemplaza TU_CANAL_PRINCIPAL por tu nombre de usuario exacto de Twitch -->
-                                <iframe 
-                                    src="https://twitch.tv" 
-                                    allowfullscreen="true" 
-                                    scrolling="no">
-                                </iframe>
+                                <div class="empty-message" style="background:#0e0e10;">Sin canal cargado</div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- COLUMNA CENTRAL: Pantalla Variable (Kick / YouTube / Twitch Opcional) -->
-            <div class="center-area">
-                <div class="video-area">
-                    <div id="secondScreen">
-                        <div class="empty-message">Introduce un enlace arriba para iniciar la transmisión</div>
+                <div class="donation-links">
+                    <a href="https://ko-fi.com/cotecreator/shop" target="_blank" class="donation-btn" title="Ko-fi">
+                        <i class="fa-solid fa-mug-hot" style="color: #29abe0;"></i>
+                        Ko-fi
+                    </a>
+                    <a href="https://ceneka.net/coteparrague" target="_blank" class="donation-btn" title="Ceneka">
+                        <i class="fa-solid fa-heart" style="color: #ff4757;"></i>
+                        Ceneka
+                    </a>
+                    <a href="https://streamelements.com/coteparrague/tip" target="_blank" class="donation-btn" title="Tips">
+                        <i class="fa-solid fa-hand-holding-dollar" style="color: #2ed573;"></i>
+                        Tips
+                    </a>
+                </div>
+
+                <div class="stream-controls">
+                    <button class="ctrl-btn btn-play" onclick="forzarPlayStreamer()"><i class="fa-solid fa-play"></i> Play</button>
+                    <button class="ctrl-btn btn-recargar" onclick="recargarStreamer()"><i class="fa-solid fa-rotate"></i> Recargar</button>
+                </div>
+
+                <div class="playlist-box">
+                    <div class="playlist-title">
+                        <span>PLAYLIST DE VIDEOS</span>
+                        <i class="fa-solid fa-list"></i>
+                    </div>
+                    <div class="playlist-items" id="playlistContainer">
                     </div>
                 </div>
-            </div>
+            </aside>
 
+            <section class="center-area">
+                <div class="video-area">
+                    <div id="secondScreen">
+                        <div class="empty-message">
+                            Selecciona de la playlist o pega abajo un link (Drive, YouTube, Kick, etc.)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video-input">
+                    <input id="videoUrl" type="text" placeholder="Pega link o usa el botón de captura..." autocomplete="off">
+                    <button onclick="cargarSegundoVideo()">CARGAR VIDEO</button>
+                    <button class="btn-capturar" onclick="capturarPantallaWeb()" title="Capturar pestaña o ventana"><i class="fa-solid fa-desktop"></i> Capturar</button>
+                </div>
+                <div id="videoError" class="error"></div>
+            </section>
+
+            <aside class="chat-area">
+                <div class="chat-header">
+                    Chat del stream
+                </div>
+                <div class="chat-frame">
+                    <iframe id="twitchChat" title="Chat del stream"></iframe>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script>
+        const playlistVideos = [
+            // Puedes agregar aquí tus videos personalizados o de Google Drive por enlace si lo requieres
+        ];
+
+        function inicializarPlaylist() {
+            const contenedor = document.getElementById("playlistContainer");
+            contenedor.innerHTML = "";
+            if (playlistVideos.length === 0) {
+                contenedor.innerHTML = `<div style="font-size:11px; color:#777; text-align:center; padding: 10px;">Sin elementos en playlist</div>`;
+                return;
+            }
+            playlistVideos.forEach((item, index) => {
+                const div = document.createElement("div");
+                div.className = "playlist-item";
+                div.innerHTML = `<span>${item.titulo}</span> <i class="fa-solid fa-play"></i>`;
+                div.onclick = () => reproducirDesdePlaylist(index);
+                contenedor.appendChild(div);
+            });
+        }
+
+        function reproducirDesdePlaylist(index) {
+            const videoObj = playlistVideos[index];
+            const input = document.getElementById("videoUrl");
+            input.value = videoObj.url;
+            
+            document.querySelectorAll(".playlist-item").forEach((el, idx) => {
+                if (idx === index) el.classList.add("active");
+                else el.classList.remove("active");
+            });
+
+            cargarSegundoVideo();
+        }
+
+        function abrirEspejo() {
+            const videoUrl = document.getElementById("videoUrl").value.trim();
+            const twitchUrl = document.getElementById("twitchUrl").value.trim();
+            
+            if (videoUrl) localStorage.setItem("espejo_video", videoUrl);
+            if (twitchUrl) localStorage.setItem("espejo_twitch", twitchUrl);
+
+            window.open(`espejo.html?url=${encodeURIComponent(videoUrl)}&twitch=${encodeURIComponent(twitchUrl)}`, "_blank");
+        }
+
+        function obtenerPlataforma(url) {
+            url = url.trim();
+            if (!url) return { tipo: null, canal: null };
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://" + url;
+            }
+            try {
+                const direccion = new URL(url);
+                const host = direccion.hostname.toLowerCase();
+                const partes = direccion.pathname.replace(/^\/+/, "").replace(/\/+$/, "").split("/");
+
+                if (host.includes("twitch.tv")) {
+                    return { tipo: "twitch", canal: partes[0] || null };
+                }
+                if (host.includes("kick.com")) {
+                    return { tipo: "kick", canal: partes[0] || null };
+                }
+            } catch (error) {
+                return { tipo: null, canal: null };
+            }
+            return { tipo: null, canal: null };
+        }
+
+        function cargarStreamerPrincipal() {
+            const input = document.getElementById("twitchUrl");
+            const urlVal = input.value.trim();
+            const { tipo, canal } = obtenerPlataforma(urlVal);
+
+            if (!tipo || !canal) {
+                alert("Introduce un link válido de Twitch o Kick.");
+                return;
+            }
+
+            const parent = window.location.hostname || "localhost";
+            const playerDiv = document.getElementById("twitchPlayer");
+            const chat = document.getElementById("twitchChat");
+            playerDiv.innerHTML = "";
+
+            if (tipo === "twitch") {
+                const iframe = document.createElement("iframe");
+                iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true`;
+                iframe.allowFullscreen = true;
+                iframe.allow = "autoplay; encrypted-media; fullscreen";
+                playerDiv.appendChild(iframe);
+
+                chat.src = `https://www.twitch.tv/embed/${encodeURIComponent(canal)}/chat?parent=${encodeURIComponent(parent)}`;
+            } else if (tipo === "kick") {
+                const iframe = document.createElement("iframe");
+                iframe.src = `https://player.kick.com/${encodeURIComponent(canal)}`;
+                iframe.allowFullscreen = true;
+                iframe.allow = "autoplay; encrypted-media; fullscreen";
+                playerDiv.appendChild(iframe);
+
+                chat.src = `https://kick.com/${encodeURIComponent(canal)}/chatroom`;
+            }
+            
+            localStorage.setItem("espejo_twitch", urlVal);
+        }
+
+        function recargarStreamer() {
+            const input = document.getElementById("twitchUrl");
+            if (input.value.trim()) {
+                cargarStreamerPrincipal();
+            }
+        }
+
+        function forzarPlayStreamer() {
+            const input = document.getElementById("twitchUrl");
+            if (input.value.trim()) {
+                cargarStreamerPrincipal();
+            }
+        }
+
+        async function capturarPantallaWeb() {
+            const pantalla = document.getElementById("secondScreen");
+            const error = document.getElementById("videoError");
+            error.style.display = "none";
+
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { cursor: "always" },
+                    audio: true
+                });
+
+                pantalla.innerHTML = "";
+                const video = document.createElement("video");
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.playsInline = true;
+                video.controls = true;
+                pantalla.appendChild(video);
+
+                stream.getVideoTracks()[0].onended = () => {
+                    pantalla.innerHTML = `<div class="empty-message">Captura finalizada</div>`;
+                };
+
+            } catch (err) {
+                console.error("Error al capturar pantalla:", err);
+            }
+        }
+
+        function obtenerYoutubeId(url) {
+            try {
+                const direccion = new URL(url);
+                const hostname = direccion.hostname.toLowerCase();
+                if (hostname.includes("youtube.com")) {
+                    const id = direccion.searchParams.get("v");
+                    if (id) return id;
+                }
+                if (hostname === "youtu.be") {
+                    return direccion.pathname.replace(/^\/+/, "").split("/")[0];
+                }
+                if (direccion.pathname.startsWith("/live/") || direccion.pathname.startsWith("/shorts/")) {
+                    return direccion.pathname.split("/")[2];
+                }
+                return null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function convertirGoogleDrive(url) {
+            try {
+                const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    const fileId = match[1];
+                    return `https://drive.google.com/file/d/${fileId}/preview`;
+                }
+            } catch (e) {
+                console.error("Error procesando link de Drive", e);
+            }
+            return null;
+        }
+
+        function cargarSegundoVideo() {
+            const input = document.getElementById("videoUrl");
+            let url = input.value.trim();
+            const pantalla = document.getElementById("secondScreen");
+            const error = document.getElementById("videoError");
+
+            if (!url) return;
+
+            pantalla.innerHTML = "";
+            error.style.display = "none";
+
+            localStorage.setItem("espejo_video", url);
+
+            if (url.toLowerCase().startsWith("<iframe")) {
+                pantalla.innerHTML = url;
+                const iframeElement = pantalla.querySelector("iframe");
+                if (iframeElement) {
+                    iframeElement.style.width = "100%";
+                    iframeElement.style.height = "100%";
+                    iframeElement.style.border = "none";
+                }
+                return;
+            }
+
+            const youtubeId = obtenerYoutubeId(url);
+            if (youtubeId) {
+                const iframe = document.createElement("iframe");
+                iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId) + "?autoplay=1";
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+                iframe.allowFullscreen = true;
+                iframe.title = "Vídeo de YouTube";
+                pantalla.appendChild(iframe);
+                return;
+            }
+
+            const linkDrivePreview = convertirGoogleDrive(url);
+            if (linkDrivePreview) {
+                const iframe = document.createElement("iframe");
+                iframe.src = linkDrivePreview;
+                iframe.allow = "autoplay; fullscreen; picture-in-picture";
+                iframe.allowFullscreen = true;
+                iframe.title = "Reproductor de Google Drive";
+                pantalla.appendChild(iframe);
+                return;
+            }
+
+            const { tipo: tipoVideo, canal: canalVideo } = obtenerPlataforma(url);
+            if (tipoVideo === "kick") {
+                const iframe = document.createElement("iframe");
+                iframe.src = `https://player.kick.com/${encodeURIComponent(canalVideo)}`;
+                iframe.allow = "autoplay; fullscreen; picture-in-picture";
+                iframe.allowFullscreen = true;
+                iframe.title = "Reproductor de Kick";
+                pantalla.appendChild(iframe);
+                return;
+            }
+
+            const urlSinQuery = url.split("?")[0].toLowerCase();
+            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
+
+            if (esVideoDirecto) {
+                const video = document.createElement("video");
+                video.src = url;
+                video.controls = true;
+                video.autoplay = true;
+                video.playsInline = true;
+                video.preload = "metadata";
+                pantalla.appendChild(video);
+                return;
+            }
+
+            const iframe = document.createElement("iframe");
+            iframe.src = url;
+            iframe.allow = "autoplay; fullscreen; picture-in-picture";
+            iframe.allowFullscreen = true;
+            iframe.title = "Transmisión principal";
+            pantalla.appendChild(iframe);
+        }
+
+        document.getElementById("twitchUrl").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") cargarStreamerPrincipal();
+        });
+
+        document.getElementById("videoUrl").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") cargarSegundoVideo();
+        });
+
+        window.onload = function() {
+            inicializarPlaylist();
+        };
+    </script>
+
+</body>
+</html>
