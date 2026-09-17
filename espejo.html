@@ -67,7 +67,7 @@
             height: 100%;
             border: none;
             display: block;
-            pointer-events: none; /* Bloquea totalmente cualquier interacción */
+            pointer-events: none;
         }
 
         .empty-message {
@@ -88,17 +88,14 @@
 
     <main class="espejo-layout">
         <section class="espejo-main">
-            <!-- Transmisión de Twitch -->
             <div class="espejo-twitch-box" id="espejoTwitch">
                 <div class="empty-message">Esperando canal de Twitch...</div>
             </div>
-            <!-- Video en curso / Playlist -->
             <div class="espejo-video-box" id="espejoScreen">
                 <div class="empty-message">Esperando video en curso...</div>
             </div>
         </section>
 
-        <!-- Chat de Twitch -->
         <aside class="espejo-chat-box" id="espejoChat">
             <div class="empty-message">Esperando chat...</div>
         </aside>
@@ -106,7 +103,7 @@
 
     <script>
         function obtenerCanal(url) {
-            url = url.trim();
+            url = (url || "").trim();
             if (!url) return null;
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "https://" + url;
@@ -149,27 +146,25 @@
             return null;
         }
 
-        function cargarEspejoCompleto() {
-            const params = new URLSearchParams(window.location.search);
-            const videoUrl = params.get("url");
-            const twitchUrl = params.get("twitch");
-
-            const pantallaVideo = document.getElementById("espejoScreen");
+        function actualizarTwitch(twitchUrl) {
+            const canal = obtenerCanal(twitchUrl);
             const pantallaTwitch = document.getElementById("espejoTwitch");
             const pantallaChat = document.getElementById("espejoChat");
-
-            const parent = window.location.hostname || "localhost";
-
-            // Cargar Twitch y Chat si viene el parámetro
-            if (twitchUrl) {
-                const canal = obtenerCanal(twitchUrl);
-                if (canal) {
-                    pantallaTwitch.innerHTML = `<iframe src="https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true" allowfullscreen></iframe>`;
-                    pantallaChat.innerHTML = `<iframe src="https://www.twitch.tv/embed/${encodeURIComponent(canal)}/chat?parent=${encodeURIComponent(parent)}"></iframe>`;
-                }
+            
+            // Usar el hostname actual o fallback seguro para Twitch embed
+            let parent = window.location.hostname;
+            if (!parent || parent === "") {
+                parent = "localhost";
             }
 
-            // Cargar el video
+            if (canal) {
+                pantallaTwitch.innerHTML = `<iframe src="https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true" allowfullscreen></iframe>`;
+                pantallaChat.innerHTML = `<iframe src="https://www.twitch.tv/embed/${encodeURIComponent(canal)}/chat?parent=${encodeURIComponent(parent)}"></iframe>`;
+            }
+        }
+
+        function actualizarVideo(videoUrl) {
+            const pantallaVideo = document.getElementById("espejoScreen");
             if (!videoUrl) return;
 
             pantallaVideo.innerHTML = "";
@@ -194,9 +189,33 @@
             pantallaVideo.innerHTML = `<iframe src="${videoUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
         }
 
+        function cargarDatosEspejo() {
+            // 1. Intentar leer de la URL primero
+            const params = new URLSearchParams(window.location.search);
+            let videoUrl = params.get("url");
+            let twitchUrl = params.get("twitch");
+
+            // 2. Si no están en la URL, rescatarlos del localStorage como respaldo sincronizado
+            if (!videoUrl) videoUrl = localStorage.getItem("espejo_video");
+            if (!twitchUrl) twitchUrl = localStorage.getItem("espejo_twitch");
+
+            if (twitchUrl) actualizarTwitch(twitchUrl);
+            if (videoUrl) actualizarVideo(videoUrl);
+        }
+
         window.onload = function() {
-            cargarEspejoCompleto();
+            cargarDatosEspejo();
         };
+
+        // Escuchar cambios en tiempo real si se actualiza desde el panel principal
+        window.addEventListener("storage", function(event) {
+            if (event.key === "espejo_video") {
+                actualizarVideo(event.newValue);
+            }
+            if (event.key === "espejo_twitch") {
+                actualizarTwitch(event.newValue);
+            }
+        });
     </script>
 
 </body>
