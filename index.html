@@ -522,7 +522,6 @@
     </main>
 
     <script>
-        // LISTA DE REPRODUCCIÓN (10 VIDEOS DE DRIVE)
         const playlistVideos = [
             { titulo: "Video 1", url: "https://drive.google.com/file/d/1nhQaS8svuzhzxlkSVKRVJdfCx-4cWf9M/view?usp=drive_link" },
             { titulo: "Video 2", url: "https://drive.google.com/file/d/1ahvzENOnWvztI4N2uDQlw8bJ3stn0Hdf/view?usp=drive_link" },
@@ -561,16 +560,13 @@
             cargarSegundoVideo();
         }
 
-        function guardarDatosSesion(twitchUrl, videoUrl) {
-            localStorage.setItem("twitchUrl", twitchUrl);
-            localStorage.setItem("videoUrl", videoUrl);
-        }
-
         function abrirEspejo() {
-            const twitchUrl = document.getElementById("twitchUrl").value.trim();
             const videoUrl = document.getElementById("videoUrl").value.trim();
-            guardarDatosSesion(twitchUrl, videoUrl);
-            window.open("espejo.html", "_blank");
+            if (!videoUrl) {
+                alert("Primero selecciona un video de la playlist.");
+                return;
+            }
+            window.open("espejo.html?url=" + encodeURIComponent(videoUrl), "_blank");
         }
 
         function obtenerCanal(url) {
@@ -598,9 +594,6 @@
                 alert("Introduce un link válido de Twitch.");
                 return;
             }
-
-            const videoUrl = document.getElementById("videoUrl").value.trim();
-            guardarDatosSesion(urlVal, videoUrl);
 
             const parent = window.location.hostname || "localhost";
             const playerDiv = document.getElementById("twitchPlayer");
@@ -698,9 +691,6 @@
             const error = document.getElementById("videoError");
 
             if (!url) return;
-
-            const twitchUrl = document.getElementById("twitchUrl").value.trim();
-            guardarDatosSesion(twitchUrl, url);
 
             pantalla.innerHTML = "";
             error.style.display = "none";
