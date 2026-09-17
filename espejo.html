@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espejo - Transmisión General</title>
+    <title>Señal en Directo - Espejo</title>
     <style>
         * {
             box-sizing: border-box;
@@ -89,19 +89,26 @@
     <main class="espejo-layout">
         <section class="espejo-main">
             <div class="espejo-twitch-box" id="espejoTwitch">
-                <div class="empty-message">Esperando canal de Twitch...</div>
+                <div class="empty-message">Sintonizando señal de Twitch...</div>
             </div>
             <div class="espejo-video-box" id="espejoScreen">
-                <div class="empty-message">Esperando video en curso...</div>
+                <div class="empty-message">Sintonizando señal de video...</div>
             </div>
         </section>
 
         <aside class="espejo-chat-box" id="espejoChat">
-            <div class="empty-message">Esperando chat...</div>
+            <div class="empty-message">Sintonizando chat...</div>
         </aside>
     </main>
 
     <script>
+        // Playlist de respaldo idéntica para que actúe como programación de TV automática
+        const playlistDefecto = [
+            "https://drive.google.com/file/d/1nhQaS8svuzhzxlkSVKRVJdfCx-4cWf9M/view?usp=drive_link",
+            "https://drive.google.com/file/d/1ahvzENOnWvztI4N2uDQlw8bJ3stn0Hdf/view?usp=drive_link",
+            "https://drive.google.com/file/d/1j4QA5zl5T8VvPvVwIv6hYUSjSeykJJxi/view?usp=drive_link"
+        ];
+
         function obtenerCanal(url) {
             url = (url || "").trim();
             if (!url) return null;
@@ -151,11 +158,7 @@
             const pantallaTwitch = document.getElementById("espejoTwitch");
             const pantallaChat = document.getElementById("espejoChat");
             
-            // Usar el hostname actual o fallback seguro para Twitch embed
-            let parent = window.location.hostname;
-            if (!parent || parent === "") {
-                parent = "localhost";
-            }
+            let parent = window.location.hostname || "localhost";
 
             if (canal) {
                 pantallaTwitch.innerHTML = `<iframe src="https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true" allowfullscreen></iframe>`;
@@ -189,25 +192,29 @@
             pantallaVideo.innerHTML = `<iframe src="${videoUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
         }
 
-        function cargarDatosEspejo() {
-            // 1. Intentar leer de la URL primero
+        function iniciarSenalDeTelevision() {
             const params = new URLSearchParams(window.location.search);
-            let videoUrl = params.get("url");
-            let twitchUrl = params.get("twitch");
+            let videoUrl = params.get("url") || localStorage.getItem("espejo_video");
+            let twitchUrl = params.get("twitch") || localStorage.getItem("espejo_twitch");
 
-            // 2. Si no están en la URL, rescatarlos del localStorage como respaldo sincronizado
-            if (!videoUrl) videoUrl = localStorage.getItem("espejo_video");
-            if (!twitchUrl) twitchUrl = localStorage.getItem("espejo_twitch");
+            // Si el espejo se abre pelado sin nada activo, sintoniza por defecto el primer video de emergencia como la "señal de tele"
+            if (!videoUrl) {
+                videoUrl = playlistDefecto[0];
+            }
 
-            if (twitchUrl) actualizarTwitch(twitchUrl);
-            if (videoUrl) actualizarVideo(videoUrl);
+            // Canal de Twitch por defecto opcional si tampoco hay nada guardado
+            if (!twitchUrl) {
+                twitchUrl = "https://www.twitch.tv/monstercat"; // Canal de prueba predeterminado para que nunca quede en negro
+            }
+
+            actualizarTwitch(twitchUrl);
+            actualizarVideo(videoUrl);
         }
 
         window.onload = function() {
-            cargarDatosEspejo();
+            iniciarSenalDeTelevision();
         };
 
-        // Escuchar cambios en tiempo real si se actualiza desde el panel principal
         window.addEventListener("storage", function(event) {
             if (event.key === "espejo_video") {
                 actualizarVideo(event.newValue);
