@@ -119,6 +119,7 @@
             gap: 10px;
             height: 100%;
             min-height: 0;
+            overflow-y: auto;
         }
 
         .recommended-section {
@@ -128,18 +129,14 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            flex: 1;
-            min-height: 0;
+            flex-shrink: 0;
         }
 
         .streamer-widget-content {
             display: flex;
             flex-direction: column;
-            flex: 1;
-            min-height: 0;
             padding: 10px;
             gap: 10px;
-            justify-content: flex-start;
         }
 
         .streamer-widget {
@@ -239,6 +236,58 @@
 
         .ctrl-btn.btn-recargar:hover {
             background: #f57c00;
+        }
+
+        /* Estilos de la Playlist */
+        .playlist-box {
+            background: #18181b;
+            border: 1px solid #303033;
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .playlist-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #aaa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .playlist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .playlist-item {
+            background: #1f1f23;
+            border: 1px solid #3a3a3d;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .playlist-item:hover {
+            background: #2d2d30;
+            border-color: #9147ff;
+        }
+
+        .playlist-item.active {
+            border-color: #9147ff;
+            background: #2c1f4a;
         }
 
         .center-area {
@@ -386,19 +435,6 @@
             font-size: 13px;
             flex-shrink: 0;
         }
-
-        @media (max-width: 1100px) {
-            html, body {
-                overflow: auto;
-            }
-            .stream-layout {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-            .sidebar-left, .center-area, .chat-area {
-                height: 450px;
-            }
-        }
     </style>
 </head>
 
@@ -434,7 +470,7 @@
                         <i class="fa-solid fa-heart" style="color: #ff4757;"></i>
                         Ceneka
                     </a>
-                    <a href="https://streamelements.com/coteparrague/tip" target="_blank" class="donation-btn" title="StreamElements">
+                    <a href="https://streamelements.com/coteparrague/tip" target="_blank" class="donation-btn" title="Tips">
                         <i class="fa-solid fa-hand-holding-dollar" style="color: #2ed573;"></i>
                         Tips
                     </a>
@@ -444,13 +480,24 @@
                     <button class="ctrl-btn btn-play" onclick="forzarPlayTwitch()"><i class="fa-solid fa-play"></i> Play</button>
                     <button class="ctrl-btn btn-recargar" onclick="recargarStreamer()"><i class="fa-solid fa-rotate"></i> Recargar</button>
                 </div>
+
+                <!-- PLAYLIST DE GOOGLE DRIVE O VIDEOS -->
+                <div class="playlist-box">
+                    <div class="playlist-title">
+                        <span>PLAYLIST DE VIDEOS</span>
+                        <i class="fa-solid fa-list"></i>
+                    </div>
+                    <div class="playlist-items" id="playlistContainer">
+                        <!-- Los videos se cargan automáticamente aquí -->
+                    </div>
+                </div>
             </aside>
 
             <section class="center-area">
                 <div class="video-area">
                     <div id="secondScreen">
                         <div class="empty-message">
-                            Pega abajo un link o captura tu pestaña de anime
+                            Selecciona de la playlist o pega abajo un link
                         </div>
                     </div>
                 </div>
@@ -475,6 +522,45 @@
     </main>
 
     <script>
+        // LISTA DE REPRODUCCIÓN (10 VIDEOS DE DRIVE)
+        const playlistVideos = [
+            { titulo: "Video 1", url: "https://drive.google.com/file/d/1nhQaS8svuzhzxlkSVKRVJdfCx-4cWf9M/view?usp=drive_link" },
+            { titulo: "Video 2", url: "https://drive.google.com/file/d/1ahvzENOnWvztI4N2uDQlw8bJ3stn0Hdf/view?usp=drive_link" },
+            { titulo: "Video 3", url: "https://drive.google.com/file/d/1j4QA5zl5T8VvPvVwIv6hYUSjSeykJJxi/view?usp=drive_link" },
+            { titulo: "Video 4", url: "https://drive.google.com/file/d/1cOAof_kugoieeCLsek6CTyUPLvcxXeRD/view?usp=drive_link" },
+            { titulo: "Video 5", url: "https://drive.google.com/file/d/1U805GOViwiJv34NRu7aor3_5OdUfcz5p/view?usp=drive_link" },
+            { titulo: "Video 6", url: "https://drive.google.com/file/d/1tUumNkdaELFwlhNr499MDLJ1e2LmZg13/view?usp=drive_link" },
+            { titulo: "Video 7", url: "https://drive.google.com/file/d/1rIsgNjsMvl3lPjEkDM9Q9fXZtNzipW3X/view?usp=drive_link" },
+            { titulo: "Video 8", url: "https://drive.google.com/file/d/1imcI6s7os1QUpI8ls1LJcnVxedj1fhr_/view?usp=drive_link" },
+            { titulo: "Video 9", url: "https://drive.google.com/file/d/1CLq3L3XvXNWtVqjLBj-oY9xJxF8qGqTy/view?usp=drive_link" },
+            { titulo: "Video 10", url: "https://drive.google.com/file/d/1VnYYip4QPOQS--8agpXX1d0TMegqAN2b/view?usp=drive_link" }
+        ];
+
+        function inicializarPlaylist() {
+            const contenedor = document.getElementById("playlistContainer");
+            contenedor.innerHTML = "";
+            playlistVideos.forEach((item, index) => {
+                const div = document.createElement("div");
+                div.className = "playlist-item";
+                div.innerHTML = `<span>${item.titulo}</span> <i class="fa-solid fa-play"></i>`;
+                div.onclick = () => reproducirDesdePlaylist(index);
+                contenedor.appendChild(div);
+            });
+        }
+
+        function reproducirDesdePlaylist(index) {
+            const videoObj = playlistVideos[index];
+            const input = document.getElementById("videoUrl");
+            input.value = videoObj.url;
+            
+            document.querySelectorAll(".playlist-item").forEach((el, idx) => {
+                if (idx === index) el.classList.add("active");
+                else el.classList.remove("active");
+            });
+
+            cargarSegundoVideo();
+        }
+
         function guardarDatosSesion(twitchUrl, videoUrl) {
             localStorage.setItem("twitchUrl", twitchUrl);
             localStorage.setItem("videoUrl", videoUrl);
@@ -597,7 +683,6 @@
                 const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
                 if (match && match[1]) {
                     const fileId = match[1];
-                    // Retorna un iframe adaptado para inserción de Google Drive
                     return `https://drive.google.com/file/d/${fileId}/preview`;
                 }
             } catch (e) {
@@ -642,7 +727,6 @@
                 return;
             }
 
-            // Detección automática de enlaces de Google Drive
             const linkDrivePreview = convertirGoogleDrive(url);
             if (linkDrivePreview) {
                 const iframe = document.createElement("iframe");
@@ -683,6 +767,10 @@
         document.getElementById("videoUrl").addEventListener("keydown", function(event) {
             if (event.key === "Enter") cargarSegundoVideo();
         });
+
+        window.onload = function() {
+            inicializarPlaylist();
+        };
     </script>
 
 </body>
