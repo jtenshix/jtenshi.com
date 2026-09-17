@@ -550,7 +550,6 @@
             error.style.display = "none";
 
             try {
-                // Abre el selector nativo del navegador (igual que Discord) para elegir pestaña o ventana
                 const stream = await navigator.mediaDevices.getDisplayMedia({
                     video: { cursor: "always" },
                     audio: true
@@ -564,7 +563,6 @@
                 video.controls = true;
                 pantalla.appendChild(video);
 
-                // Si el usuario detiene la captura desde la barra del navegador, limpia la pantalla
                 stream.getVideoTracks()[0].onended = () => {
                     pantalla.innerHTML = `<div class="empty-message">Captura finalizada</div>`;
                 };
@@ -592,6 +590,20 @@
             } catch (error) {
                 return null;
             }
+        }
+
+        function convertirGoogleDrive(url) {
+            try {
+                const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    const fileId = match[1];
+                    // Retorna un iframe adaptado para inserción de Google Drive
+                    return `https://drive.google.com/file/d/${fileId}/preview`;
+                }
+            } catch (e) {
+                console.error("Error procesando link de Drive", e);
+            }
+            return null;
         }
 
         function cargarSegundoVideo() {
@@ -626,6 +638,18 @@
                 iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
                 iframe.allowFullscreen = true;
                 iframe.title = "Vídeo de YouTube";
+                pantalla.appendChild(iframe);
+                return;
+            }
+
+            // Detección automática de enlaces de Google Drive
+            const linkDrivePreview = convertirGoogleDrive(url);
+            if (linkDrivePreview) {
+                const iframe = document.createElement("iframe");
+                iframe.src = linkDrivePreview;
+                iframe.allow = "autoplay; fullscreen; picture-in-picture";
+                iframe.allowFullscreen = true;
+                iframe.title = "Reproductor de Google Drive";
                 pantalla.appendChild(iframe);
                 return;
             }
