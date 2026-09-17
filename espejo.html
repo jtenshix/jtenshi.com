@@ -20,7 +20,7 @@
             background: #0e0e10;
             color: white;
             font-family: Arial, Helvetica, sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         body {
@@ -32,7 +32,7 @@
             flex: 1;
             width: 100%;
             margin: 0;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             min-height: 0;
         }
@@ -40,8 +40,8 @@
         .stream-layout {
             width: 100%;
             display: grid;
-            grid-template-columns: minmax(320px, 1fr) minmax(0, 2.2fr) minmax(300px, 1fr);
-            gap: 16px;
+            grid-template-columns: minmax(300px, 1fr) minmax(0, 2.2fr) minmax(300px, 1fr);
+            gap: 12px;
             align-items: stretch;
             height: 100%;
         }
@@ -68,8 +68,8 @@
         .streamer-widget-content {
             display: flex;
             flex-direction: column;
-            padding: 10px;
-            gap: 10px;
+            padding: 8px;
+            gap: 8px;
         }
 
         .streamer-widget {
@@ -182,7 +182,7 @@
             align-items: center;
             justify-content: center;
             color: #777;
-            font-size: 15px;
+            font-size: 14px;
             text-align: center;
             padding: 20px;
             pointer-events: none;
@@ -220,6 +220,47 @@
             height: 100%;
             border: none;
             display: block;
+        }
+
+        /* DISEÑO RESPONSIVO PARA MÓVILES Y PANTALLAS PEQUEÑAS */
+        @media (max-width: 1024px) {
+            html, body {
+                overflow-y: auto;
+                height: auto;
+            }
+
+            .layout {
+                height: auto;
+                overflow: visible;
+            }
+
+            .stream-layout {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                gap: 16px;
+            }
+
+            .center-area {
+                order: 1;
+                height: 300px;
+            }
+
+            .sidebar-left {
+                order: 2;
+                height: auto;
+                overflow: visible;
+            }
+
+            .streamer-widget {
+                aspect-ratio: 16 / 9;
+                height: 250px;
+            }
+
+            .chat-area {
+                order: 3;
+                height: 350px;
+            }
         }
     </style>
 </head>
@@ -413,8 +454,8 @@
                 return;
             }
 
-            const urlSinGroup = url.split("?")[0].toLowerCase();
-            const esVideoDirecto = urlSinGroup.endsWith(".mp4") || urlSinGroup.endsWith(".webm") || urlSinGroup.endsWith(".ogg") || urlSinGroup.endsWith(".mov");
+            const urlSinQuery = url.split("?")[0].toLowerCase();
+            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
 
             if (esVideoDirecto) {
                 const video = document.createElement("video");
@@ -435,7 +476,6 @@
 
         window.onload = function() {
             const params = new URLSearchParams(window.location.search);
-            // Lee prioritariamente lo que viene en la URL al compartir el link
             let twitchUrl = params.get("twitch") || "";
             let videoUrl = params.get("url") || "";
 
@@ -445,4 +485,5 @@
     </script>
 
 </body>
+
 </html>
