@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Señal en Directo - Espejo</title>
+    <title>Espejo de Transmisión</title>
     <style>
         * {
             box-sizing: border-box;
@@ -16,58 +16,42 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background: #0e0e10;
-            overflow: hidden;
-            font-family: Arial, Helvetica, sans-serif;
+            background: #000;
             color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow: hidden;
         }
 
-        .espejo-layout {
+        .mirror-container {
+            position: relative;
             width: 100%;
             height: 100%;
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 0;
-        }
-
-        .espejo-main {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #espejoScreen {
+            position: absolute;
+            inset: 0;
+            width: 100%;
             height: 100%;
             background: #000;
         }
 
-        .espejo-twitch-box {
-            height: 40%;
-            width: 100%;
-            background: #0e0e10;
-            border-bottom: 2px solid #303033;
-            position: relative;
-        }
-
-        .espejo-video-box {
-            flex: 1;
-            width: 100%;
-            background: #000;
-            position: relative;
-        }
-
-        .espejo-chat-box {
-            height: 100%;
-            background: #18181b;
-            border-left: 2px solid #303033;
-            position: relative;
-        }
-
-        .espejo-twitch-box iframe,
-        .espejo-video-box iframe,
-        .espejo-video-box video,
-        .espejo-chat-box iframe {
+        #espejoScreen iframe {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
-            pointer-events: none;
+        }
+
+        #espejoScreen video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            background: #000;
         }
 
         .empty-message {
@@ -76,8 +60,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #777;
-            font-size: 14px;
+            color: #555;
+            font-size: 18px;
             text-align: center;
             padding: 20px;
         }
@@ -86,40 +70,51 @@
 
 <body>
 
-    <main class="espejo-layout">
-        <section class="espejo-main">
-            <div class="espejo-twitch-box" id="espejoTwitch">
-                <div class="empty-message">Sintonizando señal de Twitch...</div>
-            </div>
-            <div class="espejo-video-box" id="espejoScreen">
-                <div class="empty-message">Sintonizando señal de video...</div>
-            </div>
-        </section>
-
-        <aside class="espejo-chat-box" id="espejoChat">
-            <div class="empty-message">Sintonizando chat...</div>
-        </aside>
-    </main>
+    <div class="mirror-container">
+        <div id="espejoScreen">
+            <div class="empty-message">Esperando transmisión...</div>
+        </div>
+    </div>
 
     <script>
-        // Playlist de respaldo idéntica para que actúe como programación de TV automática
-        const playlistDefecto = [
-            "https://drive.google.com/file/d/1nhQaS8svuzhzxlkSVKRVJdfCx-4cWf9M/view?usp=drive_link",
-            "https://drive.google.com/file/d/1ahvzENOnWvztI4N2uDQlw8bJ3stn0Hdf/view?usp=drive_link",
-            "https://drive.google.com/file/d/1j4QA5zl5T8VvPvVwIv6hYUSjSeykJJxi/view?usp=drive_link"
-        ];
-
-        function obtenerCanal(url) {
-            url = (url || "").trim();
-            if (!url) return null;
+        function obtenerPlataforma(url) {
+            url = url.trim();
+            if (!url) return { tipo: null, canal: null };
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "https://" + url;
             }
             try {
                 const direccion = new URL(url);
-                if (!direccion.hostname.toLowerCase().includes("twitch.tv")) return null;
+                const host = direccion.hostname.toLowerCase();
                 const partes = direccion.pathname.replace(/^\/+/, "").replace(/\/+$/, "").split("/");
-                return partes[0] || null;
+
+                if (host.includes("twitch.tv")) {
+                    return { tipo: "twitch", canal: partes[0] || null };
+                }
+                if (host.includes("kick.com")) {
+                    return { tipo: "kick", canal: partes[0] || null };
+                }
+            } catch (error) {
+                return { tipo: null, canal: null };
+            }
+            return { tipo: null, canal: null };
+        }
+
+        function obtenerYoutubeId(url) {
+            try {
+                const direccion = new URL(url);
+                const hostname = direccion.hostname.toLowerCase();
+                if (hostname.includes("youtube.com")) {
+                    const id = direccion.searchParams.get("v");
+                    if (id) return id;
+                }
+                if (hostname === "youtu.be") {
+                    return direccion.pathname.replace(/^\/+/, "").split("/")[0];
+                }
+                if (direccion.pathname.startsWith("/live/") || direccion.pathname.startsWith("/shorts/")) {
+                    return direccion.pathname.split("/")[2];
+                }
+                return null;
             } catch (error) {
                 return null;
             }
@@ -129,100 +124,112 @@
             try {
                 const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
                 if (match && match[1]) {
-                    return `https://drive.google.com/file/d/${match[1]}/preview`;
+                    const fileId = match[1];
+                    return `https://drive.google.com/file/d/${fileId}/preview`;
                 }
             } catch (e) {
-                console.error("Error en Drive", e);
+                console.error("Error procesando link de Drive", e);
             }
             return null;
         }
 
-        function obtenerYoutubeId(url) {
-            try {
-                const direccion = new URL(url);
-                const hostname = direccion.hostname.toLowerCase();
-                if (hostname.includes("youtube.com")) {
-                    return direccion.searchParams.get("v");
-                }
-                if (hostname === "youtu.be") {
-                    return direccion.pathname.replace(/^\/+/, "").split("/")[0];
-                }
-            } catch (error) {
-                return null;
-            }
-            return null;
-        }
-
-        function actualizarTwitch(twitchUrl) {
-            const canal = obtenerCanal(twitchUrl);
-            const pantallaTwitch = document.getElementById("espejoTwitch");
-            const pantallaChat = document.getElementById("espejoChat");
-            
-            let parent = window.location.hostname || "localhost";
-
-            if (canal) {
-                pantallaTwitch.innerHTML = `<iframe src="https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true" allowfullscreen></iframe>`;
-                pantallaChat.innerHTML = `<iframe src="https://www.twitch.tv/embed/${encodeURIComponent(canal)}/chat?parent=${encodeURIComponent(parent)}"></iframe>`;
-            }
-        }
-
-        function actualizarVideo(videoUrl) {
-            const pantallaVideo = document.getElementById("espejoScreen");
-            if (!videoUrl) return;
-
-            pantallaVideo.innerHTML = "";
-
-            if (videoUrl.toLowerCase().startsWith("<iframe")) {
-                pantallaVideo.innerHTML = videoUrl;
+        function cargarContenidoEspejo(url) {
+            const pantalla = document.getElementById("espejoScreen");
+            if (!url) {
+                pantalla.innerHTML = `<div class="empty-message">Esperando transmisión...</div>`;
                 return;
             }
 
-            const youtubeId = obtenerYoutubeId(videoUrl);
+            pantalla.innerHTML = "";
+
+            if (url.toLowerCase().startsWith("<iframe")) {
+                pantalla.innerHTML = url;
+                const iframeElement = pantalla.querySelector("iframe");
+                if (iframeElement) {
+                    iframeElement.style.width = "100%";
+                    iframeElement.style.height = "100%";
+                    iframeElement.style.border = "none";
+                }
+                return;
+            }
+
+            const youtubeId = obtenerYoutubeId(url);
             if (youtubeId) {
-                pantallaVideo.innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                const iframe = document.createElement("iframe");
+                iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId) + "?autoplay=1";
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+                iframe.allowFullscreen = true;
+                pantalla.appendChild(iframe);
                 return;
             }
 
-            const linkDrive = convertirGoogleDrive(videoUrl);
-            if (linkDrive) {
-                pantallaVideo.innerHTML = `<iframe src="${linkDrive}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+            const linkDrivePreview = convertirGoogleDrive(url);
+            if (linkDrivePreview) {
+                const iframe = document.createElement("iframe");
+                iframe.src = linkDrivePreview;
+                iframe.allow = "autoplay; fullscreen; picture-in-picture";
+                iframe.allowFullscreen = true;
+                pantalla.appendChild(iframe);
                 return;
             }
 
-            pantallaVideo.innerHTML = `<iframe src="${videoUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-        }
-
-        function iniciarSenalDeTelevision() {
-            const params = new URLSearchParams(window.location.search);
-            let videoUrl = params.get("url") || localStorage.getItem("espejo_video");
-            let twitchUrl = params.get("twitch") || localStorage.getItem("espejo_twitch");
-
-            // Si el espejo se abre pelado sin nada activo, sintoniza por defecto el primer video de emergencia como la "señal de tele"
-            if (!videoUrl) {
-                videoUrl = playlistDefecto[0];
+            const { tipo, canal } = obtenerPlataforma(url);
+            if (tipo === "twitch") {
+                const parent = window.location.hostname || "localhost";
+                const iframe = document.createElement("iframe");
+                iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=false&autoplay=true`;
+                iframe.allowFullscreen = true;
+                iframe.allow = "autoplay; encrypted-media; fullscreen";
+                pantalla.appendChild(iframe);
+                return;
+            }
+            if (tipo === "kick") {
+                const iframe = document.createElement("iframe");
+                iframe.src = `https://player.kick.com/${encodeURIComponent(canal)}`;
+                iframe.allowFullscreen = true;
+                iframe.allow = "autoplay; encrypted-media; fullscreen";
+                pantalla.appendChild(iframe);
+                return;
             }
 
-            // Canal de Twitch por defecto opcional si tampoco hay nada guardado
-            if (!twitchUrl) {
-                twitchUrl = "https://www.twitch.tv/monstercat"; // Canal de prueba predeterminado para que nunca quede en negro
+            const urlSinQuery = url.split("?")[0].toLowerCase();
+            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
+
+            if (esVideoDirecto) {
+                const video = document.createElement("video");
+                video.src = url;
+                video.controls = true;
+                video.autoplay = true;
+                video.playsInline = true;
+                pantalla.appendChild(video);
+                return;
             }
 
-            actualizarTwitch(twitchUrl);
-            actualizarVideo(videoUrl);
+            const iframe = document.createElement("iframe");
+            iframe.src = url;
+            iframe.allow = "autoplay; fullscreen; picture-in-picture";
+            iframe.allowFullscreen = true;
+            pantalla.appendChild(iframe);
         }
 
+        // Revisar parámetros de la URL al abrir
         window.onload = function() {
-            iniciarSenalDeTelevision();
-        };
+            const params = new URLSearchParams(window.location.search);
+            let urlVideo = params.get("url");
 
-        window.addEventListener("storage", function(event) {
-            if (event.key === "espejo_video") {
-                actualizarVideo(event.newValue);
+            if (!urlVideo) {
+                urlVideo = localStorage.getItem("espejo_video");
             }
-            if (event.key === "espejo_twitch") {
-                actualizarTwitch(event.newValue);
-            }
-        });
+
+            cargarContenidoEspejo(urlVideo);
+
+            // Escuchar cambios en tiempo real si se actualiza desde la pestaña de control
+            window.addEventListener("storage", function(e) {
+                if (e.key === "espejo_video") {
+                    cargarContenidoEspejo(e.newValue);
+                }
+            });
+        };
     </script>
 
 </body>
