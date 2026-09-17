@@ -28,6 +28,48 @@
             flex-direction: column;
         }
 
+        /* Barra superior discreta con botones de acceso directo */
+        .mirror-topbar {
+            width: 100%;
+            background: #18181b;
+            padding: 8px 16px;
+            border-bottom: 1px solid #303033;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .mirror-topbar span {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .preset-btn {
+            height: 32px;
+            padding: 0 14px;
+            border: 1px solid #3a3a3d;
+            border-radius: 5px;
+            background: #1f1f23;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: #2d2d30;
+            border-color: #9147ff;
+        }
+
+        .preset-btn.active {
+            background: #9147ff;
+            border-color: #9147ff;
+        }
+
         .layout {
             flex: 1;
             width: 100%;
@@ -225,6 +267,14 @@
 </head>
 
 <body>
+
+    <!-- Barra limpia con accesos directos predefinidos -->
+    <header class="mirror-topbar">
+        <span>Accesos directos:</span>
+        <button class="preset-btn" onclick="cargarPreset('https://www.twitch.tv/coteparrague', 'https://kick.com/westcol')">Cote + Westcol</button>
+        <button class="preset-btn" onclick="cargarPreset('https://www.twitch.tv/coteparrague', '')">Solo Cote (Twitch)</button>
+        <button class="preset-btn" onclick="cargarPreset('', 'https://kick.com/westcol')">Solo Westcol (Kick)</button>
+    </header>
 
     <main class="layout">
         <div class="stream-layout">
@@ -433,9 +483,15 @@
             pantalla.appendChild(iframe);
         }
 
+        function cargarPreset(twitchUrl, videoUrl) {
+            cargarStreamerPrincipal(twitchUrl);
+            cargarSegundoVideo(videoUrl);
+        }
+
         window.onload = function() {
-            let twitchUrl = localStorage.getItem("espejo_twitch");
-            let videoUrl = localStorage.getItem("espejo_video");
+            const params = new URLSearchParams(window.location.search);
+            let twitchUrl = params.get("twitch") || localStorage.getItem("espejo_twitch") || "https://www.twitch.tv/coteparrague";
+            let videoUrl = params.get("url") || localStorage.getItem("espejo_video") || "https://kick.com/westcol";
 
             cargarStreamerPrincipal(twitchUrl);
             cargarSegundoVideo(videoUrl);
