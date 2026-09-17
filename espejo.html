@@ -28,48 +28,6 @@
             flex-direction: column;
         }
 
-        /* Barra superior discreta con botones de acceso directo */
-        .mirror-topbar {
-            width: 100%;
-            background: #18181b;
-            padding: 8px 16px;
-            border-bottom: 1px solid #303033;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-
-        .mirror-topbar span {
-            font-size: 12px;
-            color: #aaa;
-            font-weight: bold;
-            margin-right: 5px;
-        }
-
-        .preset-btn {
-            height: 32px;
-            padding: 0 14px;
-            border: 1px solid #3a3a3d;
-            border-radius: 5px;
-            background: #1f1f23;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s;
-        }
-
-        .preset-btn:hover {
-            background: #2d2d30;
-            border-color: #9147ff;
-        }
-
-        .preset-btn.active {
-            background: #9147ff;
-            border-color: #9147ff;
-        }
-
         .layout {
             flex: 1;
             width: 100%;
@@ -268,14 +226,6 @@
 
 <body>
 
-    <!-- Barra limpia con accesos directos predefinidos -->
-    <header class="mirror-topbar">
-        <span>Accesos directos:</span>
-        <button class="preset-btn" onclick="cargarPreset('https://www.twitch.tv/coteparrague', 'https://kick.com/westcol')">Cote + Westcol</button>
-        <button class="preset-btn" onclick="cargarPreset('https://www.twitch.tv/coteparrague', '')">Solo Cote (Twitch)</button>
-        <button class="preset-btn" onclick="cargarPreset('', 'https://kick.com/westcol')">Solo Westcol (Kick)</button>
-    </header>
-
     <main class="layout">
         <div class="stream-layout">
             <aside class="sidebar-left">
@@ -326,7 +276,7 @@
 
     <script>
         function obtenerPlataforma(url) {
-            url = url.trim();
+            url = (url || "").trim();
             if (!url) return { tipo: null, canal: null };
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "https://" + url;
@@ -463,8 +413,8 @@
                 return;
             }
 
-            const urlSinQuery = url.split("?")[0].toLowerCase();
-            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
+            const urlSinGroup = url.split("?")[0].toLowerCase();
+            const esVideoDirecto = urlSinGroup.endsWith(".mp4") || urlSinGroup.endsWith(".webm") || urlSinGroup.endsWith(".ogg") || urlSinGroup.endsWith(".mov");
 
             if (esVideoDirecto) {
                 const video = document.createElement("video");
@@ -483,27 +433,14 @@
             pantalla.appendChild(iframe);
         }
 
-        function cargarPreset(twitchUrl, videoUrl) {
-            cargarStreamerPrincipal(twitchUrl);
-            cargarSegundoVideo(videoUrl);
-        }
-
         window.onload = function() {
             const params = new URLSearchParams(window.location.search);
-            let twitchUrl = params.get("twitch") || localStorage.getItem("espejo_twitch") || "https://www.twitch.tv/coteparrague";
-            let videoUrl = params.get("url") || localStorage.getItem("espejo_video") || "https://kick.com/westcol";
+            // Lee prioritariamente lo que viene en la URL al compartir el link
+            let twitchUrl = params.get("twitch") || "";
+            let videoUrl = params.get("url") || "";
 
             cargarStreamerPrincipal(twitchUrl);
             cargarSegundoVideo(videoUrl);
-
-            window.addEventListener("storage", function(e) {
-                if (e.key === "espejo_twitch") {
-                    cargarStreamerPrincipal(e.newValue);
-                }
-                if (e.key === "espejo_video") {
-                    cargarSegundoVideo(e.newValue);
-                }
-            });
         };
     </script>
 
