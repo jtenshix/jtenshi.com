@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -238,7 +238,6 @@
             background: #f57c00;
         }
 
-        /* Estilos de la Playlist */
         .playlist-box {
             background: #18181b;
             border: 1px solid #303033;
@@ -481,14 +480,12 @@
                     <button class="ctrl-btn btn-recargar" onclick="recargarStreamer()"><i class="fa-solid fa-rotate"></i> Recargar</button>
                 </div>
 
-                <!-- PLAYLIST DE GOOGLE DRIVE O VIDEOS -->
                 <div class="playlist-box">
                     <div class="playlist-title">
                         <span>PLAYLIST DE VIDEOS</span>
                         <i class="fa-solid fa-list"></i>
                     </div>
                     <div class="playlist-items" id="playlistContainer">
-                        <!-- Los videos se cargan automáticamente aquí -->
                     </div>
                 </div>
             </aside>
@@ -562,11 +559,12 @@
 
         function abrirEspejo() {
             const videoUrl = document.getElementById("videoUrl").value.trim();
-            if (!videoUrl) {
-                alert("Primero selecciona un video de la playlist.");
-                return;
-            }
-            window.open("espejo.html?url=" + encodeURIComponent(videoUrl), "_blank");
+            const twitchUrl = document.getElementById("twitchUrl").value.trim();
+            
+            if (videoUrl) localStorage.setItem("espejo_video", videoUrl);
+            if (twitchUrl) localStorage.setItem("espejo_twitch", twitchUrl);
+
+            window.open(`espejo.html?url=${encodeURIComponent(videoUrl)}&twitch=${encodeURIComponent(twitchUrl)}`, "_blank");
         }
 
         function obtenerCanal(url) {
@@ -607,6 +605,9 @@
 
             const chat = document.getElementById("twitchChat");
             chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
+            
+            // Sincronizar automáticamente en localStorage por si el espejo se abre después
+            localStorage.setItem("espejo_twitch", urlVal);
         }
 
         function recargarStreamer() {
@@ -694,6 +695,9 @@
 
             pantalla.innerHTML = "";
             error.style.display = "none";
+
+            // Sincronizar automáticamente en localStorage para el espejo
+            localStorage.setItem("espejo_video", url);
 
             if (url.toLowerCase().startsWith("<iframe")) {
                 pantalla.innerHTML = url;
