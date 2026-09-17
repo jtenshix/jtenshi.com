@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espejo - Control de Transmisión</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Espejo - Transmisión</title>
     <style>
         * {
             box-sizing: border-box;
@@ -18,277 +17,26 @@
             width: 100%;
             height: 100%;
             background: #0e0e10;
-            color: white;
+            overflow: hidden;
             font-family: Arial, Helvetica, sans-serif;
-            overflow: hidden;
         }
 
-        body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
+        .espejo-layout {
             width: 100%;
-            background: #18181b;
-            padding: 10px 18px;
-            border-bottom: 1px solid #303033;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .url-loader {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .url-loader input {
-            flex: 1;
-            background: #0e0e10;
-            border: 1px solid #303033;
-            border-radius: 4px;
-            padding: 6px 10px;
-            color: white;
-            font-size: 13px;
-        }
-
-        .url-loader button {
-            background: #9147ff;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .url-loader button:hover {
-            background: #772ce8;
-        }
-
-        .layout {
-            flex: 1;
-            width: 100%;
-            margin: 0;
-            padding: 16px;
-            display: flex;
-            min-height: 0;
-        }
-
-        .stream-layout {
-            width: 100%;
-            display: grid;
-            grid-template-columns: minmax(320px, 1fr) minmax(0, 2.2fr) minmax(300px, 1fr);
-            gap: 16px;
-            align-items: stretch;
             height: 100%;
-        }
-
-        .sidebar-left {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            height: 100%;
-            min-height: 0;
-        }
-
-        .recommended-section {
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-        }
-
-        .streamer-widget-content {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-            padding: 10px;
-            gap: 10px;
-            justify-content: flex-start;
-        }
-
-        .streamer-widget {
             position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 15;
-            background: #0e0e10;
-            border-radius: 4px;
-            overflow: hidden;
-            flex-shrink: 0;
         }
 
-        #twitchPlayer {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        #twitchPlayer iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        .streamer-input-container {
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-
-        .streamer-input-container input {
+        /* Pantalla principal del video (ocupa todo o se ajusta) */
+        .espejo-video-area {
             flex: 1;
-            background: #0e0e10;
-            border: 1px solid #303033;
-            border-radius: 4px;
-            padding: 6px 8px;
-            color: white;
-            font-size: 12px;
-        }
-
-        .streamer-input-container button {
-            background: #2f2f35;
-            color: white;
-            border: 1px solid #444;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .streamer-input-container button:hover {
-            background: #3a3a42;
-        }
-
-        .donation-links {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            padding: 8px;
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            flex-shrink: 0;
-        }
-
-        .donation-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            padding: 6px 2px;
-            background: #1f1f23;
-            border: 1px solid #3a3a3d;
-            border-radius: 5px;
-            color: #efeff1;
-            text-decoration: none;
-            font-size: 10px;
-            font-weight: bold;
-            transition: background 0.2s, border-color 0.2s;
-        }
-
-        .donation-btn i {
-            font-size: 16px;
-        }
-
-        .donation-btn:hover {
-            background: #2d2d30;
-            border-color: #9147ff;
-        }
-
-        .stream-controls {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-
-        .ctrl-btn {
-            height: 34px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .ctrl-btn.btn-recargar {
-            background: #ff9800;
-            color: black;
-        }
-
-        .ctrl-btn.btn-recargar:hover {
-            background: #f57c00;
-        }
-
-        .center-area {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
             height: 100%;
-            min-height: 0;
-        }
-
-        .url-bar {
-            display: flex;
-            gap: 8px;
-            background: #18181b;
-            padding: 10px;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            flex-shrink: 0;
-        }
-
-        .url-bar input {
-            flex: 1;
-            background: #0e0e10;
-            border: 1px solid #303033;
-            border-radius: 4px;
-            padding: 8px 10px;
-            color: white;
-            font-size: 13px;
-        }
-
-        .url-bar button {
-            background: #9147ff;
-            color: white;
-            border: none;
-            padding: 0 16px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .video-area {
             position: relative;
-            width: 100%;
-            flex: 1;
             background: #000;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #303033;
-            min-height: 0;
         }
 
-        #secondScreen {
+        #espejoScreen {
             position: absolute;
             inset: 0;
             width: 100%;
@@ -296,14 +44,14 @@
             background: #000;
         }
 
-        #secondScreen iframe {
+        #espejoScreen iframe {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
         }
 
-        #secondScreen video {
+        #espejoScreen video {
             width: 100%;
             height: 100%;
             display: block;
@@ -317,149 +65,36 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #777;
-            font-size: 15px;
+            color: #555;
+            font-size: 18px;
             text-align: center;
             padding: 20px;
-            pointer-events: none;
-        }
-
-        .chat-area {
-            width: 100%;
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            min-height: 0;
-        }
-
-        .chat-header {
-            height: 38px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 13px;
-            border-bottom: 1px solid #303033;
-        }
-
-        .chat-frame {
-            flex: 1;
-            min-height: 0;
-        }
-
-        .chat-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        @media (max-width: 1100px) {
-            html, body {
-                overflow: auto;
-            }
-            .stream-layout {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-            .sidebar-left, .center-area, .chat-area {
-                height: 450px;
-            }
         }
     </style>
 </head>
 
 <body>
 
-    <header class="topbar">
-        <span>🔗 Vista Espejo</span>
-        <div class="url-loader">
-            <input type="text" id="shareableLink" readonly placeholder="Link del espejo generado...">
-            <button onclick="copiarLinkEspejo()">Copiar Link</button>
-        </div>
-    </header>
-
-    <main class="layout">
-        <div class="stream-layout">
-            <aside class="sidebar-left">
-                <div class="recommended-section">
-                    <div class="streamer-widget-content">
-                        <div class="streamer-widget">
-                            <div id="twitchPlayer">
-                                <div class="empty-message" style="background:#0e0e10;">Sin canal cargado</div>
-                            </div>
-                        </div>
-                        <div class="streamer-input-container">
-                            <input type="text" id="twitchInput" placeholder="Canal de Twitch...">
-                            <button onclick="cargarTwitchDesdeInput()">Cargar</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="donation-links">
-                    <a href="https://ko-fi.com/cotecreator/shop" target="_blank" class="donation-btn" title="Ko-fi">
-                        <i class="fa-solid fa-mug-hot" style="color: #29abe0;"></i>
-                        Ko-fi
-                    </a>
-                    <a href="https://ceneka.net/coteparrague" target="_blank" class="donation-btn" title="Ceneka">
-                        <i class="fa-solid fa-heart" style="color: #ff4757;"></i>
-                        Ceneka
-                    </a>
-                    <a href="https://streamelements.com/coteparrague/tip" target="_blank" class="donation-btn" title="Tips">
-                        <i class="fa-solid fa-hand-holding-dollar" style="color: #2ed573;"></i>
-                        Tips
-                    </a>
-                </div>
-
-                <div class="stream-controls">
-                    <button class="ctrl-btn btn-recargar" onclick="cargarTodo()"><i class="fa-solid fa-rotate"></i> Recargar Todo</button>
-                </div>
-            </aside>
-
-            <section class="center-area">
-                <div class="url-bar">
-                    <input type="text" id="videoInput" placeholder="URL de YouTube, video directo o iframe...">
-                    <button onclick="cargarVideoDesdeInput()">Cargar Video</button>
-                </div>
-                <div class="video-area">
-                    <div id="secondScreen">
-                        <div class="empty-message">
-                            Sin video principal cargado
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <aside class="chat-area">
-                <div class="chat-header">
-                    Chat del stream
-                </div>
-                <div class="chat-frame">
-                    <iframe id="twitchChat" title="Chat de Twitch"></iframe>
-                </div>
-            </aside>
-        </div>
+    <main class="espejo-layout">
+        <section class="espejo-video-area">
+            <div id="espejoScreen">
+                <div class="empty-message">Esperando contenido...</div>
+            </div>
+        </section>
     </main>
 
     <script>
-        function obtenerCanal(url) {
-            url = url.trim();
-            if (!url) return null;
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "https://" + url;
-            }
+        function convertirGoogleDrive(url) {
             try {
-                const direccion = new URL(url);
-                if (!direccion.hostname.toLowerCase().includes("twitch.tv")) return null;
-                const partes = direccion.pathname.replace(/^\/+/, "").replace(/\/+$/, "").split("/");
-                return partes[0] || null;
-            } catch (error) {
-                return null;
+                const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    const fileId = match[1];
+                    return `https://drive.google.com/file/d/${fileId}/preview`;
+                }
+            } catch (e) {
+                console.error("Error procesando link de Drive", e);
             }
+            return null;
         }
 
         function obtenerYoutubeId(url) {
@@ -468,7 +103,7 @@
                 const hostname = direccion.hostname.toLowerCase();
                 if (hostname.includes("youtube.com")) {
                     const id = direccion.searchParams.get("v");
-                    if (id) return id;
+                    if id return id;
                 }
                 if (hostname === "youtu.be") {
                     return direccion.pathname.replace(/^\/+/, "").split("/")[0];
@@ -482,32 +117,16 @@
             }
         }
 
-        function cargarTwitch(twitchUrl) {
-            const canal = obtenerCanal(twitchUrl);
-            if (!canal) return;
+        function cargarContenidoEspejo() {
+            const videoUrl = localStorage.getItem("videoUrl");
+            const pantalla = document.getElementById("espejoScreen");
 
-            const parent = window.location.hostname || "localhost";
-            const playerDiv = document.getElementById("twitchPlayer");
-            playerDiv.innerHTML = "";
-
-            const iframe = document.createElement("iframe");
-            iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true`;
-            iframe.allowFullscreen = true;
-            iframe.allow = "autoplay; encrypted-media; fullscreen";
-            playerDiv.appendChild(iframe);
-
-            const chat = document.getElementById("twitchChat");
-            chat.src = "https://www.twitch.tv/embed/" + encodeURIComponent(canal) + "/chat?parent=" + encodeURIComponent(parent);
-        }
-
-        function cargarSegundoVideo(url) {
-            const pantalla = document.getElementById("secondScreen");
-            if (!url) return;
+            if (!videoUrl) return;
 
             pantalla.innerHTML = "";
 
-            if (url.toLowerCase().startsWith("<iframe")) {
-                pantalla.innerHTML = url;
+            if (videoUrl.toLowerCase().startsWith("<iframe")) {
+                pantalla.innerHTML = videoUrl;
                 const iframeElement = pantalla.querySelector("iframe");
                 if (iframeElement) {
                     iframeElement.style.width = "100%";
@@ -517,91 +136,44 @@
                 return;
             }
 
-            const youtubeId = obtenerYoutubeId(url);
+            const youtubeId = obtenerYoutubeId(videoUrl);
             if (youtubeId) {
                 const iframe = document.createElement("iframe");
                 iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId) + "?autoplay=1";
                 iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
                 iframe.allowFullscreen = true;
-                iframe.title = "Vídeo de YouTube";
                 pantalla.appendChild(iframe);
                 return;
             }
 
-            const urlSinQuery = url.split("?")[0].toLowerCase();
-            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
-
-            if (esVideoDirecto) {
-                const video = document.createElement("video");
-                video.src = url;
-                video.controls = true;
-                video.autoplay = true;
-                video.playsInline = true;
-                video.preload = "metadata";
-                pantalla.appendChild(video);
+            const linkDrivePreview = convertirGoogleDrive(videoUrl);
+            if (linkDrivePreview) {
+                const iframe = document.createElement("iframe");
+                iframe.src = linkDrivePreview;
+                iframe.allow = "autoplay; fullscreen; picture-in-picture";
+                iframe.allowFullscreen = true;
+                pantalla.appendChild(iframe);
                 return;
             }
 
             const iframe = document.createElement("iframe");
-            iframe.src = url;
+            iframe.src = videoUrl;
             iframe.allow = "autoplay; fullscreen; picture-in-picture";
             iframe.allowFullscreen = true;
-            iframe.title = "Transmisión principal";
             pantalla.appendChild(iframe);
         }
 
-        function cargarTwitchDesdeInput() {
-            const val = document.getElementById("twitchInput").value;
-            if (val) {
-                localStorage.setItem("twitchUrl", val);
-                cargarTwitch(val);
-                actualizarLinkEspejo();
+        // Cargar al iniciar
+        window.onload = function() {
+            cargarContenidoEspejo();
+        };
+
+        // Escuchar cambios si se actualiza desde la ventana principal en tiempo real
+        window.addEventListener("storage", function(event) {
+            if (event.key === "videoUrl") {
+                cargarContenidoEspejo();
             }
-        }
-
-        function cargarVideoDesdeInput() {
-            const val = document.getElementById("videoInput").value;
-            if (val) {
-                localStorage.setItem("videoUrl", val);
-                cargarSegundoVideo(val);
-                actualizarLinkEspejo();
-            }
-        }
-
-        function actualizarLinkEspejo() {
-            const twitch = document.getElementById("twitchInput").value;
-            const video = document.getElementById("videoInput").value;
-            const params = new URLSearchParams();
-            if (twitch) params.set("twitch", twitch);
-            if (video) params.set("video", video);
-
-            const linkActual = window.location.origin + window.location.pathname + "?" + params.toString();
-            document.getElementById("shareableLink").value = linkActual;
-        }
-
-        function copiarLinkEspejo() {
-            const input = document.getElementById("shareableLink");
-            input.select();
-            navigator.clipboard.writeText(input.value);
-        }
-
-        function cargarTodo() {
-            const params = new URLSearchParams(window.location.search);
-            const twitchUrl = params.get("twitch") || localStorage.getItem("twitchUrl");
-            const videoUrl = params.get("video") || localStorage.getItem("videoUrl");
-
-            if (twitchUrl) {
-                document.getElementById("twitchInput").value = twitchUrl;
-                cargarTwitch(twitchUrl);
-            }
-            if (videoUrl) {
-                document.getElementById("videoInput").value = videoUrl;
-                cargarSegundoVideo(videoUrl);
-            }
-            actualizarLinkEspejo();
-        }
-
-        window.addEventListener("DOMContentLoaded", cargarTodo);
+        });
     </script>
 
 </body>
