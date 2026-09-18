@@ -222,7 +222,7 @@
             display: block;
         }
 
-        /* DISEÑO MÓVIL: Video principal de fondo y Twitch flotando arriba a la IZQUIERDA */
+        /* DISEÑO MÓVIL CORREGIDO: Video de fondo, Twitch flotando arriba izq, Chat flotando abajo der */
         @media (max-width: 1024px) {
             html, body {
                 height: 100%;
@@ -230,7 +230,7 @@
             }
 
             .layout {
-                padding: 4px;
+                padding: 0;
                 height: 100%;
             }
 
@@ -238,9 +238,10 @@
                 position: relative;
                 display: block;
                 height: 100%;
+                width: 100%;
             }
 
-            /* El video principal ocupa toda la pantalla de fondo */
+            /* Video principal de fondo cubriendo toda la pantalla */
             .center-area {
                 position: absolute;
                 inset: 0;
@@ -254,22 +255,22 @@
                 border: none;
                 border-radius: 0;
                 height: 100%;
+                width: 100%;
             }
 
-            /* Twitch se coloca flotando en la esquina superior IZQUIERDA */
+            /* Twitch flotando arriba a la IZQUIERDA en miniatura */
             .sidebar-left {
                 position: absolute;
-                top: 12px;
-                left: 12px;
-                width: 130px;
+                top: 10px;
+                left: 10px;
+                width: 120px;
                 height: auto;
                 z-index: 10;
-                gap: 4px;
-                background: rgba(24, 24, 27, 0.85);
-                padding: 4px;
-                border-radius: 6px;
+                background: rgba(24, 24, 27, 0.9);
+                padding: 2px;
+                border-radius: 4px;
                 border: 1px solid #303033;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.7);
             }
 
             .recommended-section {
@@ -283,32 +284,31 @@
 
             .streamer-widget {
                 aspect-ratio: 16 / 9;
-                height: 75px;
+                height: 68px;
             }
 
-            /* Ocultamos los botones de donación en móvil para ahorrar espacio */
             .donation-links {
                 display: none;
             }
 
-            /* El chat se ubica abajo para leerse con comodidad */
+            /* Chat flotando compacto abajo a la DERECHA */
             .chat-area {
                 position: absolute;
-                bottom: 12px;
-                left: 12px;
-                right: 12px;
-                width: auto;
-                height: 200px;
+                bottom: 10px;
+                right: 10px;
+                width: 150px;
+                height: 180px;
                 z-index: 10;
-                background: rgba(24, 24, 27, 0.9);
+                background: rgba(24, 24, 27, 0.92);
                 border-radius: 6px;
                 border: 1px solid #303033;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.7);
             }
 
             .chat-header {
-                height: 26px;
-                font-size: 11px;
+                height: 22px;
+                font-size: 10px;
+                border-bottom: 1px solid #303033;
             }
         }
     </style>
@@ -323,7 +323,7 @@
                     <div class="streamer-widget-content">
                         <div class="streamer-widget">
                             <div id="twitchPlayer">
-                                <div class="empty-message" style="background:#0e0e10;">Sin canal cargado</div>
+                                <div class="empty-message" style="background:#0e0e10;">Sin canal</div>
                             </div>
                         </div>
                     </div>
@@ -355,7 +355,7 @@
 
             <aside class="chat-area">
                 <div class="chat-header">
-                    Chat del stream
+                    Chat
                 </div>
                 <div class="chat-frame">
                     <iframe id="twitchChat" title="Chat del stream"></iframe>
@@ -429,7 +429,7 @@
             playerDiv.innerHTML = "";
 
             if (!tipo || !canal) {
-                playerDiv.innerHTML = `<div class="empty-message" style="background:#0e0e10;">Sin canal cargado</div>`;
+                playerDiv.innerHTML = `<div class="empty-message" style="background:#0e0e10;">Sin canal</div>`;
                 chat.src = "";
                 return;
             }
