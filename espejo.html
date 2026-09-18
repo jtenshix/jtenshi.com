@@ -226,7 +226,7 @@
             display: none;
         }
 
-        /* DISEÑO MÓVIL: Mitad superior videos unidos, mitad inferior chat entero */
+        /* DISEÑO MÓVIL: Video superior con overlay más grande, chat abajo entero */
         @media (max-width: 1024px) {
             html, body {
                 height: 100%;
@@ -251,7 +251,6 @@
                 display: none;
             }
 
-            /* Mitad superior: Video principal con Twitch superpuesto estilo camarita */
             .center-area {
                 position: relative;
                 flex: 1;
@@ -266,18 +265,19 @@
                 border-radius: 6px;
             }
 
+            /* Overlay de Twitch más grande (ancho y alto incrementados) */
             #twitchPlayerOverlay {
                 display: block;
                 position: absolute;
                 top: 8px;
                 left: 8px;
-                width: 120px;
-                height: 70px;
+                width: 155px;
+                height: 95px;
                 z-index: 20;
                 background: #0e0e10;
                 border-radius: 4px;
-                border: 1px solid rgba(255, 255, 255, 0.3);
-                box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+                border: 1px solid rgba(255, 255, 255, 0.4);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.85);
                 overflow: hidden;
             }
 
@@ -288,7 +288,6 @@
                 display: block;
             }
 
-            /* Mitad inferior: El chat ocupa toda la mitad de abajo limpia y cómoda para escribir */
             .chat-area {
                 position: relative;
                 flex: 1;
