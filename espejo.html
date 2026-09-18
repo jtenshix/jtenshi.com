@@ -222,7 +222,7 @@
             display: block;
         }
 
-        /* DISEÑO MÓVIL: Video principal gigante de fondo y Twitch/Chat flotando en esquina */
+        /* DISEÑO MÓVIL: Video principal de fondo y Twitch flotando arriba a la IZQUIERDA */
         @media (max-width: 1024px) {
             html, body {
                 height: 100%;
@@ -256,11 +256,11 @@
                 height: 100%;
             }
 
-            /* Twitch se convierte en una ventana flotante pequeña en la esquina superior derecha */
+            /* Twitch se coloca flotando en la esquina superior IZQUIERDA */
             .sidebar-left {
                 position: absolute;
                 top: 12px;
-                right: 12px;
+                left: 12px;
                 width: 130px;
                 height: auto;
                 z-index: 10;
@@ -286,18 +286,19 @@
                 height: 75px;
             }
 
-            /* Ocultamos los botones de donación en móvil para ganar espacio limpio */
+            /* Ocultamos los botones de donación en móvil para ahorrar espacio */
             .donation-links {
                 display: none;
             }
 
-            /* El chat se ubica de forma flotante y compacta en la esquina inferior derecha o abajo a un lado */
+            /* El chat se ubica abajo para leerse con comodidad */
             .chat-area {
                 position: absolute;
                 bottom: 12px;
+                left: 12px;
                 right: 12px;
-                width: 160px;
-                height: 220px;
+                width: auto;
+                height: 200px;
                 z-index: 10;
                 background: rgba(24, 24, 27, 0.9);
                 border-radius: 6px;
