@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Espejo de Transmisión</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -226,10 +226,11 @@
             display: none;
         }
 
-        /* DISEÑO MÓVIL: Video superior con overlay más grande, chat abajo entero */
+        /* DISEÑO MÓVIL OPTIMIZADO PARA TECLADO */
         @media (max-width: 1024px) {
             html, body {
                 height: 100%;
+                height: 100dvh; /* Usa el alto dinámico real de la pantalla descontando el teclado */
                 overflow: hidden;
             }
 
@@ -251,12 +252,12 @@
                 display: none;
             }
 
+            /* Mitad superior (Videos) se comprime inteligentemente cuando sale el teclado */
             .center-area {
                 position: relative;
-                flex: 1;
+                flex: 0 0 40%; /* Ocupa un espacio controlado arriba para dejar el resto al chat */
                 width: 100%;
-                height: auto;
-                min-height: 0;
+                min-height: 120px;
             }
 
             .video-area {
@@ -265,14 +266,13 @@
                 border-radius: 6px;
             }
 
-            /* Overlay de Twitch más grande (ancho y alto incrementados) */
             #twitchPlayerOverlay {
                 display: block;
                 position: absolute;
-                top: 8px;
-                left: 8px;
-                width: 155px;
-                height: 95px;
+                top: 6px;
+                left: 6px;
+                width: 140px;
+                height: 85px;
                 z-index: 20;
                 background: #0e0e10;
                 border-radius: 4px;
@@ -288,18 +288,18 @@
                 display: block;
             }
 
+            /* Mitad inferior (Chat) toma el resto del espacio disponible con el teclado abierto */
             .chat-area {
                 position: relative;
                 flex: 1;
                 width: 100%;
-                height: auto;
                 min-height: 0;
                 border-radius: 6px;
             }
 
             .chat-header {
-                height: 30px;
-                font-size: 12px;
+                height: 26px;
+                font-size: 11px;
             }
         }
     </style>
