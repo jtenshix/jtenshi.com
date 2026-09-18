@@ -91,6 +91,26 @@
             background: #772ce8;
         }
 
+        .stop-btn {
+            height: 32px;
+            padding: 0 14px;
+            background: #ff4757;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stop-btn:hover {
+            background: #ff2d43;
+        }
+
         /* Layout Principal */
         .layout {
             flex: 1;
@@ -302,6 +322,9 @@
         </div>
         <button class="action-btn" onclick="abrirEspejo()">
             <i class="fa-solid fa-clone"></i> Abrir Espejo
+        </button>
+        <button class="stop-btn" onclick="apagarTodo()">
+            <i class="fa-solid fa-stop"></i> Apagar Todo
         </button>
     </header>
 
@@ -516,6 +539,7 @@
             const twitchUrl = document.getElementById("twitchUrl").value;
             const videoUrl = document.getElementById("videoUrl").value;
 
+            localStorage.removeItem("espejo_reset");
             localStorage.setItem("espejo_twitch", twitchUrl);
             localStorage.setItem("espejo_video", videoUrl);
 
@@ -527,9 +551,22 @@
             const twitchUrl = document.getElementById("twitchUrl").value.trim();
             const videoUrl = document.getElementById("videoUrl").value.trim();
 
-            // Construye la URL del espejo pasando los parámetros exactos
             const urlEspejo = `espejo.html?twitch=${encodeURIComponent(twitchUrl)}&url=${encodeURIComponent(videoUrl)}`;
             window.open(urlEspejo, "_blank");
+        }
+
+        // Función para limpiar todo y mandar señal de apagado masivo a los espejos
+        function apagarTodo() {
+            document.getElementById("twitchUrl").value = "";
+            document.getElementById("videoUrl").value = "";
+
+            localStorage.setItem("espejo_reset", "true");
+            localStorage.setItem("espejo_twitch", "");
+            localStorage.setItem("espejo_video", "");
+            localStorage.setItem("espejo_timestamp", Date.now());
+
+            cargarStreamerPrincipal("");
+            cargarSegundoVideo("");
         }
 
         window.onload = function() {
