@@ -1,586 +1,201 @@
+
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control - Transmisión</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: #0e0e10;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-            overflow: hidden;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Barra de control superior */
-        .control-panel {
-            background: #18181b;
-            border-bottom: 1px solid #303033;
-            padding: 10px 16px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-shrink: 0;
-            flex-wrap: wrap;
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .control-group label {
-            font-size: 11px;
-            color: #aaa;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .control-input {
-            flex: 1;
-            height: 32px;
-            background: #0e0e10;
-            border: 1px solid #3a3a3d;
-            border-radius: 4px;
-            color: white;
-            padding: 0 10px;
-            font-size: 12px;
-        }
-
-        .control-input:focus {
-            outline: none;
-            border-color: #9147ff;
-        }
-
-        .action-btn {
-            height: 32px;
-            padding: 0 14px;
-            background: #9147ff;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .action-btn:hover {
-            background: #772ce8;
-        }
-
-        .stop-btn {
-            height: 32px;
-            padding: 0 14px;
-            background: #ff4757;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .stop-btn:hover {
-            background: #ff2d43;
-        }
-
-        /* Layout Principal */
-        .layout {
-            flex: 1;
-            width: 100%;
-            margin: 0;
-            padding: 16px;
-            display: flex;
-            min-height: 0;
-        }
-
-        .stream-layout {
-            width: 100%;
-            display: grid;
-            grid-template-columns: minmax(320px, 1fr) minmax(0, 2.2fr) minmax(300px, 1fr);
-            gap: 16px;
-            align-items: stretch;
-            height: 100%;
-        }
-
-        .sidebar-left {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            height: 100%;
-            min-height: 0;
-            overflow-y: auto;
-        }
-
-        .recommended-section {
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .streamer-widget-content {
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            gap: 10px;
-        }
-
-        .streamer-widget {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 15;
-            background: #0e0e10;
-            border-radius: 4px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        #twitchPlayer {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        #twitchPlayer iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        .donation-links {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            padding: 8px;
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            flex-shrink: 0;
-        }
-
-        .donation-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            padding: 6px 2px;
-            background: #1f1f23;
-            border: 1px solid #3a3a3d;
-            border-radius: 5px;
-            color: #efeff1;
-            text-decoration: none;
-            font-size: 10px;
-            font-weight: bold;
-            transition: background 0.2s, border-color 0.2s;
-        }
-
-        .donation-btn i {
-            font-size: 16px;
-        }
-
-        .donation-btn:hover {
-            background: #2d2d30;
-            border-color: #9147ff;
-        }
-
-        .center-area {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            height: 100%;
-            min-height: 0;
-        }
-
-        .video-area {
-            position: relative;
-            width: 100%;
-            flex: 1;
-            background: #000;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #303033;
-            min-height: 0;
-        }
-
-        #secondScreen {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-
-        #secondScreen iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        #secondScreen video {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: contain;
-            background: #000;
-        }
-
-        .empty-message {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #777;
-            font-size: 15px;
-            text-align: center;
-            padding: 20px;
-            pointer-events: none;
-        }
-
-        .chat-area {
-            width: 100%;
-            background: #18181b;
-            border: 1px solid #303033;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            min-height: 0;
-        }
-
-        .chat-header {
-            height: 38px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 13px;
-            border-bottom: 1px solid #303033;
-        }
-
-        .chat-frame {
-            flex: 1;
-            min-height: 0;
-        }
-
-        .chat-frame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cote TV | Cine compartido</title>
+<style>
+:root{color-scheme:dark;--bg:#0d0d12;--panel:#181820;--line:#33333e;--text:#f3f3f6;--muted:#a5a4ae;--accent:#985bff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+button,input{font:inherit}button{cursor:pointer;border:0;border-radius:8px;padding:9px 13px;color:white;background:#35323e;font-weight:650}button:hover{filter:brightness(1.13)}button.primary{background:var(--accent)}button:disabled{opacity:.5;cursor:default}
+header{padding:14px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:#17151c;border-bottom:1px solid var(--line)}
+.brand{font-size:20px;font-weight:850;letter-spacing:.2px}.brand b{color:#ae84ff}.pill{display:inline-block;border:1px solid #4a3c63;background:#2c223d;border-radius:20px;padding:3px 9px;color:#d5c1ff;font-size:11px}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.muted{color:var(--muted)}.small{font-size:12px}.hide{display:none!important}
+.admin{padding:12px 20px;background:#201b2b;border-bottom:1px solid #4f3c6c}.admin-inner{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:280px}.field label{font-size:11px;color:#c9bddf;text-transform:uppercase;font-weight:700;letter-spacing:.5px}
+input{height:37px;padding:8px 10px;color:white;background:#101016;border:1px solid #514960;border-radius:8px;width:100%;outline:none}input:focus{border-color:var(--accent)}
+.page{display:grid;grid-template-columns:minmax(220px,1fr) minmax(350px,2.2fr) minmax(250px,1fr);gap:14px;padding:14px;height:calc(100dvh - 67px);min-height:450px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-height:0;display:flex;flex-direction:column;overflow:hidden}.panel-head{border-bottom:1px solid var(--line);padding:10px 12px;font-weight:750;display:flex;justify-content:space-between;align-items:center}
+.embed{flex:1;min-height:0;background:#050508;position:relative}.embed iframe{width:100%;height:100%;border:0;display:block}.twitch-video{aspect-ratio:16/12;flex:0 0 auto;min-height:160px}.donate{padding:12px;display:flex;flex-wrap:wrap;gap:7px}.donate a{color:white;background:#24242b;border:1px solid #3c3c46;padding:8px 10px;border-radius:7px;text-decoration:none;font-size:12px}
+.movie{position:relative;flex:1;min-height:200px;background:#000}.movie video,.movie iframe,.movie #yt{width:100%;height:100%;border:none;display:block;background:black}.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9f9f9f;text-align:center;padding:20px}
+.footer{padding:11px 12px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line)}.status{display:flex;flex-direction:column;min-width:0}.time{font-variant-numeric:tabular-nums;font-weight:750}.notice{font-size:12px;color:#c5b0e8;margin:0;padding:0 12px 11px}.notice.warning{color:#f1bc81}.mini{font-size:11px;color:#a3a3ac}
+@media(max-width:1000px){.page{height:auto;min-height:calc(100dvh - 67px);grid-template-columns:1fr}.main{order:1;min-height:400px}.twitch{order:2}.chat{order:3;min-height:430px}.twitch-video{aspect-ratio:16/9}.movie{aspect-ratio:16/9;min-height:180px;flex:0 0 auto}}
+</style>
 </head>
-
 <body>
-
-    <!-- Panel de control para manejar los links y abrir el espejo -->
-    <header class="control-panel">
-        <div class="control-group">
-            <label for="twitchUrl">Twitch/Kick (Izquierda):</label>
-            <input type="text" id="twitchUrl" class="control-input" placeholder="Ej: twitch.tv/coteparrague" oninput="actualizarPrincipal()">
-        </div>
-        <div class="control-group">
-            <label for="videoUrl">Video/Stream (Centro):</label>
-            <input type="text" id="videoUrl" class="control-input" placeholder="Ej: Link de YouTube, Kick o iframe" oninput="actualizarPrincipal()">
-        </div>
-        <button class="action-btn" onclick="abrirEspejo()">
-            <i class="fa-solid fa-clone"></i> Abrir Espejo
-        </button>
-        <button class="stop-btn" onclick="apagarTodo()">
-            <i class="fa-solid fa-stop"></i> Apagar Todo
-        </button>
-    </header>
-
-    <main class="layout">
-        <div class="stream-layout">
-            <aside class="sidebar-left">
-                <div class="recommended-section">
-                    <div class="streamer-widget-content">
-                        <div class="streamer-widget">
-                            <div id="twitchPlayer">
-                                <div class="empty-message" style="background:#0e0e10;">Sin canal cargado</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="donation-links">
-                    <a href="https://ko-fi.com/cotecreator/shop" target="_blank" class="donation-btn" title="Ko-fi">
-                        <i class="fa-solid fa-mug-hot" style="color: #29abe0;"></i>
-                        Ko-fi
-                    </a>
-                    <a href="https://ceneka.net/coteparrague" target="_blank" class="donation-btn" title="Ceneka">
-                        <i class="fa-solid fa-heart" style="color: #ff4757;"></i>
-                        Ceneka
-                    </a>
-                    <a href="https://streamelements.com/coteparrague/tip" target="_blank" class="donation-btn" title="Tips">
-                        <i class="fa-solid fa-hand-holding-dollar" style="color: #2ed573;"></i>
-                        Tips
-                    </a>
-                </div>
-            </aside>
-
-            <section class="center-area">
-                <div class="video-area">
-                    <div id="secondScreen">
-                        <div class="empty-message">Esperando transmisión...</div>
-                    </div>
-                </div>
-            </section>
-
-            <aside class="chat-area">
-                <div class="chat-header">
-                    Chat del stream
-                </div>
-                <div class="chat-frame">
-                    <iframe id="twitchChat" title="Chat del stream"></iframe>
-                </div>
-            </aside>
-        </div>
-    </main>
-
-    <script>
-        function obtenerPlataforma(url) {
-            url = (url || "").trim();
-            if (!url) return { tipo: null, canal: null };
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "https://" + url;
-            }
-            try {
-                const direccion = new URL(url);
-                const host = direccion.hostname.toLowerCase();
-                const partes = direccion.pathname.replace(/^\/+/, "").replace(/\/+$/, "").split("/");
-
-                if (host.includes("twitch.tv")) {
-                    return { tipo: "twitch", canal: partes[0] || null };
-                }
-                if (host.includes("kick.com")) {
-                    return { tipo: "kick", canal: partes[0] || null };
-                }
-            } catch (error) {
-                return { tipo: null, canal: null };
-            }
-            return { tipo: null, canal: null };
-        }
-
-        function obtenerYoutubeId(url) {
-            try {
-                const direccion = new URL(url);
-                const hostname = direccion.hostname.toLowerCase();
-                if (hostname.includes("youtube.com")) {
-                    const id = direccion.searchParams.get("v");
-                    if (id) return id;
-                }
-                if (hostname === "youtu.be") {
-                    return direccion.pathname.replace(/^\/+/, "").split("/")[0];
-                }
-                if (direccion.pathname.startsWith("/live/") || direccion.pathname.startsWith("/shorts/")) {
-                    return direccion.pathname.split("/")[2];
-                }
-                return null;
-            } catch (error) {
-                return null;
-            }
-        }
-
-        function convertirGoogleDrive(url) {
-            try {
-                const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) {
-                    const fileId = match[1];
-                    return `https://drive.google.com/file/d/${fileId}/preview`;
-                }
-            } catch (e) {
-                console.error("Error procesando link de Drive", e);
-            }
-            return null;
-        }
-
-        function cargarStreamerPrincipal(urlVal) {
-            const { tipo, canal } = obtenerPlataforma(urlVal);
-            const parent = window.location.hostname || "localhost";
-            const playerDiv = document.getElementById("twitchPlayer");
-            const chat = document.getElementById("twitchChat");
-            playerDiv.innerHTML = "";
-
-            if (!tipo || !canal) {
-                playerDiv.innerHTML = `<div class="empty-message" style="background:#0e0e10;">Sin canal cargado</div>`;
-                chat.src = "";
-                return;
-            }
-
-            if (tipo === "twitch") {
-                const iframe = document.createElement("iframe");
-                iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(canal)}&parent=${encodeURIComponent(parent)}&muted=true&autoplay=true`;
-                iframe.allowFullscreen = true;
-                iframe.allow = "autoplay; encrypted-media; fullscreen";
-                playerDiv.appendChild(iframe);
-
-                chat.src = `https://www.twitch.tv/embed/${encodeURIComponent(canal)}/chat?parent=${encodeURIComponent(parent)}`;
-            } else if (tipo === "kick") {
-                const iframe = document.createElement("iframe");
-                iframe.src = `https://player.kick.com/${encodeURIComponent(canal)}`;
-                iframe.allowFullscreen = true;
-                iframe.allow = "autoplay; encrypted-media; fullscreen";
-                playerDiv.appendChild(iframe);
-
-                chat.src = `https://kick.com/${encodeURIComponent(canal)}/chatroom`;
-            }
-        }
-
-        function cargarSegundoVideo(url) {
-            const pantalla = document.getElementById("secondScreen");
-            if (!url) {
-                pantalla.innerHTML = `<div class="empty-message">Esperando transmisión...</div>`;
-                return;
-            }
-
-            pantalla.innerHTML = "";
-
-            if (url.toLowerCase().startsWith("<iframe")) {
-                pantalla.innerHTML = url;
-                const iframeElement = pantalla.querySelector("iframe");
-                if (iframeElement) {
-                    iframeElement.style.width = "100%";
-                    iframeElement.style.height = "100%";
-                    iframeElement.style.border = "none";
-                }
-                return;
-            }
-
-            const youtubeId = obtenerYoutubeId(url);
-            if (youtubeId) {
-                const iframe = document.createElement("iframe");
-                iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(youtubeId) + "?autoplay=1";
-                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-                iframe.allowFullscreen = true;
-                pantalla.appendChild(iframe);
-                return;
-            }
-
-            const linkDrivePreview = convertirGoogleDrive(url);
-            if (linkDrivePreview) {
-                const iframe = document.createElement("iframe");
-                iframe.src = linkDrivePreview;
-                iframe.allow = "autoplay; fullscreen; picture-in-picture";
-                iframe.allowFullscreen = true;
-                pantalla.appendChild(iframe);
-                return;
-            }
-
-            const { tipo, canal } = obtenerPlataforma(url);
-            if (tipo === "kick") {
-                const iframe = document.createElement("iframe");
-                iframe.src = `https://player.kick.com/${encodeURIComponent(canal)}`;
-                iframe.allow = "autoplay; fullscreen; picture-in-picture";
-                iframe.allowFullscreen = true;
-                pantalla.appendChild(iframe);
-                return;
-            }
-
-            const urlSinQuery = url.split("?")[0].toLowerCase();
-            const esVideoDirecto = urlSinQuery.endsWith(".mp4") || urlSinQuery.endsWith(".webm") || urlSinQuery.endsWith(".ogg") || urlSinQuery.endsWith(".mov");
-
-            if (esVideoDirecto) {
-                const video = document.createElement("video");
-                video.src = url;
-                video.controls = true;
-                video.autoplay = true;
-                video.playsInline = true;
-                pantalla.appendChild(video);
-                return;
-            }
-
-            const iframe = document.createElement("iframe");
-            iframe.src = url;
-            iframe.allow = "autoplay; fullscreen; picture-in-picture";
-            iframe.allowFullscreen = true;
-            pantalla.appendChild(iframe);
-        }
-
-        function actualizarPrincipal() {
-            const twitchUrl = document.getElementById("twitchUrl").value;
-            const videoUrl = document.getElementById("videoUrl").value;
-
-            localStorage.removeItem("espejo_reset");
-            localStorage.setItem("espejo_twitch", twitchUrl);
-            localStorage.setItem("espejo_video", videoUrl);
-
-            cargarStreamerPrincipal(twitchUrl);
-            cargarSegundoVideo(videoUrl);
-        }
-
-        function abrirEspejo() {
-            const twitchUrl = document.getElementById("twitchUrl").value.trim();
-            const videoUrl = document.getElementById("videoUrl").value.trim();
-
-            const urlEspejo = `espejo.html?twitch=${encodeURIComponent(twitchUrl)}&url=${encodeURIComponent(videoUrl)}`;
-            window.open(urlEspejo, "_blank");
-        }
-
-        // Función para limpiar todo y mandar señal de apagado masivo a los espejos
-        function apagarTodo() {
-            document.getElementById("twitchUrl").value = "";
-            document.getElementById("videoUrl").value = "";
-
-            localStorage.setItem("espejo_reset", "true");
-            localStorage.setItem("espejo_twitch", "");
-            localStorage.setItem("espejo_video", "");
-            localStorage.setItem("espejo_timestamp", Date.now());
-
-            cargarStreamerPrincipal("");
-            cargarSegundoVideo("");
-        }
-
-        window.onload = function() {
-            let savedTwitch = localStorage.getItem("espejo_twitch") || "";
-            let savedVideo = localStorage.getItem("espejo_video") || "";
-
-            document.getElementById("twitchUrl").value = savedTwitch;
-            document.getElementById("videoUrl").value = savedVideo;
-
-            cargarStreamerPrincipal(savedTwitch);
-            cargarSegundoVideo(savedVideo);
-        };
-    </script>
-
+<header>
+  <div><span class="brand">COTE <b>TV</b></span> <span class="pill">CINE COMPARTIDO</span></div>
+  <div class="header-right"><span id="connection" class="small muted">Cargando…</span><span id="identity" class="mini"></span><button id="loginBtn">Entrar como streamer</button><button id="logoutBtn" class="hide">Salir</button></div>
+</header>
+<section class="admin hide" id="adminPanel">
+ <div class="admin-inner">
+  <div class="field"><label for="videoUrl">Enlace del video (YouTube, MP4 directo o iframe embebible)</label><input id="videoUrl" placeholder="https://..." /></div>
+  <button id="publishBtn" class="primary">Cambiar película</button>
+  <button id="playBtn">▶ Emitir</button><button id="pauseBtn">Ⅱ Pausar</button><button id="syncBtn">↻ Publicar minuto</button>
+ </div>
+ <div class="mini" style="padding-top:7px">Solo la cuenta autorizada puede emitir cambios al público. El reproductor externo debe permitir la incrustación.</div>
+</section>
+<div class="page">
+  <aside class="panel twitch">
+   <div class="panel-head">📺 Streamer en Twitch</div>
+   <div class="embed twitch-video" id="twitchPlayer"></div>
+   <div class="donate"><a href="https://ko-fi.com/cotecreator/shop" target="_blank" rel="noopener noreferrer">Ko-fi</a><a href="https://ceneka.net/coteparrague" target="_blank" rel="noopener noreferrer">Ceneka</a><a href="https://streamelements.com/coteparrague/tip" target="_blank" rel="noopener noreferrer">Tips</a></div>
+  </aside>
+  <main class="panel main">
+   <div class="panel-head"><span>🎬 Película</span><span id="filmLabel" class="small muted">Sin película</span></div>
+   <div class="movie" id="movie"><div class="placeholder">Esperando que la streamer comience la función…</div></div>
+   <div class="footer"><div class="status"><span id="statusText">Esperando emisión</span><span id="timeText" class="time small muted">--:--</span></div><button class="primary" id="backLive" disabled>● Volver al directo</button></div>
+   <p class="notice" id="info">Cada espectador reproduce el contenido desde el proveedor externo. Tu página no distribuye el video.</p>
+  </main>
+  <aside class="panel chat"><div class="panel-head">💬 Chat de Twitch</div><div class="embed" id="twitchChat"></div></aside>
+</div>
+<script type="module">
+/**
+ * CONFIGURACIÓN: completa estos valores después de crear tu proyecto Firebase.
+ * Si los dejas como están, puedes probar el modo DEMO en dos pestañas del MISMO navegador.
+ * El modo DEMO NO sincroniza a usuarios de otros dispositivos.
+ */
+const FIREBASE_CONFIG = {
+ apiKey: 'PON_AQUI_API_KEY',
+ authDomain: 'TU-PROYECTO.firebaseapp.com',
+ projectId: 'TU-PROYECTO',
+ appId: 'PON_AQUI_APP_ID'
+};
+const ADMIN_UID = 'PON_AQUI_UID_DE_LA_STREAMER';
+const TWITCH_CHANNEL = 'coteparrague';
+const ROOM_DOC = ['salas','principal'];
+// Demo autorizado de Big Buck Bunny, video de ejemplo alojado fuera de GitHub.
+const SAMPLE_URL = 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+const configured = !FIREBASE_CONFIG.apiKey.startsWith('PON_AQUI_') && !ADMIN_UID.startsWith('PON_AQUI_');
+const $ = (id) => document.getElementById(id);
+let auth=null, db=null, firestore=null, authMod=null;
+let isAdmin=false, followLive=true, snapshot=null, activeSource='', player=null;
+let programmaticUntil=0, lastYtTime=null, lastYtAt=0, lastPublishedAt=0;
+const channel = !configured && 'BroadcastChannel' in window ? new BroadcastChannel('cote-tv-demo') : null;
+const safeText=(x)=>String(x??'');
+const serverMs = (timestamp)=> timestamp?.toMillis ? timestamp.toMillis() : (typeof timestamp==='number' ? timestamp : Date.now());
+const nowPosition=(s)=>Math.max(0,(Number(s?.position)||0)+(s?.playing?Math.max(0,(Date.now()-serverMs(s.updatedAt))/1000):0));
+const fmtTime=(v)=>{v=Math.max(0,Math.floor(Number(v)||0));return `${Math.floor(v/3600)>0?String(Math.floor(v/3600))+':':''}${String(Math.floor(v%3600/60)).padStart(2,'0')}:${String(v%60).padStart(2,'0')}`};
+function classify(raw){
+ let u; try{u=new URL(raw);}catch{return null};
+ if(!['https:','http:'].includes(u.protocol))return null;
+ const h=u.hostname.toLowerCase();
+ let id=null;
+ if(h==='youtu.be')id=u.pathname.split('/')[1];
+ if(h==='youtube.com'||h==='www.youtube.com'||h==='m.youtube.com'||h==='youtube-nocookie.com'||h==='www.youtube-nocookie.com'){
+  id=u.searchParams.get('v') || (/^\/(shorts|live|embed)\//.test(u.pathname)?u.pathname.split('/')[2]:null);
+ }
+ if(id && /^[a-zA-Z0-9_-]{11}$/.test(id))return {kind:'youtube',source:'https://www.youtube.com/watch?v='+id,id};
+ if(/\.(mp4|webm|ogg)(?:$|\?)/i.test(u.href))return {kind:'video',source:u.href};
+ return {kind:'iframe',source:u.href};
+}
+function playerPos(){try{if(!player)return 0;if(player.kind==='video')return player.el.currentTime||0;if(player.kind==='youtube' && player.el.getCurrentTime)return player.el.getCurrentTime()||0;}catch{}return 0}
+function playerPlaying(){try{if(!player)return false;if(player.kind==='video')return !player.el.paused;if(player.kind==='youtube')return player.el.getPlayerState()===window.YT?.PlayerState?.PLAYING;}catch{}return false}
+function tell(t,isWarning=false){$('info').textContent=t;$('info').classList.toggle('warning',isWarning)}
+function setViewerStatus(){ $('statusText').textContent=isAdmin?'Control de emisión':(followLive?'Siguiendo el directo':'Reproducción personal');$('backLive').disabled=!snapshot || !player || isAdmin; }
+function showAdmin(){ $('adminPanel').classList.toggle('hide',!isAdmin);$('loginBtn').classList.toggle('hide',isAdmin);$('logoutBtn').classList.toggle('hide',!isAdmin);$('identity').textContent=isAdmin?'STREAMER':'';setViewerStatus(); }
+function setIframe(container, src, title){container.replaceChildren();let f=document.createElement('iframe');f.src=src;f.title=title;f.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';f.allowFullscreen=true;f.referrerPolicy='strict-origin-when-cross-origin';container.appendChild(f)}
+function setupTwitch(){const parent=location.hostname || 'localhost';const c=encodeURIComponent(TWITCH_CHANNEL);setIframe($('twitchPlayer'),`https://player.twitch.tv/?channel=${c}&parent=${encodeURIComponent(parent)}&muted=true`,'Twitch');setIframe($('twitchChat'),`https://www.twitch.tv/embed/${c}/chat?parent=${encodeURIComponent(parent)}`,'Chat de Twitch');}
+function youtubeApi(){return new Promise((resolve,reject)=>{if(window.YT?.Player)return resolve(window.YT);let s=document.createElement('script');let timeout=setTimeout(()=>reject(new Error('No se pudo cargar YouTube')),12000);s.src='https://www.youtube.com/iframe_api';window.onYouTubeIframeAPIReady=()=>{clearTimeout(timeout);resolve(window.YT)};s.onerror=()=>{clearTimeout(timeout);reject(new Error('No se pudo cargar YouTube'))};document.head.appendChild(s)});}
+async function displaySource(raw){
+ const details=classify(raw);const container=$('movie');if(player?.kind==='youtube')try{player.el.destroy()}catch{}
+ container.replaceChildren();player=null;lastYtTime=null;activeSource=raw;$('filmLabel').textContent=details?details.kind.toUpperCase():'SIN FUENTE';
+ if(!details){container.innerHTML='<div class="placeholder">La streamer aún no ha seleccionado película</div>';setViewerStatus();return}
+ programmaticUntil=Date.now()+2400;
+ if(details.kind==='video'){
+  const v=document.createElement('video');v.controls=true;v.playsInline=true;v.preload='metadata';v.src=details.source;container.appendChild(v);player={kind:'video',el:v};
+  v.addEventListener('loadedmetadata',()=>applySync());
+  ['play','pause','seeked'].forEach(e=>v.addEventListener(e,()=>{if(Date.now()<programmaticUntil)return;if(isAdmin)publishCurrent();else{followLive=false;setViewerStatus()}}));
+  tell('El proveedor del archivo sirve los datos directamente a cada espectador. Puedes pausar o adelantar en tu reproductor.');
+ }else if(details.kind==='youtube'){
+  try{await youtubeApi();if(raw!==activeSource)return;const mount=document.createElement('div');mount.id='yt-player';container.appendChild(mount);
+   const yt=new window.YT.Player(mount,{videoId:details.id,playerVars:{playsinline:1,controls:1,rel:0,origin:location.origin},events:{onReady:()=>applySync(),onStateChange:(e)=>{
+    if(Date.now()<programmaticUntil)return;
+    if([window.YT.PlayerState.PLAYING,window.YT.PlayerState.PAUSED].includes(e.data)){
+      if(isAdmin)publishCurrent();else{followLive=false;setViewerStatus()}
+    }
+   }}});player={kind:'youtube',el:yt};tell('YouTube permite sincronizar la posición mediante su API, sujeto a sus condiciones y restricciones de reproducción.');
+  }catch(e){container.innerHTML='<div class="placeholder">No se pudo cargar el reproductor de YouTube</div>';tell(e.message,true)}
+ }else{
+  const f=document.createElement('iframe');f.src=details.source;f.title='Reproductor externo';f.allow='autoplay; fullscreen; picture-in-picture';f.allowFullscreen=true;f.referrerPolicy='strict-origin-when-cross-origin';container.appendChild(f);player={kind:'iframe',el:f};
+  tell('Este sitio usa un iframe cerrado: puede mostrar la película si permite incrustación, pero NO admite sincronización de minuto ni botón «Volver al directo» desde esta página.',true);
+ }
+ setViewerStatus();
+}
+function applySync(){
+ if(!snapshot||!player||player.kind==='iframe')return;
+ const target=nowPosition(snapshot);programmaticUntil=Date.now()+1600;
+ if(player.kind==='video'){
+  try{if(Number.isFinite(player.el.duration))target>=player.el.duration?player.el.currentTime=Math.max(0,player.el.duration-.1):player.el.currentTime=target;else player.el.currentTime=target;}catch{}
+  if(snapshot.playing)player.el.play().catch(()=>tell('Tu navegador bloqueó el inicio automático. Pulsa Play para activar la reproducción.',true));else player.el.pause();
+ }else if(player.kind==='youtube'){
+  try{player.el.seekTo(target,true);if(snapshot.playing)player.el.playVideo();else player.el.pauseVideo()}catch{}
+ }
+ setViewerStatus();
+}
+function onSharedState(s){
+ if(!s)return;
+ const different=s.source!==activeSource;snapshot=s;
+ if(different){followLive=true;displaySource(s.source).then(()=>{if(followLive)applySync()})}
+ else if(followLive && !isAdmin)applySync();
+ setViewerStatus();
+}
+async function broadcast(s){
+ if(!isAdmin)return;
+ try{
+  if(configured){await firestore.setDoc(firestore.doc(db,...ROOM_DOC),{...s,updatedAt:firestore.serverTimestamp()},{merge:true});}
+  else{const payload={...s,updatedAt:Date.now()};localStorage.setItem('cote-tv-state',JSON.stringify(payload));channel?.postMessage(payload);onSharedState(payload)}
+ }catch(e){tell('No se pudo publicar el cambio: '+e.message,true)}
+}
+function publishCurrent(){
+ if(!isAdmin || !activeSource || !player || player.kind==='iframe')return;
+ if(Date.now()-lastPublishedAt<650)return;
+ lastPublishedAt=Date.now();broadcast({source:activeSource,position:playerPos(),playing:playerPlaying()});
+}
+function publishSource(){const v=$('videoUrl').value.trim();const details=classify(v);if(!details){tell('Escribe una URL HTTPS válida.',true);return}if(!isAdmin)return;
+ broadcast({source:details.source,position:0,playing:false});}
+$('publishBtn').addEventListener('click',publishSource);
+$('syncBtn').addEventListener('click',publishCurrent);
+$('playBtn').addEventListener('click',()=>{if(!isAdmin||!player)return;if(player.kind==='video')player.el.play().catch(()=>{});else if(player.kind==='youtube')player.el.playVideo();else tell('No se puede controlar un iframe cerrado.',true);setTimeout(publishCurrent,450)});
+$('pauseBtn').addEventListener('click',()=>{if(!isAdmin||!player)return;if(player.kind==='video')player.el.pause();else if(player.kind==='youtube')player.el.pauseVideo();else tell('No se puede controlar un iframe cerrado.',true);setTimeout(publishCurrent,450)});
+$('backLive').addEventListener('click',()=>{if(!snapshot||isAdmin)return;if(player?.kind==='iframe'){tell('Este reproductor externo no admite saltar a un minuto desde otra web.',true);return}followLive=true;applySync();});
+$('loginBtn').addEventListener('click',async()=>{
+ if(!configured){isAdmin=true;showAdmin();$('videoUrl').value=activeSource||SAMPLE_URL;return;}
+ try{const provider=new authMod.GoogleAuthProvider();const result=await authMod.signInWithPopup(auth,provider);
+ if(result.user.uid!==ADMIN_UID)tell('Esta cuenta no tiene permisos de streamer. UID: '+result.user.uid,true);
+ }catch(e){tell('Error al iniciar sesión: '+e.message,true)}
+});
+$('logoutBtn').addEventListener('click',async()=>{if(configured)await authMod.signOut(auth);isAdmin=false;showAdmin();});
+async function initialize(){
+ setupTwitch();
+ if(!configured){
+  $('connection').textContent='DEMO LOCAL (no conecta espectadores remotos)';
+  const saved=localStorage.getItem('cote-tv-state');if(saved){try{onSharedState(JSON.parse(saved))}catch{}}else onSharedState({source:SAMPLE_URL,position:0,playing:false,updatedAt:Date.now()});
+  channel?.addEventListener('message',(event)=>onSharedState(event.data));
+  window.addEventListener('storage',(event)=>{if(event.key==='cote-tv-state'&&event.newValue)try{onSharedState(JSON.parse(event.newValue))}catch{}});
+  return;
+ }
+ try{
+  const [{initializeApp},{getFirestore,doc,onSnapshot,setDoc,serverTimestamp},{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}]=await Promise.all([
+   import('https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js'),
+   import('https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js'),
+   import('https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js')]);
+  const app=initializeApp(FIREBASE_CONFIG);db=getFirestore(app);auth=getAuth(app);firestore={doc,onSnapshot,setDoc,serverTimestamp};authMod={GoogleAuthProvider,signInWithPopup,signOut};
+  onAuthStateChanged(auth,(user)=>{isAdmin=!!user&&user.uid===ADMIN_UID;showAdmin();if(user&&!isAdmin)tell('Sesión iniciada sin permisos de streamer. UID: '+user.uid,true);});
+  onSnapshot(doc(db,...ROOM_DOC),(snap)=>{
+   $('connection').textContent='Conectado';if(snap.exists())onSharedState(snap.data());else{$('statusText').textContent='Esperando que la streamer cargue un video';}
+  },(err)=>{$('connection').textContent='Sin conexión';tell('Error leyendo la sala: '+err.message,true)});
+ }catch(e){$('connection').textContent='Error de configuración';tell('Comprueba los datos de Firebase: '+e.message,true)}
+}
+setInterval(()=>{
+ if(snapshot){$('timeText').textContent=`En directo: ${fmtTime(nowPosition(snapshot))} · Tú: ${fmtTime(playerPos())}`;}
+ if(isAdmin&&player?.kind==='youtube'&&Date.now()>programmaticUntil){
+  const current=playerPos(), t=Date.now();
+  if(lastYtTime!==null&&lastYtAt>0){const expected=lastYtTime+(playerPlaying()?(t-lastYtAt)/1000:0);if(Math.abs(current-expected)>3)publishCurrent();}
+  lastYtTime=current;lastYtAt=t;
+ }
+},1800);
+initialize();
+</script>
 </body>
-
 </html>
